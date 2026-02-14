@@ -29,12 +29,20 @@ sys.path.insert(0, os.path.abspath(binpath + '/Development/pymodules'))
 sys.path.insert(0, os.path.abspath(binpath + '/Release/pymodules'))
 
 # Add the build paths to PATH so renderdoc.dll can be located
-os.environ["PATH"] += os.pathsep + os.path.abspath(binpath + '/Development/')
-os.environ["PATH"] += os.pathsep + os.path.abspath(binpath + '/Release/')
+dev_path = os.path.abspath(binpath + '/Development/')
+rel_path = os.path.abspath(binpath + '/Release/')
+
+if os.path.exists(dev_path):
+    os.environ["PATH"] = os.pathsep + dev_path + os.pathsep + os.environ.get("PATH", "")
+
+if os.path.exists(rel_path):
+    os.environ["PATH"] = os.pathsep + rel_path + os.pathsep + os.environ.get("PATH", "")
 
 if sys.platform == 'win32' and sys.version_info[1] >= 8:
-    os.add_dll_directory(binpath + '/Release/')
-    os.add_dll_directory(binpath + '/Development/')
+    if os.path.exists(rel_path):
+        os.add_dll_directory(rel_path)
+    if os.path.exists(dev_path):
+        os.add_dll_directory(dev_path)
 
 # path to module libraries for linux
 sys.path.insert(0, os.path.abspath(os.path.join(docsdir, '../build/lib')))
