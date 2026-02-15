@@ -1,74 +1,220 @@
-<p align="center"><img src="https://user-images.githubusercontent.com/661798/36482670-f81601c0-170b-11e8-8adb-2365b346ac27.png" /></p>
+# RenderDoc Python Modules
 
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
-[![CI](https://github.com/baldurk/renderdoc/actions/workflows/ci.yml/badge.svg?branch=v1.x&event=push)](https://github.com/baldurk/renderdoc/actions)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](docs/CODE_OF_CONDUCT.md) 
+[English](README.md) | [简体中文](README.zh-CN.md)
 
-RenderDoc is a frame-capture based graphics debugger, currently available for Vulkan, D3D11, D3D12, OpenGL, and OpenGL ES development on Windows, Linux, Android, and Nintendo Switch&trade;. It is completely open-source under the MIT license.
+Pre-built RenderDoc Python modules repository containing builds for different RenderDoc versions, Python versions, and platforms. Built from RenderDoc's develop branch for development, testing, and debugging. **Built on Windows Platform**
 
-RenderDoc is intended for debugging your own programs only. Any discussion of capturing programs that you did not create will not be allowed in any official public RenderDoc setting, including the issue tracker, discord, or via email. For example this includes capturing commercial games that you did not create, or capturing Google Maps or Google Earth. Note: Capturing projects you created that use a third party engine like Unreal or Unity, or open source and free projects is completely fine and supported.
+## Overview
 
-If you have any questions, suggestions or problems or you can [create an issue](https://github.com/baldurk/renderdoc/issues/new/choose) here on github, [email me directly](mailto:baldurk@baldurk.org) or come into [IRC](https://webchat.oftc.net/?channels=renderdoc) or [Discord](https://discord.gg/ahq6yRB) to discuss it.
+This repository is dedicated to storing and managing RenderDoc Python module build artifacts, including:
 
-To install on windows run the appropriate installer for your OS ([64-bit](https://renderdoc.org/stable/latest/RenderDoc_latest_64.msi) | [32-bit](https://renderdoc.org/stable/latest/RenderDoc_latest_32.msi)) or download the portable zip from the [builds page](https://renderdoc.org/builds). The 64-bit windows build fully supports capturing from 32-bit programs. On linux only 64-bit x86 is supported - there is a precompiled [binary tarball](https://renderdoc.org/stable/latest/renderdoc_latest.tar.gz) available, or your distribution may package it. If not you can [build from source](docs/CONTRIBUTING/Compiling.md).
+- **renderdoc.pyd** - Core RenderDoc Python module
+- **qrenderdoc.pyd** - Qt UI Python module
+- **renderdoc.dll** - RenderDoc core library
+- **Dependencies** - Runtime dependencies like D3D compiler
+- **Debug Symbols** - .pdb files for debugging
+- **Type Stubs** - Complete Python type hints (.py files)
+- **Build Reports** - Detailed build environment information and version records
 
-* **Downloads**: Stable and nightly builds: https://renderdoc.org/builds ( [Symbol server](https://renderdoc.org/symbols) )
-* **Documentation**: [HTML online](https://renderdoc.org/docs), [CHM in builds](https://renderdoc.org/docs/renderdoc.chm), [Videos](https://www.youtube.com/user/baldurkarlsson)
-* **Contact**: [baldurk@baldurk.org](mailto:baldurk@baldurk.org), [#renderdoc on OFTC IRC](https://webchat.oftc.net/?channels=renderdoc), [Discord server](https://discord.gg/ahq6yRB)
-* **Code of Conduct**: [Contributor Covenant](docs/CODE_OF_CONDUCT.md)
-* **Information for contributors**: [All contribution information](docs/CONTRIBUTING.md), [Compilation instructions](docs/CONTRIBUTING/Compiling.md)
-* **Community extensions**: [Extensions repository](https://github.com/baldurk/renderdoc-contrib)
+## Directory Structure
 
-Screenshots
---------------
+```text
+python-releases/
+├── v1.43_py3.13.9_x64/
+│   ├── pymodules/           # Python modules and dependencies
+│   │   ├── renderdoc.pyd
+│   │   ├── qrenderdoc.pyd
+│   │   ├── renderdoc.dll
+│   │   ├── d3dcompiler_47.dll
+│   │   ├── renderdoc.pdb    # Debug symbols
+│   │   ├── qrenderdoc.pdb
+│   │   ├── renderdoc.lib    # Import libraries
+│   │   └── qrenderdoc.lib
+│   ├── stubs/               # Python Stubs
+│   └── REPORT.md            # Build environment
+└── v{version}_py{python}_{platform}/
+    └── ...
+```
 
-| [ ![Texture view](https://renderdoc.org/fp/ts_screen1.jpg?2) ](https://renderdoc.org/fp/screen1.jpg) | [ ![Pixel history & shader debug](https://renderdoc.org/fp/ts_screen2.jpg?2) ](https://renderdoc.org/fp/screen2.png) |
-| --- | --- |
-| [ ![Mesh viewer](https://renderdoc.org/fp/ts_screen3.jpg?2) ](https://renderdoc.org/fp/screen3.png) | [ ![Pipeline viewer & constants](https://renderdoc.org/fp/ts_screen4.jpg?2) ](https://renderdoc.org/fp/screen4.png) |
+## Version Convention
 
-API Support
---------------
+Release directories follow this naming format:
 
-|                          | Windows                  | Linux                    | Android                   |
-| ------------------------ | ------------------------ | ------------------------ | ------------------------  |
-| Vulkan                   | :heavy_check_mark:       | :heavy_check_mark:       | :heavy_check_mark:        |
-| OpenGL ES 2.0 - 3.2      | :heavy_check_mark:       | :heavy_check_mark:       | :heavy_check_mark:        |
-| OpenGL 3.2 - 4.6 Core    | :heavy_check_mark:       | :heavy_check_mark:       |  N/A                      |
-| D3D11 & D3D12            | :heavy_check_mark:       |  N/A                     |  N/A                      |
-| OpenGL 1.0 - 2.0 Compat  | :heavy_multiplication_x: | :heavy_multiplication_x: |  N/A                      |
-| D3D9 & 10                | :heavy_multiplication_x: |  N/A                     |  N/A                      |
-| Metal                    |  N/A                     |  N/A                     |  N/A                      |
+```text
+v{RenderDoc version}_py{Python full version}_{platform}
 
-* Nintendo Switch&trade; support is distributed separately for authorized developers as part of the NintendoSDK. For more information, consult the Nintendo Developer Portal.
+Examples:
+v1.43_py3.13.9_x64    → RenderDoc 1.43, Python 3.13.9, 64-bit Windows
+v1.43_py3.12.8_x86    → RenderDoc 1.43, Python 3.12.8, 32-bit Windows
+v1.44_py3.13.9_x64    → RenderDoc 1.44, Python 3.13.9, 64-bit Windows
+```
 
-Downloads
---------------
+## Quick Start
 
-There are [binary releases](https://renderdoc.org/builds) available, built from the release targets. If you just want to use the program and you ended up here, this is what you want :).
+### 1. Choose the Right Version
 
-It's recommended that if you're new you start with the stable builds. Nightly builds are available every day from the [v1.x branch here](https://renderdoc.org/builds#nightly) if you need it, but correspondingly may be less stable.
+Select the appropriate release directory based on your RenderDoc version, Python version, and platform.
 
-Documentation
---------------
+**List available versions**:
 
-The text documentation is available [online for the latest stable version](https://renderdoc.org/docs/), as well as in [renderdoc.chm](https://renderdoc.org/docs/renderdoc.chm) in any build. It's built from [restructured text with sphinx](docs).
+```bash
+ls python-releases/
+```
 
-As mentioned above there are some [youtube videos](https://www.youtube.com/user/baldurkarlsson) showing the use of some basic features and an introduction/overview.
+### 2. Using the Modules
 
-There is also a great presentation by [@Icetigris](https://twitter.com/Icetigris) which goes into some details of how RenderDoc can be used in real world situations: [slides are up here](https://docs.google.com/presentation/d/1LQUMIld4SGoQVthnhT1scoA3k4Sg0as14G4NeSiSgFU/edit#slide=id.p).
+#### Method A: Add to Python Path
 
-License
---------------
+```python
+import sys
+sys.path.append(r'path\to\v1.43_py3.13.9_x64\pymodules')
 
-RenderDoc is released under the MIT license, see [LICENSE.md](LICENSE.md) for full text as well as 3rd party library acknowledgements.
+import renderdoc
+import qrenderdoc
 
-Compiling
----------
+# Open a RenderDoc capture file
+cap = renderdoc.OpenCapture("capture.rdc")
+```
 
-Building RenderDoc is fairly straight forward on most platforms. See [Compiling.md](docs/CONTRIBUTING/Compiling.md) for more details.
+#### Method B: Copy to Project Directory
 
-Contributing & Development
---------------
+Copy the `.pyd` and `.dll` files from the `pymodules/` directory to your Python project.
 
-I've added some notes on how to contribute, as well as where to get started looking through the code in [Developing-Change.md](docs/CONTRIBUTING/Developing-Change.md). All contribution information is available under [CONTRIBUTING.md](docs/CONTRIBUTING.md).
+### 3. Configure Type Hints
 
+Each release includes complete Python type stubs for IDE autocomplete and type checking.
+
+> The stubs are modified, using `regenerate-stubs.py` with modules from the Development build branch, not the Release branch.
+
+**VS Code Configuration** (`.vscode/settings.json`):
+
+```json
+{
+  "python.analysis.extraPaths": [
+    "path/to/v1.43_py3.13.9_x64/stubs"
+  ]
+}
+```
+
+**PyCharm Configuration**:
+
+1. Right-click on the `stubs/` directory
+2. Select `Mark Directory as` → `Sources Root`
+
+**For more information on using stubs for syntax highlighting, see the [RenderDoc development environment documentation](https://renderdoc.org/docs/python_api/dev_environment.html)**
+
+## System Requirements
+
+### General Requirements
+
+- **Operating System**: Windows 10/11 (x64 or x86).
+- **Python**: The Python version specified in the directory. Typically 3.13.9
+- **Visual C++ Redistributable**: Usually pre-installed
+
+### Version Example
+
+**v1.43_py3.13.9_x64**:
+
+- Windows 10/11 x64
+- Python 3.13.9
+- MSBuild 17.11.5
+- Platform Toolset v143
+- Windows SDK 10.0.26100.0
+
+## Build Information
+
+Each release includes a detailed build report (`REPORT.md`) documenting:
+
+- **Python Environment**: Version, include directory, import libraries
+- **Build Tools**: MSBuild, Platform Toolset, Windows SDK versions
+- **Visual Studio**: Version and installation path
+- **System Information**: OS version, architecture
+- **Build Parameters**: Complete MSBuild command lines
+- **Test Results**: Module import test status
+
+### Build Environment Example
+
+```text
+MSBuild: 17.11.5
+Platform Toolset: v143
+Windows SDK: 10.0.26100.0
+Visual Studio: 2022
+Python: 3.13.9
+```
+
+**Detailed Documentation**: [v1.43_py3.13.9_x64/README.md](python-releases/v1.43_py3.13.9_x64/README.md)
+
+## FAQ
+
+### Q: How do I choose the correct version?
+
+**A**: Prioritize in this order:
+
+1. **RenderDoc Version** - Must match your RenderDoc installation, especially for remote debugging (e.g., Android pre-installed RenderDoc cmd, version must match exactly)
+2. **Python Version** - Must match your Python environment
+
+### Q: Can I use versions across different releases?
+
+**A**: **Not recommended**.
+
+- Different RenderDoc versions may have incompatible APIs
+- Different Python versions are incompatible (ABI changes)
+- x86 and x64 cannot be mixed
+
+### Q: What if import fails?
+
+**A**: Check the following:
+
+1. Python version matches
+2. Both `.pyd` and `.dll` files are copied together
+3. Graphics drivers (dx dll) and renderdoc.dll are in the same directory
+4. Visual C++ Redistributable is installed
+5. Platform matches (x64/x86)?
+
+If the issue persists, [you can use the Dependencies tool to check dependencies](https://github.com/lucasg/Dependencies)
+
+### Q: How do I use type stubs?
+
+**A**: See the [RenderDoc Python API development environment documentation](https://renderdoc.org/docs/python_api/dev_environment.html)
+
+1. For IDE autocomplete and type checking
+2. Supports VS Code, PyCharm, and other IDEs
+3. Works with mypy for static type checking
+
+### Q: Build from source
+
+**A**: This repository uses automated build scripts (actually a skill), including handling of deprecation warnings (C4996) and C++ syntax downgrade warnings for newer Python versions, without treating warnings as errors.
+
+- Located in `.claude/skills/renderdoc-python-builder/` directory
+
+## Contributing
+
+This repository primarily serves as a distribution channel for pre-built modules. Source code contributions are not accepted.
+
+For:
+
+- **Report Issues**: Submit issues in the main RenderDoc repository
+- **Request New Versions**: Open an issue with version requirements
+- **Build Issues**: Check the version-specific REPORT.md for build environment details
+
+## License
+
+Build artifacts in this repository follow the RenderDoc license:
+
+- **RenderDoc**: MIT License
+- See: <https://github.com/baldurk/renderdoc/blob/master/LICENSE>
+
+## Related Links
+
+- **RenderDoc Official Repository**: <https://github.com/baldurk/renderdoc>
+- **RenderDoc Documentation**: <https://renderdoc.org/>
+- **Python API Documentation**: <https://renderdoc.org/docs/python_api.html>
+
+## Maintenance Information
+
+- **Main Branch**: `main` for integrating modules. Other branches store build artifacts and are not uploaded to GitHub due to large size
+- **Release Branches**: python/v1.43
+
+---
+
+**Note**: This repository contains only pre-built Python modules and build artifacts. It does not include RenderDoc source code. For source code, visit the [RenderDoc Official Repository](https://github.com/baldurk/renderdoc).
