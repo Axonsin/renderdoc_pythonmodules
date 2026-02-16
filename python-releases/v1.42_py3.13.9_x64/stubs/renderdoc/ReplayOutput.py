@@ -10,11 +10,11 @@ import enum as __enum
 from typing import List, Tuple, Callable, Any
 
 
-from .CompType import CompType
 from .Subresource import Subresource
-from .ResultDetails import ResultDetails
+from .CompType import CompType
 from .WindowingData import WindowingData
 from .ResourceId import ResourceId
+from .ResultDetails import ResultDetails
 from .MeshDisplay import MeshDisplay
 from .TextureDisplay import TextureDisplay
 

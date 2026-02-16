@@ -12,11 +12,11 @@ from typing import List, Tuple, Callable, Any
 
 from .ReplayController import ReplayController
 from .CaptureOptions import CaptureOptions
-from .ExecuteResult import ExecuteResult
 from .EnvironmentModification import EnvironmentModification
+from .ExecuteResult import ExecuteResult
 from .PathEntry import PathEntry
-from .ResultDetails import ResultDetails
 from .ReplayOptions import ReplayOptions
+from .ResultDetails import ResultDetails
 
 from .CaptureAccess import CaptureAccess
 

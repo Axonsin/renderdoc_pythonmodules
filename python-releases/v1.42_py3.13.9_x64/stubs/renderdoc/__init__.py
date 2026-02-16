@@ -2042,7 +2042,7 @@ __all__ = [
     'rdcarray_of_GLPipe_TextureCompleteness',
 ]
 
-__loader__ = None # (!) real value is '<_frozen_importlib_external.ExtensionFileLoader object at 0x000001EC4868B890>'
+__loader__ = None # (!) real value is '<_frozen_importlib_external.ExtensionFileLoader object at 0x00000205B113B890>'
 
-__spec__ = None # (!) real value is "ModuleSpec(name='renderdoc', loader=<_frozen_importlib_external.ExtensionFileLoader object at 0x000001EC4868B890>, origin='C:\\\\Users\\\\13908\\\\Desktop\\\\works\\\\renderdoc_pythonmodules\\\\x64\\\\Development\\\\pymodules\\\\renderdoc.pyd')"
+__spec__ = None # (!) real value is "ModuleSpec(name='renderdoc', loader=<_frozen_importlib_external.ExtensionFileLoader object at 0x00000205B113B890>, origin='C:\\\\Users\\\\13908\\\\Desktop\\\\works\\\\renderdoc_pythonmodules\\\\x64\\\\Development\\\\pymodules\\\\renderdoc.pyd')"
 
