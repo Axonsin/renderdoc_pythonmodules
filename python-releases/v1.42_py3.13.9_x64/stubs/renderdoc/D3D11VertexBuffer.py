@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -92,6 +92,6 @@ The :class:`ResourceId` of the buffer bound to this slot.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DB1AD0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.D3D11VertexBuffer' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.D3D11VertexBuffer' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.D3D11VertexBuffer' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.D3D11VertexBuffer' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.D3D11VertexBuffer' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.D3D11VertexBuffer' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.D3D11VertexBuffer' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.D3D11VertexBuffer' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.D3D11VertexBuffer' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.D3D11VertexBuffer' objects>, 'byteStride': <attribute 'byteStride' of 'renderdoc.D3D11VertexBuffer' objects>, 'byteOffset': <attribute 'byteOffset' of 'renderdoc.D3D11VertexBuffer' objects>, '__doc__': 'Describes a single D3D11 vertex buffer binding.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC8DAA0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.D3D11VertexBuffer' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.D3D11VertexBuffer' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.D3D11VertexBuffer' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.D3D11VertexBuffer' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.D3D11VertexBuffer' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.D3D11VertexBuffer' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.D3D11VertexBuffer' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.D3D11VertexBuffer' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.D3D11VertexBuffer' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.D3D11VertexBuffer' objects>, 'byteStride': <attribute 'byteStride' of 'renderdoc.D3D11VertexBuffer' objects>, 'byteOffset': <attribute 'byteOffset' of 'renderdoc.D3D11VertexBuffer' objects>, '__doc__': 'Describes a single D3D11 vertex buffer binding.'})"
 
 

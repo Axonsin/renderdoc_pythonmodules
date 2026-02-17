@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -10,10 +10,10 @@ import enum as __enum
 from typing import List, Tuple, Callable, Any
 
 
-from .Subresource import Subresource
-from .CompType import CompType
-from .WindowingData import WindowingData
 from .ResourceId import ResourceId
+from .WindowingData import WindowingData
+from .CompType import CompType
+from .Subresource import Subresource
 from .ResultDetails import ResultDetails
 from .MeshDisplay import MeshDisplay
 from .TextureDisplay import TextureDisplay
@@ -277,6 +277,6 @@ class ReplayOutput(): # skipped bases: <class 'SwigPyObject'>
 
 
     NoResult = 4294967295
-    __dict__ = None # (!) real value is "mappingproxy({'NoResult': 4294967295, 'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DDFCF0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.ReplayOutput' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.ReplayOutput' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.ReplayOutput' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.ReplayOutput' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.ReplayOutput' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.ReplayOutput' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.ReplayOutput' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.ReplayOutput' objects>, 'Shutdown': <method 'Shutdown' of 'renderdoc.ReplayOutput' objects>, 'SetTextureDisplay': <method 'SetTextureDisplay' of 'renderdoc.ReplayOutput' objects>, 'SetMeshDisplay': <method 'SetMeshDisplay' of 'renderdoc.ReplayOutput' objects>, 'ReadbackOutputTexture': <method 'ReadbackOutputTexture' of 'renderdoc.ReplayOutput' objects>, 'GetDimensions': <method 'GetDimensions' of 'renderdoc.ReplayOutput' objects>, 'ClearThumbnails': <method 'ClearThumbnails' of 'renderdoc.ReplayOutput' objects>, 'AddThumbnail': <method 'AddThumbnail' of 'renderdoc.ReplayOutput' objects>, 'DrawThumbnail': <method 'DrawThumbnail' of 'renderdoc.ReplayOutput' objects>, 'Display': <method 'Display' of 'renderdoc.ReplayOutput' objects>, 'SetPixelContext': <method 'SetPixelContext' of 'renderdoc.ReplayOutput' objects>, 'SetPixelContextLocation': <method 'SetPixelContextLocation' of 'renderdoc.ReplayOutput' objects>, 'DisablePixelContext': <method 'DisablePixelContext' of 'renderdoc.ReplayOutput' objects>, 'GetCustomShaderTexID': <method 'GetCustomShaderTexID' of 'renderdoc.ReplayOutput' objects>, 'GetDebugOverlayTexID': <method 'GetDebugOverlayTexID' of 'renderdoc.ReplayOutput' objects>, 'PickVertex': <method 'PickVertex' of 'renderdoc.ReplayOutput' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.ReplayOutput' objects>, '__doc__': '\\nA stateful output handle that contains the current configuration for one particular view\\nof the capture. This allows multiple outputs to run independently without interfering with each\\nother.\\n\\nThe different types are enumerated in :class:`ReplayOutputType`.\\n\\n.. data:: NoResult\\n\\n  No result was found in e.g. :meth:`PickVertex`.\\n\\n'})"
+    __dict__ = None # (!) real value is "mappingproxy({'NoResult': 4294967295, 'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCBB930>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.ReplayOutput' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.ReplayOutput' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.ReplayOutput' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.ReplayOutput' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.ReplayOutput' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.ReplayOutput' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.ReplayOutput' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.ReplayOutput' objects>, 'Shutdown': <method 'Shutdown' of 'renderdoc.ReplayOutput' objects>, 'SetTextureDisplay': <method 'SetTextureDisplay' of 'renderdoc.ReplayOutput' objects>, 'SetMeshDisplay': <method 'SetMeshDisplay' of 'renderdoc.ReplayOutput' objects>, 'ReadbackOutputTexture': <method 'ReadbackOutputTexture' of 'renderdoc.ReplayOutput' objects>, 'GetDimensions': <method 'GetDimensions' of 'renderdoc.ReplayOutput' objects>, 'ClearThumbnails': <method 'ClearThumbnails' of 'renderdoc.ReplayOutput' objects>, 'AddThumbnail': <method 'AddThumbnail' of 'renderdoc.ReplayOutput' objects>, 'DrawThumbnail': <method 'DrawThumbnail' of 'renderdoc.ReplayOutput' objects>, 'Display': <method 'Display' of 'renderdoc.ReplayOutput' objects>, 'SetPixelContext': <method 'SetPixelContext' of 'renderdoc.ReplayOutput' objects>, 'SetPixelContextLocation': <method 'SetPixelContextLocation' of 'renderdoc.ReplayOutput' objects>, 'DisablePixelContext': <method 'DisablePixelContext' of 'renderdoc.ReplayOutput' objects>, 'GetCustomShaderTexID': <method 'GetCustomShaderTexID' of 'renderdoc.ReplayOutput' objects>, 'GetDebugOverlayTexID': <method 'GetDebugOverlayTexID' of 'renderdoc.ReplayOutput' objects>, 'PickVertex': <method 'PickVertex' of 'renderdoc.ReplayOutput' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.ReplayOutput' objects>, '__doc__': '\\nA stateful output handle that contains the current configuration for one particular view\\nof the capture. This allows multiple outputs to run independently without interfering with each\\nother.\\n\\nThe different types are enumerated in :class:`ReplayOutputType`.\\n\\n.. data:: NoResult\\n\\n  No result was found in e.g. :meth:`PickVertex`.\\n\\n'})"
 
 

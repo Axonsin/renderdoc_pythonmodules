@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -115,6 +115,6 @@ The bound viewports and scissors.
         pass
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DD0520>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKViewState' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKViewState' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKViewState' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKViewState' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKViewState' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKViewState' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKViewState' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKViewState' objects>, 'discardRectanglesExclusive': <attribute 'discardRectanglesExclusive' of 'renderdoc.VKViewState' objects>, 'discardRectangles': <attribute 'discardRectangles' of 'renderdoc.VKViewState' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKViewState' objects>, 'viewportScissors': <attribute 'viewportScissors' of 'renderdoc.VKViewState' objects>, 'depthNegativeOneToOne': <attribute 'depthNegativeOneToOne' of 'renderdoc.VKViewState' objects>, '__doc__': 'Describes the view state in the pipeline.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCAC400>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKViewState' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKViewState' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKViewState' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKViewState' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKViewState' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKViewState' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKViewState' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKViewState' objects>, 'discardRectanglesExclusive': <attribute 'discardRectanglesExclusive' of 'renderdoc.VKViewState' objects>, 'discardRectangles': <attribute 'discardRectangles' of 'renderdoc.VKViewState' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKViewState' objects>, 'viewportScissors': <attribute 'viewportScissors' of 'renderdoc.VKViewState' objects>, 'depthNegativeOneToOne': <attribute 'depthNegativeOneToOne' of 'renderdoc.VKViewState' objects>, '__doc__': 'Describes the view state in the pipeline.'})"
 
 

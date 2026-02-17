@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -107,6 +107,6 @@ The value to use with the modification specified in :data:`mod`.
         pass
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DE1DC0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.EnvironmentModification' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.EnvironmentModification' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.EnvironmentModification' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.EnvironmentModification' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.EnvironmentModification' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.EnvironmentModification' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.EnvironmentModification' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.EnvironmentModification' objects>, 'value': <attribute 'value' of 'renderdoc.EnvironmentModification' objects>, 'name': <attribute 'name' of 'renderdoc.EnvironmentModification' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.EnvironmentModification' objects>, 'mod': <attribute 'mod' of 'renderdoc.EnvironmentModification' objects>, 'sep': <attribute 'sep' of 'renderdoc.EnvironmentModification' objects>, '__doc__': 'A modification to a single environment variable.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCBE160>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.EnvironmentModification' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.EnvironmentModification' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.EnvironmentModification' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.EnvironmentModification' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.EnvironmentModification' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.EnvironmentModification' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.EnvironmentModification' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.EnvironmentModification' objects>, 'value': <attribute 'value' of 'renderdoc.EnvironmentModification' objects>, 'name': <attribute 'name' of 'renderdoc.EnvironmentModification' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.EnvironmentModification' objects>, 'mod': <attribute 'mod' of 'renderdoc.EnvironmentModification' objects>, 'sep': <attribute 'sep' of 'renderdoc.EnvironmentModification' objects>, '__doc__': 'A modification to a single environment variable.'})"
 
 

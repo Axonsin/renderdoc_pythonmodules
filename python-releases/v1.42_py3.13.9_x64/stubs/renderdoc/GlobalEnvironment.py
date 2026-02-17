@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -92,6 +92,6 @@ The handle to the X display to use internally. If left ``NULL``, one will be ope
         pass
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DA4130>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GlobalEnvironment' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GlobalEnvironment' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GlobalEnvironment' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GlobalEnvironment' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GlobalEnvironment' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GlobalEnvironment' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GlobalEnvironment' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GlobalEnvironment' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GlobalEnvironment' objects>, 'xlibDisplay': <attribute 'xlibDisplay' of 'renderdoc.GlobalEnvironment' objects>, 'waylandDisplay': <attribute 'waylandDisplay' of 'renderdoc.GlobalEnvironment' objects>, 'enumerateGPUs': <attribute 'enumerateGPUs' of 'renderdoc.GlobalEnvironment' objects>, '__doc__': 'Structure used for initialising environment in a replay application.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC801D0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GlobalEnvironment' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GlobalEnvironment' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GlobalEnvironment' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GlobalEnvironment' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GlobalEnvironment' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GlobalEnvironment' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GlobalEnvironment' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GlobalEnvironment' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GlobalEnvironment' objects>, 'xlibDisplay': <attribute 'xlibDisplay' of 'renderdoc.GlobalEnvironment' objects>, 'waylandDisplay': <attribute 'waylandDisplay' of 'renderdoc.GlobalEnvironment' objects>, 'enumerateGPUs': <attribute 'enumerateGPUs' of 'renderdoc.GlobalEnvironment' objects>, '__doc__': 'Structure used for initialising environment in a replay application.'})"
 
 

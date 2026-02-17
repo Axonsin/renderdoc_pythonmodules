@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -2042,7 +2042,7 @@ __all__ = [
     'rdcarray_of_GLPipe_TextureCompleteness',
 ]
 
-__loader__ = None # (!) real value is '<_frozen_importlib_external.ExtensionFileLoader object at 0x00000205B113B890>'
+__loader__ = None # (!) real value is '<_frozen_importlib_external.ExtensionFileLoader object at 0x0000014808A3B890>'
 
-__spec__ = None # (!) real value is "ModuleSpec(name='renderdoc', loader=<_frozen_importlib_external.ExtensionFileLoader object at 0x00000205B113B890>, origin='C:\\\\Users\\\\13908\\\\Desktop\\\\works\\\\renderdoc_pythonmodules\\\\x64\\\\Development\\\\pymodules\\\\renderdoc.pyd')"
+__spec__ = None # (!) real value is "ModuleSpec(name='renderdoc', loader=<_frozen_importlib_external.ExtensionFileLoader object at 0x0000014808A3B890>, origin='C:\\\\Users\\\\13908\\\\Desktop\\\\works\\\\renderdoc_pythonmodules\\\\x64\\\\Release\\\\pymodules\\\\renderdoc.pyd')"
 

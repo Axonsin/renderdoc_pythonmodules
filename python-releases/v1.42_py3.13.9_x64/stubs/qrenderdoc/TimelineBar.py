@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module qrenderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\qrenderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\qrenderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -90,6 +90,6 @@ class TimelineBar(): # skipped bases: <class 'SwigPyObject'>
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79626180>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.TimelineBar' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.TimelineBar' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.TimelineBar' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.TimelineBar' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.TimelineBar' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.TimelineBar' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.TimelineBar' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.TimelineBar' objects>, 'Widget': <method 'Widget' of 'qrenderdoc.TimelineBar' objects>, 'HighlightResourceUsage': <method 'HighlightResourceUsage' of 'qrenderdoc.TimelineBar' objects>, 'HighlightHistory': <method 'HighlightHistory' of 'qrenderdoc.TimelineBar' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.TimelineBar' objects>, '__doc__': '\\nThe timeline bar.\\n\\nThis window is retrieved by calling :meth:`CaptureContext.GetTimelineBar`.\\n\\n'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85B622B00>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.TimelineBar' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.TimelineBar' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.TimelineBar' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.TimelineBar' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.TimelineBar' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.TimelineBar' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.TimelineBar' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.TimelineBar' objects>, 'Widget': <method 'Widget' of 'qrenderdoc.TimelineBar' objects>, 'HighlightResourceUsage': <method 'HighlightResourceUsage' of 'qrenderdoc.TimelineBar' objects>, 'HighlightHistory': <method 'HighlightHistory' of 'qrenderdoc.TimelineBar' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.TimelineBar' objects>, '__doc__': '\\nThe timeline bar.\\n\\nThis window is retrieved by calling :meth:`CaptureContext.GetTimelineBar`.\\n\\n'})"
 
 

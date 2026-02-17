@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -121,6 +121,6 @@ The read framebuffer.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79D972C0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GLFrameBuffer' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GLFrameBuffer' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GLFrameBuffer' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GLFrameBuffer' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GLFrameBuffer' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GLFrameBuffer' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GLFrameBuffer' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GLFrameBuffer' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GLFrameBuffer' objects>, 'framebufferSRGB': <attribute 'framebufferSRGB' of 'renderdoc.GLFrameBuffer' objects>, 'drawFBO': <attribute 'drawFBO' of 'renderdoc.GLFrameBuffer' objects>, 'dither': <attribute 'dither' of 'renderdoc.GLFrameBuffer' objects>, 'blendState': <attribute 'blendState' of 'renderdoc.GLFrameBuffer' objects>, 'readFBO': <attribute 'readFBO' of 'renderdoc.GLFrameBuffer' objects>, '__doc__': 'Describes the current state of the framebuffer stage of the pipeline.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC73300>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GLFrameBuffer' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GLFrameBuffer' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GLFrameBuffer' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GLFrameBuffer' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GLFrameBuffer' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GLFrameBuffer' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GLFrameBuffer' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GLFrameBuffer' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GLFrameBuffer' objects>, 'framebufferSRGB': <attribute 'framebufferSRGB' of 'renderdoc.GLFrameBuffer' objects>, 'drawFBO': <attribute 'drawFBO' of 'renderdoc.GLFrameBuffer' objects>, 'dither': <attribute 'dither' of 'renderdoc.GLFrameBuffer' objects>, 'blendState': <attribute 'blendState' of 'renderdoc.GLFrameBuffer' objects>, 'readFBO': <attribute 'readFBO' of 'renderdoc.GLFrameBuffer' objects>, '__doc__': 'Describes the current state of the framebuffer stage of the pipeline.'})"
 
 

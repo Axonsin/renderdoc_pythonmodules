@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module qrenderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\qrenderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\qrenderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -115,6 +115,6 @@ Unread updates to the bug exist
         pass
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD7962C130>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.BugReport' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.BugReport' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.BugReport' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.BugReport' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.BugReport' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.BugReport' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.BugReport' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.BugReport' objects>, 'URL': <method 'URL' of 'qrenderdoc.BugReport' objects>, 'submitDate': <attribute 'submitDate' of 'qrenderdoc.BugReport' objects>, 'checkDate': <attribute 'checkDate' of 'qrenderdoc.BugReport' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.BugReport' objects>, 'reportId': <attribute 'reportId' of 'qrenderdoc.BugReport' objects>, 'unreadUpdates': <attribute 'unreadUpdates' of 'qrenderdoc.BugReport' objects>, '__doc__': 'Describes a submitted bug report.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85B628AB0>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.BugReport' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.BugReport' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.BugReport' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.BugReport' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.BugReport' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.BugReport' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.BugReport' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.BugReport' objects>, 'URL': <method 'URL' of 'qrenderdoc.BugReport' objects>, 'submitDate': <attribute 'submitDate' of 'qrenderdoc.BugReport' objects>, 'checkDate': <attribute 'checkDate' of 'qrenderdoc.BugReport' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.BugReport' objects>, 'reportId': <attribute 'reportId' of 'qrenderdoc.BugReport' objects>, 'unreadUpdates': <attribute 'unreadUpdates' of 'qrenderdoc.BugReport' objects>, '__doc__': 'Describes a submitted bug report.'})"
 
 

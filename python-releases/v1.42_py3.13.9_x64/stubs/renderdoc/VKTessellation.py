@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -76,6 +76,6 @@ The number of control points in each input patch.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DA72B0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKTessellation' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKTessellation' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKTessellation' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKTessellation' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKTessellation' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKTessellation' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKTessellation' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKTessellation' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKTessellation' objects>, 'domainOriginUpperLeft': <attribute 'domainOriginUpperLeft' of 'renderdoc.VKTessellation' objects>, 'numControlPoints': <attribute 'numControlPoints' of 'renderdoc.VKTessellation' objects>, '__doc__': 'Describes the state of the fixed-function tessellator.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC83250>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKTessellation' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKTessellation' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKTessellation' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKTessellation' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKTessellation' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKTessellation' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKTessellation' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKTessellation' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKTessellation' objects>, 'domainOriginUpperLeft': <attribute 'domainOriginUpperLeft' of 'renderdoc.VKTessellation' objects>, 'numControlPoints': <attribute 'numControlPoints' of 'renderdoc.VKTessellation' objects>, '__doc__': 'Describes the state of the fixed-function tessellator.'})"
 
 

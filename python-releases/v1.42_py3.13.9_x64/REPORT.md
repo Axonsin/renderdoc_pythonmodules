@@ -1,7 +1,7 @@
 # Build Report - v1.42_py3.13.9_x64
 
-**Generated**: 2026-02-15 18:42:59
-**Build Duration**: 284.3 seconds
+**Generated**: 2026-02-18 03:08:42
+**Build Duration**: 173.4 seconds
 
 ---
 
@@ -13,8 +13,8 @@
 | **RenderDoc Version** | 1.42 |
 | **Python Version** | 3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:09:58) [MSC v.1929 64 bit (AMD64)] |
 | **Platform** | x64 |
-| **Build Configuration** | Development |
-| **Total Size** | 130.6 MB |
+| **Build Configuration** | Release |
+| **Total Size** | 50.2 MB |
 | **File Count** | 10 |
 
 ---
@@ -25,7 +25,7 @@
 | Property | Value |
 |----------|-------|
 | **Executable** | `C:\ProgramData\miniconda3\python.exe` |
-| **Version** | 3.13 |
+| **Version** | 3.13.9 |
 | **Include Dir** | `C:\ProgramData\miniconda3\include` |
 | **Import Lib** | `C:\ProgramData\miniconda3\libs\python313.lib` |
 
@@ -50,8 +50,8 @@
 | Property | Value |
 |----------|-------|
 | **Branch** | python/v1.42 |
-| **Commit** | 83d2204bc |
-| **Full Commit** | 83d2204bc9b9469c3ffe74eb9f948c449948bee1 |
+| **Commit** | 75c0ae1e5 |
+| **Full Commit** | 75c0ae1e559bdb4a6a0dfb6b567a0c62ffc28f65 |
 
 ---
 
@@ -67,18 +67,18 @@
 
 #### Python Modules
 
-- `qrenderdoc.pyd` (8.4 MB)
-- `renderdoc.pyd` (7.2 MB)
+- `qrenderdoc.pyd` (7.3 MB)
+- `renderdoc.pyd` (6.1 MB)
 
 #### Runtime Dependencies
 
 - `d3dcompiler_47.dll` (4.5 MB)
-- `renderdoc.dll` (72.0 MB)
+- `renderdoc.dll` (23.6 MB)
 
 #### Debug Symbols
 
-- `qrenderdoc.pdb` (20.6 MB)
-- `renderdoc.pdb` (17.9 MB)
+- `qrenderdoc.pdb` (4.6 MB)
+- `renderdoc.pdb` (4.0 MB)
 
 #### Import Libraries & Export Files
 
@@ -109,9 +109,9 @@
 # Build pyrenderdoc_module
 C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe \
     qrenderdoc\Code\pyrenderdoc\pyrenderdoc_module.vcxproj \
-    -p:Configuration=Development \
+    -p:Configuration=Release \
     -p:Platform=x64 \
-    -p:SolutionDir=c:\Users\13908\Desktop\works\renderdoc_pythonmodules\ \
+    -p:SolutionDir=C:\Users\13908\Desktop\works\renderdoc_pythonmodules\ \
     -p:PlatformToolset=v143 \
     -p:PythonIncludeDir=C:\ProgramData\miniconda3\include \
     -p:PythonLibraryDir=C:\ProgramData\miniconda3\libs
@@ -119,17 +119,17 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBu
 # Build qrenderdoc_module
 C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe \
     qrenderdoc\Code\pyrenderdoc\qrenderdoc_module.vcxproj \
-    -p:Configuration=Development \
+    -p:Configuration=Release \
     -p:Platform=x64 \
-    -p:SolutionDir=c:\Users\13908\Desktop\works\renderdoc_pythonmodules\ \
+    -p:SolutionDir=C:\Users\13908\Desktop\works\renderdoc_pythonmodules\ \
     -p:PlatformToolset=v143 \
     -p:PythonIncludeDir=C:\ProgramData\miniconda3\include \
     -p:PythonLibraryDir=C:\ProgramData\miniconda3\libs
 ```
 
 ### Project Configuration
-- **Source Directory**: `c:\Users\13908\Desktop\works\renderdoc_pythonmodules`
-- **Output Directory**: `x64\Development\pymodules`
+- **Source Directory**: `C:\Users\13908\Desktop\works\renderdoc_pythonmodules`
+- **Output Directory**: `x64\Release\pymodules`
 - **Release Directory**: `python-releases/v1.42_py3.13.9_x64/`
 
 ---

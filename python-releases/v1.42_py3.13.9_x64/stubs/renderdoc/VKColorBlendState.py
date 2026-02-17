@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -106,6 +106,6 @@ The blend operations for each target.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DA4570>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKColorBlendState' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKColorBlendState' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKColorBlendState' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKColorBlendState' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKColorBlendState' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKColorBlendState' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKColorBlendState' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKColorBlendState' objects>, 'blends': <attribute 'blends' of 'renderdoc.VKColorBlendState' objects>, 'blendFactor': <attribute 'blendFactor' of 'renderdoc.VKColorBlendState' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKColorBlendState' objects>, 'alphaToCoverageEnable': <attribute 'alphaToCoverageEnable' of 'renderdoc.VKColorBlendState' objects>, 'alphaToOneEnable': <attribute 'alphaToOneEnable' of 'renderdoc.VKColorBlendState' objects>, '__doc__': 'Describes the pipeline blending state.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC805B0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKColorBlendState' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKColorBlendState' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKColorBlendState' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKColorBlendState' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKColorBlendState' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKColorBlendState' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKColorBlendState' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKColorBlendState' objects>, 'blends': <attribute 'blends' of 'renderdoc.VKColorBlendState' objects>, 'blendFactor': <attribute 'blendFactor' of 'renderdoc.VKColorBlendState' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKColorBlendState' objects>, 'alphaToCoverageEnable': <attribute 'alphaToCoverageEnable' of 'renderdoc.VKColorBlendState' objects>, 'alphaToOneEnable': <attribute 'alphaToOneEnable' of 'renderdoc.VKColorBlendState' objects>, '__doc__': 'Describes the pipeline blending state.'})"
 
 

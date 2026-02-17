@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -78,6 +78,6 @@ The :class:`ResourceId` of the buffer.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DD2810>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.D3D11StreamOutBind' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.D3D11StreamOutBind' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.D3D11StreamOutBind' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.D3D11StreamOutBind' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.D3D11StreamOutBind' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.D3D11StreamOutBind' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.D3D11StreamOutBind' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.D3D11StreamOutBind' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.D3D11StreamOutBind' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.D3D11StreamOutBind' objects>, 'byteOffset': <attribute 'byteOffset' of 'renderdoc.D3D11StreamOutBind' objects>, '__doc__': 'Describes a binding on the D3D11 stream-out stage.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCAEB70>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.D3D11StreamOutBind' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.D3D11StreamOutBind' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.D3D11StreamOutBind' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.D3D11StreamOutBind' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.D3D11StreamOutBind' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.D3D11StreamOutBind' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.D3D11StreamOutBind' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.D3D11StreamOutBind' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.D3D11StreamOutBind' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.D3D11StreamOutBind' objects>, 'byteOffset': <attribute 'byteOffset' of 'renderdoc.D3D11StreamOutBind' objects>, '__doc__': 'Describes a binding on the D3D11 stream-out stage.'})"
 
 

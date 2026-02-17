@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module qrenderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\qrenderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\qrenderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -183,7 +183,7 @@ __all__ = [
     'rdcarray_of_ptr_ICaptureViewer',
 ]
 
-__loader__ = None # (!) real value is '<_frozen_importlib_external.ExtensionFileLoader object at 0x000001BACF7703E0>'
+__loader__ = None # (!) real value is '<_frozen_importlib_external.ExtensionFileLoader object at 0x00000249CDA743E0>'
 
-__spec__ = None # (!) real value is "ModuleSpec(name='qrenderdoc', loader=<_frozen_importlib_external.ExtensionFileLoader object at 0x000001BACF7703E0>, origin='C:\\\\Users\\\\13908\\\\Desktop\\\\works\\\\renderdoc_pythonmodules\\\\x64\\\\Development\\\\pymodules\\\\qrenderdoc.pyd')"
+__spec__ = None # (!) real value is "ModuleSpec(name='qrenderdoc', loader=<_frozen_importlib_external.ExtensionFileLoader object at 0x00000249CDA743E0>, origin='C:\\\\Users\\\\13908\\\\Desktop\\\\works\\\\renderdoc_pythonmodules\\\\x64\\\\Release\\\\pymodules\\\\qrenderdoc.pyd')"
 

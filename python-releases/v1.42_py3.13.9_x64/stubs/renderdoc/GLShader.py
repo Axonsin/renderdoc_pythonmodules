@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -122,6 +122,6 @@ A list of integers with the subroutine values.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DE8F20>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GLShader' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GLShader' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GLShader' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GLShader' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GLShader' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GLShader' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GLShader' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GLShader' objects>, 'subroutines': <attribute 'subroutines' of 'renderdoc.GLShader' objects>, 'reflection': <attribute 'reflection' of 'renderdoc.GLShader' objects>, 'shaderResourceId': <attribute 'shaderResourceId' of 'renderdoc.GLShader' objects>, 'programResourceId': <attribute 'programResourceId' of 'renderdoc.GLShader' objects>, 'stage': <attribute 'stage' of 'renderdoc.GLShader' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GLShader' objects>, '__doc__': 'Describes an OpenGL shader stage.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCC4B80>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GLShader' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GLShader' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GLShader' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GLShader' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GLShader' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GLShader' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GLShader' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GLShader' objects>, 'subroutines': <attribute 'subroutines' of 'renderdoc.GLShader' objects>, 'reflection': <attribute 'reflection' of 'renderdoc.GLShader' objects>, 'shaderResourceId': <attribute 'shaderResourceId' of 'renderdoc.GLShader' objects>, 'programResourceId': <attribute 'programResourceId' of 'renderdoc.GLShader' objects>, 'stage': <attribute 'stage' of 'renderdoc.GLShader' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GLShader' objects>, '__doc__': 'Describes an OpenGL shader stage.'})"
 
 

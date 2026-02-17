@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -104,6 +104,6 @@ How many objects were bound.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DB7240>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.BlendStats' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.BlendStats' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.BlendStats' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.BlendStats' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.BlendStats' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.BlendStats' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.BlendStats' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.BlendStats' objects>, 'calls': <attribute 'calls' of 'renderdoc.BlendStats' objects>, 'redundants': <attribute 'redundants' of 'renderdoc.BlendStats' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.BlendStats' objects>, 'sets': <attribute 'sets' of 'renderdoc.BlendStats' objects>, 'nulls': <attribute 'nulls' of 'renderdoc.BlendStats' objects>, '__doc__': 'Contains the statistics for blend state binds in a frame.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC931D0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.BlendStats' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.BlendStats' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.BlendStats' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.BlendStats' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.BlendStats' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.BlendStats' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.BlendStats' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.BlendStats' objects>, 'calls': <attribute 'calls' of 'renderdoc.BlendStats' objects>, 'redundants': <attribute 'redundants' of 'renderdoc.BlendStats' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.BlendStats' objects>, 'sets': <attribute 'sets' of 'renderdoc.BlendStats' objects>, 'nulls': <attribute 'nulls' of 'renderdoc.BlendStats' objects>, '__doc__': 'Contains the statistics for blend state binds in a frame.'})"
 
 

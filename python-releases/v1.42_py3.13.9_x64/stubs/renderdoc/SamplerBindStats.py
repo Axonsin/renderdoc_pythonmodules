@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -104,6 +104,6 @@ How many objects were bound.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DE3630>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.SamplerBindStats' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.SamplerBindStats' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.SamplerBindStats' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.SamplerBindStats' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.SamplerBindStats' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.SamplerBindStats' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.SamplerBindStats' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.SamplerBindStats' objects>, 'calls': <attribute 'calls' of 'renderdoc.SamplerBindStats' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.SamplerBindStats' objects>, 'sets': <attribute 'sets' of 'renderdoc.SamplerBindStats' objects>, 'bindslots': <attribute 'bindslots' of 'renderdoc.SamplerBindStats' objects>, 'nulls': <attribute 'nulls' of 'renderdoc.SamplerBindStats' objects>, '__doc__': 'Contains the statistics for sampler binds in a frame.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCBF580>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.SamplerBindStats' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.SamplerBindStats' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.SamplerBindStats' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.SamplerBindStats' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.SamplerBindStats' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.SamplerBindStats' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.SamplerBindStats' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.SamplerBindStats' objects>, 'calls': <attribute 'calls' of 'renderdoc.SamplerBindStats' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.SamplerBindStats' objects>, 'sets': <attribute 'sets' of 'renderdoc.SamplerBindStats' objects>, 'bindslots': <attribute 'bindslots' of 'renderdoc.SamplerBindStats' objects>, 'nulls': <attribute 'nulls' of 'renderdoc.SamplerBindStats' objects>, '__doc__': 'Contains the statistics for sampler binds in a frame.'})"
 
 

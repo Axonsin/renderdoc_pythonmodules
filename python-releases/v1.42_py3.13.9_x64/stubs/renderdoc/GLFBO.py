@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -135,6 +135,6 @@ The framebuffer stencil attachment.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DD3C90>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GLFBO' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GLFBO' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GLFBO' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GLFBO' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GLFBO' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GLFBO' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GLFBO' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GLFBO' objects>, 'colorAttachments': <attribute 'colorAttachments' of 'renderdoc.GLFBO' objects>, 'readBuffer': <attribute 'readBuffer' of 'renderdoc.GLFBO' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.GLFBO' objects>, 'drawBuffers': <attribute 'drawBuffers' of 'renderdoc.GLFBO' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GLFBO' objects>, 'depthAttachment': <attribute 'depthAttachment' of 'renderdoc.GLFBO' objects>, 'stencilAttachment': <attribute 'stencilAttachment' of 'renderdoc.GLFBO' objects>, '__doc__': 'Describes the contents of a framebuffer object.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCAFBE0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GLFBO' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GLFBO' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GLFBO' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GLFBO' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GLFBO' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GLFBO' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GLFBO' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GLFBO' objects>, 'colorAttachments': <attribute 'colorAttachments' of 'renderdoc.GLFBO' objects>, 'readBuffer': <attribute 'readBuffer' of 'renderdoc.GLFBO' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.GLFBO' objects>, 'drawBuffers': <attribute 'drawBuffers' of 'renderdoc.GLFBO' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GLFBO' objects>, 'depthAttachment': <attribute 'depthAttachment' of 'renderdoc.GLFBO' objects>, 'stencilAttachment': <attribute 'stencilAttachment' of 'renderdoc.GLFBO' objects>, '__doc__': 'Describes the contents of a framebuffer object.'})"
 
 

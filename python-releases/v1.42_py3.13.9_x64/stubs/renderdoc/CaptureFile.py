@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -13,11 +13,11 @@ from typing import List, Tuple, Callable, Any
 from .SDFile import SDFile
 from .ResultDetails import ResultDetails
 from .CaptureFileFormat import CaptureFileFormat
-from .FileType import FileType
 from .Thumbnail import Thumbnail
+from .FileType import FileType
 from .ReplaySupport import ReplaySupport
-from .ReplayOptions import ReplayOptions
 from .ReplayController import ReplayController
+from .ReplayOptions import ReplayOptions
 
 from .CaptureAccess import CaptureAccess
 
@@ -315,6 +315,6 @@ class CaptureFile(CaptureAccess):
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DAA250>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.CaptureFile' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.CaptureFile' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.CaptureFile' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.CaptureFile' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.CaptureFile' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.CaptureFile' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.CaptureFile' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.CaptureFile' objects>, 'Shutdown': <method 'Shutdown' of 'renderdoc.CaptureFile' objects>, 'OpenFile': <method 'OpenFile' of 'renderdoc.CaptureFile' objects>, 'OpenBuffer': <method 'OpenBuffer' of 'renderdoc.CaptureFile' objects>, 'CopyFileTo': <method 'CopyFileTo' of 'renderdoc.CaptureFile' objects>, 'Convert': <method 'Convert' of 'renderdoc.CaptureFile' objects>, 'GetCaptureFileFormats': <method 'GetCaptureFileFormats' of 'renderdoc.CaptureFile' objects>, 'LocalReplaySupport': <method 'LocalReplaySupport' of 'renderdoc.CaptureFile' objects>, 'RecordedMachineIdent': <method 'RecordedMachineIdent' of 'renderdoc.CaptureFile' objects>, 'TimestampBase': <method 'TimestampBase' of 'renderdoc.CaptureFile' objects>, 'TimestampFrequency': <method 'TimestampFrequency' of 'renderdoc.CaptureFile' objects>, 'SetMetadata': <method 'SetMetadata' of 'renderdoc.CaptureFile' objects>, 'OpenCapture': <method 'OpenCapture' of 'renderdoc.CaptureFile' objects>, 'GetStructuredData': <method 'GetStructuredData' of 'renderdoc.CaptureFile' objects>, 'SetStructuredData': <method 'SetStructuredData' of 'renderdoc.CaptureFile' objects>, 'GetThumbnail': <method 'GetThumbnail' of 'renderdoc.CaptureFile' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.CaptureFile' objects>, '__doc__': '\\nA handle to a capture file. Used for simple cheap processing and meta-data fetching\\nwithout opening the capture for analysis.\\n\\n'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC86250>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.CaptureFile' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.CaptureFile' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.CaptureFile' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.CaptureFile' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.CaptureFile' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.CaptureFile' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.CaptureFile' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.CaptureFile' objects>, 'Shutdown': <method 'Shutdown' of 'renderdoc.CaptureFile' objects>, 'OpenFile': <method 'OpenFile' of 'renderdoc.CaptureFile' objects>, 'OpenBuffer': <method 'OpenBuffer' of 'renderdoc.CaptureFile' objects>, 'CopyFileTo': <method 'CopyFileTo' of 'renderdoc.CaptureFile' objects>, 'Convert': <method 'Convert' of 'renderdoc.CaptureFile' objects>, 'GetCaptureFileFormats': <method 'GetCaptureFileFormats' of 'renderdoc.CaptureFile' objects>, 'LocalReplaySupport': <method 'LocalReplaySupport' of 'renderdoc.CaptureFile' objects>, 'RecordedMachineIdent': <method 'RecordedMachineIdent' of 'renderdoc.CaptureFile' objects>, 'TimestampBase': <method 'TimestampBase' of 'renderdoc.CaptureFile' objects>, 'TimestampFrequency': <method 'TimestampFrequency' of 'renderdoc.CaptureFile' objects>, 'SetMetadata': <method 'SetMetadata' of 'renderdoc.CaptureFile' objects>, 'OpenCapture': <method 'OpenCapture' of 'renderdoc.CaptureFile' objects>, 'GetStructuredData': <method 'GetStructuredData' of 'renderdoc.CaptureFile' objects>, 'SetStructuredData': <method 'SetStructuredData' of 'renderdoc.CaptureFile' objects>, 'GetThumbnail': <method 'GetThumbnail' of 'renderdoc.CaptureFile' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.CaptureFile' objects>, '__doc__': '\\nA handle to a capture file. Used for simple cheap processing and meta-data fetching\\nwithout opening the capture for analysis.\\n\\n'})"
 
 

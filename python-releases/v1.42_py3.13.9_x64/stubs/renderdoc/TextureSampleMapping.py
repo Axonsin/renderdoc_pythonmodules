@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -90,6 +90,6 @@ normal 2D image. If set to :data:`ResolveSamples` then instead there's a default
 
 
     ResolveSamples = 4294967295
-    __dict__ = None # (!) real value is "mappingproxy({'ResolveSamples': 4294967295, 'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79D8D210>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.TextureSampleMapping' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.TextureSampleMapping' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.TextureSampleMapping' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.TextureSampleMapping' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.TextureSampleMapping' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.TextureSampleMapping' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.TextureSampleMapping' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.TextureSampleMapping' objects>, 'sampleIndex': <attribute 'sampleIndex' of 'renderdoc.TextureSampleMapping' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.TextureSampleMapping' objects>, 'mapToArray': <attribute 'mapToArray' of 'renderdoc.TextureSampleMapping' objects>, '__doc__': '\\nHow to map multisampled textures for saving to non-multisampled file formats.\\n\\n.. data:: ResolveSamples\\n\\n  Value for :data:`sampleIndex` if the samples should be averaged.\\n\\n'})"
+    __dict__ = None # (!) real value is "mappingproxy({'ResolveSamples': 4294967295, 'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC69220>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.TextureSampleMapping' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.TextureSampleMapping' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.TextureSampleMapping' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.TextureSampleMapping' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.TextureSampleMapping' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.TextureSampleMapping' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.TextureSampleMapping' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.TextureSampleMapping' objects>, 'sampleIndex': <attribute 'sampleIndex' of 'renderdoc.TextureSampleMapping' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.TextureSampleMapping' objects>, 'mapToArray': <attribute 'mapToArray' of 'renderdoc.TextureSampleMapping' objects>, '__doc__': '\\nHow to map multisampled textures for saving to non-multisampled file formats.\\n\\n.. data:: ResolveSamples\\n\\n  Value for :data:`sampleIndex` if the samples should be averaged.\\n\\n'})"
 
 
