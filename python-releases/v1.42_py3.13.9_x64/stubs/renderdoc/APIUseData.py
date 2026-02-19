@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -104,6 +104,6 @@ A string message if the API is unsupported explaining why.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCA48D0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.APIUseData' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.APIUseData' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.APIUseData' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.APIUseData' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.APIUseData' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.APIUseData' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.APIUseData' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.APIUseData' objects>, 'name': <attribute 'name' of 'renderdoc.APIUseData' objects>, 'presenting': <attribute 'presenting' of 'renderdoc.APIUseData' objects>, 'supportMessage': <attribute 'supportMessage' of 'renderdoc.APIUseData' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.APIUseData' objects>, 'supported': <attribute 'supported' of 'renderdoc.APIUseData' objects>, '__doc__': 'Information about the API that the target is using.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DC89F0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.APIUseData' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.APIUseData' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.APIUseData' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.APIUseData' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.APIUseData' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.APIUseData' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.APIUseData' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.APIUseData' objects>, 'name': <attribute 'name' of 'renderdoc.APIUseData' objects>, 'presenting': <attribute 'presenting' of 'renderdoc.APIUseData' objects>, 'supportMessage': <attribute 'supportMessage' of 'renderdoc.APIUseData' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.APIUseData' objects>, 'supported': <attribute 'supported' of 'renderdoc.APIUseData' objects>, '__doc__': 'Information about the API that the target is using.'})"
 
 

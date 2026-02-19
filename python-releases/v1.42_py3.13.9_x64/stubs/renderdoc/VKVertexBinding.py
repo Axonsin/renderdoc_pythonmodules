@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -95,6 +95,6 @@ The vertex binding where data will be sourced from.
         pass
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC9AD10>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKVertexBinding' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKVertexBinding' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKVertexBinding' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKVertexBinding' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKVertexBinding' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKVertexBinding' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKVertexBinding' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKVertexBinding' objects>, 'vertexBufferBinding': <attribute 'vertexBufferBinding' of 'renderdoc.VKVertexBinding' objects>, 'instanceDivisor': <attribute 'instanceDivisor' of 'renderdoc.VKVertexBinding' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKVertexBinding' objects>, 'perInstance': <attribute 'perInstance' of 'renderdoc.VKVertexBinding' objects>, '__doc__': 'Describes a vertex binding.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DBED10>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKVertexBinding' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKVertexBinding' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKVertexBinding' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKVertexBinding' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKVertexBinding' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKVertexBinding' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKVertexBinding' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKVertexBinding' objects>, 'vertexBufferBinding': <attribute 'vertexBufferBinding' of 'renderdoc.VKVertexBinding' objects>, 'instanceDivisor': <attribute 'instanceDivisor' of 'renderdoc.VKVertexBinding' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKVertexBinding' objects>, 'perInstance': <attribute 'perInstance' of 'renderdoc.VKVertexBinding' objects>, '__doc__': 'Describes a vertex binding.'})"
 
 

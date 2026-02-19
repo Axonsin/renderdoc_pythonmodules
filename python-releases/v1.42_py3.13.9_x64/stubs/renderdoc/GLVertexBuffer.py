@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -111,6 +111,6 @@ The :class:`ResourceId` of the buffer bound to this slot.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCC2B50>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GLVertexBuffer' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GLVertexBuffer' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GLVertexBuffer' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GLVertexBuffer' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GLVertexBuffer' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GLVertexBuffer' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GLVertexBuffer' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GLVertexBuffer' objects>, 'instanceDivisor': <attribute 'instanceDivisor' of 'renderdoc.GLVertexBuffer' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.GLVertexBuffer' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GLVertexBuffer' objects>, 'byteStride': <attribute 'byteStride' of 'renderdoc.GLVertexBuffer' objects>, 'byteOffset': <attribute 'byteOffset' of 'renderdoc.GLVertexBuffer' objects>, '__doc__': 'Describes a single OpenGL vertex buffer binding.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DE6800>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.GLVertexBuffer' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.GLVertexBuffer' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.GLVertexBuffer' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.GLVertexBuffer' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.GLVertexBuffer' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.GLVertexBuffer' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.GLVertexBuffer' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.GLVertexBuffer' objects>, 'instanceDivisor': <attribute 'instanceDivisor' of 'renderdoc.GLVertexBuffer' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.GLVertexBuffer' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.GLVertexBuffer' objects>, 'byteStride': <attribute 'byteStride' of 'renderdoc.GLVertexBuffer' objects>, 'byteOffset': <attribute 'byteOffset' of 'renderdoc.GLVertexBuffer' objects>, '__doc__': 'Describes a single OpenGL vertex buffer binding.'})"
 
 

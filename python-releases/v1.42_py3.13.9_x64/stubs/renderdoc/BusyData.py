@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -62,6 +62,6 @@ The name of the client currently connected to the target.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC84A70>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.BusyData' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.BusyData' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.BusyData' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.BusyData' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.BusyData' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.BusyData' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.BusyData' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.BusyData' objects>, 'clientName': <attribute 'clientName' of 'renderdoc.BusyData' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.BusyData' objects>, '__doc__': 'Information about why the target is busy.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DA8A60>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.BusyData' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.BusyData' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.BusyData' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.BusyData' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.BusyData' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.BusyData' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.BusyData' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.BusyData' objects>, 'clientName': <attribute 'clientName' of 'renderdoc.BusyData' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.BusyData' objects>, '__doc__': 'Information about why the target is busy.'})"
 
 

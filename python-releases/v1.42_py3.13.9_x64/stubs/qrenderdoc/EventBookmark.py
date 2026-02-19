@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module qrenderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\qrenderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\qrenderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -76,6 +76,6 @@ The text associated with this bookmark - could be empty
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85B6260C0>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.EventBookmark' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.EventBookmark' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.EventBookmark' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.EventBookmark' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.EventBookmark' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.EventBookmark' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.EventBookmark' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.EventBookmark' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.EventBookmark' objects>, 'text': <attribute 'text' of 'qrenderdoc.EventBookmark' objects>, 'eventId': <attribute 'eventId' of 'qrenderdoc.EventBookmark' objects>, '__doc__': 'A description of a bookmark on an event'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79629740>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.EventBookmark' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.EventBookmark' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.EventBookmark' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.EventBookmark' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.EventBookmark' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.EventBookmark' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.EventBookmark' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.EventBookmark' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.EventBookmark' objects>, 'text': <attribute 'text' of 'qrenderdoc.EventBookmark' objects>, 'eventId': <attribute 'eventId' of 'qrenderdoc.EventBookmark' objects>, '__doc__': 'A description of a bookmark on an event'})"
 
 

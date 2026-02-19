@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -76,6 +76,6 @@ The :class:`SDChunkMetaData` with the metadata for this chunk.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCAACE0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.SDChunk' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.SDChunk' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.SDChunk' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.SDChunk' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.SDChunk' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.SDChunk' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.SDChunk' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.SDChunk' objects>, 'Duplicate': <method 'Duplicate' of 'renderdoc.SDChunk' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.SDChunk' objects>, 'metadata': <attribute 'metadata' of 'renderdoc.SDChunk' objects>, '__doc__': 'Defines a single structured chunk, which is a :class:`SDObject`.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DCECF0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.SDChunk' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.SDChunk' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.SDChunk' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.SDChunk' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.SDChunk' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.SDChunk' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.SDChunk' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.SDChunk' objects>, 'Duplicate': <method 'Duplicate' of 'renderdoc.SDChunk' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.SDChunk' objects>, 'metadata': <attribute 'metadata' of 'renderdoc.SDChunk' objects>, '__doc__': 'Defines a single structured chunk, which is a :class:`SDObject`.'})"
 
 

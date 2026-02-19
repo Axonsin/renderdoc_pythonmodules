@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -93,6 +93,6 @@ The :class:`BlendMultiplier` for the source blend value.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCC9D70>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.BlendEquation' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.BlendEquation' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.BlendEquation' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.BlendEquation' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.BlendEquation' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.BlendEquation' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.BlendEquation' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.BlendEquation' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.BlendEquation' objects>, 'destination': <attribute 'destination' of 'renderdoc.BlendEquation' objects>, 'source': <attribute 'source' of 'renderdoc.BlendEquation' objects>, 'operation': <attribute 'operation' of 'renderdoc.BlendEquation' objects>, '__doc__': 'Describes the details of a blend operation.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DEDDA0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.BlendEquation' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.BlendEquation' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.BlendEquation' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.BlendEquation' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.BlendEquation' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.BlendEquation' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.BlendEquation' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.BlendEquation' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.BlendEquation' objects>, 'destination': <attribute 'destination' of 'renderdoc.BlendEquation' objects>, 'source': <attribute 'source' of 'renderdoc.BlendEquation' objects>, 'operation': <attribute 'operation' of 'renderdoc.BlendEquation' objects>, '__doc__': 'Describes the details of a blend operation.'})"
 
 

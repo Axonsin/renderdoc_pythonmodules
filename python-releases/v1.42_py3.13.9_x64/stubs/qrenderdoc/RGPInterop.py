@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module qrenderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\qrenderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\qrenderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -75,6 +75,6 @@ class RGPInterop(): # skipped bases: <class 'SwigPyObject'>
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85B626550>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.RGPInterop' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.RGPInterop' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.RGPInterop' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.RGPInterop' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.RGPInterop' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.RGPInterop' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.RGPInterop' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.RGPInterop' objects>, 'HasRGPEvent': <method 'HasRGPEvent' of 'qrenderdoc.RGPInterop' objects>, 'SelectRGPEvent': <method 'SelectRGPEvent' of 'qrenderdoc.RGPInterop' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.RGPInterop' objects>, '__doc__': 'Controlling interface for interop with RGP tool.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79629BD0>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.RGPInterop' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.RGPInterop' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.RGPInterop' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.RGPInterop' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.RGPInterop' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.RGPInterop' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.RGPInterop' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.RGPInterop' objects>, 'HasRGPEvent': <method 'HasRGPEvent' of 'qrenderdoc.RGPInterop' objects>, 'SelectRGPEvent': <method 'SelectRGPEvent' of 'qrenderdoc.RGPInterop' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.RGPInterop' objects>, '__doc__': 'Controlling interface for interop with RGP tool.'})"
 
 

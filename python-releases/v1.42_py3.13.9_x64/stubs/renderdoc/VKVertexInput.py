@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -94,6 +94,6 @@ The vertex buffers.
         pass
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCE1220>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKVertexInput' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKVertexInput' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKVertexInput' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKVertexInput' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKVertexInput' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKVertexInput' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKVertexInput' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKVertexInput' objects>, 'attributes': <attribute 'attributes' of 'renderdoc.VKVertexInput' objects>, 'vertexBuffers': <attribute 'vertexBuffers' of 'renderdoc.VKVertexInput' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKVertexInput' objects>, 'bindings': <attribute 'bindings' of 'renderdoc.VKVertexInput' objects>, '__doc__': 'Describes the fixed-function vertex input fetch setup.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79E05180>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKVertexInput' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKVertexInput' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKVertexInput' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKVertexInput' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKVertexInput' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKVertexInput' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKVertexInput' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKVertexInput' objects>, 'attributes': <attribute 'attributes' of 'renderdoc.VKVertexInput' objects>, 'vertexBuffers': <attribute 'vertexBuffers' of 'renderdoc.VKVertexInput' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKVertexInput' objects>, 'bindings': <attribute 'bindings' of 'renderdoc.VKVertexInput' objects>, '__doc__': 'Describes the fixed-function vertex input fetch setup.'})"
 
 

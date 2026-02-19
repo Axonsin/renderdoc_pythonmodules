@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -93,6 +93,6 @@ The :class:`ResourceId` of the index buffer.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCA2580>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.D3D11IndexBuffer' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.D3D11IndexBuffer' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.D3D11IndexBuffer' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.D3D11IndexBuffer' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.D3D11IndexBuffer' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.D3D11IndexBuffer' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.D3D11IndexBuffer' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.D3D11IndexBuffer' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.D3D11IndexBuffer' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.D3D11IndexBuffer' objects>, 'byteStride': <attribute 'byteStride' of 'renderdoc.D3D11IndexBuffer' objects>, 'byteOffset': <attribute 'byteOffset' of 'renderdoc.D3D11IndexBuffer' objects>, '__doc__': 'Describes the D3D11 index buffer binding.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DC6330>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.D3D11IndexBuffer' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.D3D11IndexBuffer' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.D3D11IndexBuffer' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.D3D11IndexBuffer' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.D3D11IndexBuffer' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.D3D11IndexBuffer' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.D3D11IndexBuffer' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.D3D11IndexBuffer' objects>, 'resourceId': <attribute 'resourceId' of 'renderdoc.D3D11IndexBuffer' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.D3D11IndexBuffer' objects>, 'byteStride': <attribute 'byteStride' of 'renderdoc.D3D11IndexBuffer' objects>, 'byteOffset': <attribute 'byteOffset' of 'renderdoc.D3D11IndexBuffer' objects>, '__doc__': 'Describes the D3D11 index buffer binding.'})"
 
 

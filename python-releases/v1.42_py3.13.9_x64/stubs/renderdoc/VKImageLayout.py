@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -118,6 +118,6 @@ The number of mip levels in the range.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC9D2C0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKImageLayout' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKImageLayout' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKImageLayout' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKImageLayout' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKImageLayout' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKImageLayout' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKImageLayout' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKImageLayout' objects>, 'name': <attribute 'name' of 'renderdoc.VKImageLayout' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKImageLayout' objects>, 'numMip': <attribute 'numMip' of 'renderdoc.VKImageLayout' objects>, 'numLayer': <attribute 'numLayer' of 'renderdoc.VKImageLayout' objects>, 'baseLayer': <attribute 'baseLayer' of 'renderdoc.VKImageLayout' objects>, 'baseMip': <attribute 'baseMip' of 'renderdoc.VKImageLayout' objects>, '__doc__': 'Contains the layout of a range of subresources in an image.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DC0EE0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKImageLayout' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKImageLayout' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKImageLayout' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKImageLayout' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKImageLayout' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKImageLayout' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKImageLayout' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKImageLayout' objects>, 'name': <attribute 'name' of 'renderdoc.VKImageLayout' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKImageLayout' objects>, 'numMip': <attribute 'numMip' of 'renderdoc.VKImageLayout' objects>, 'numLayer': <attribute 'numLayer' of 'renderdoc.VKImageLayout' objects>, 'baseLayer': <attribute 'baseLayer' of 'renderdoc.VKImageLayout' objects>, 'baseMip': <attribute 'baseMip' of 'renderdoc.VKImageLayout' objects>, '__doc__': 'Contains the layout of a range of subresources in an image.'})"
 
 

@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -76,6 +76,6 @@ The dynamic offset to apply to the buffer in bytes.
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BCD46C0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKDynamicOffset' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKDynamicOffset' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKDynamicOffset' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKDynamicOffset' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKDynamicOffset' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKDynamicOffset' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKDynamicOffset' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKDynamicOffset' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKDynamicOffset' objects>, 'descriptorByteOffset': <attribute 'descriptorByteOffset' of 'renderdoc.VKDynamicOffset' objects>, 'dynamicBufferByteOffset': <attribute 'dynamicBufferByteOffset' of 'renderdoc.VKDynamicOffset' objects>, '__doc__': 'A dynamic offset applied to a single descriptor access.'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79DF8710>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.VKDynamicOffset' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.VKDynamicOffset' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.VKDynamicOffset' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.VKDynamicOffset' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.VKDynamicOffset' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.VKDynamicOffset' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.VKDynamicOffset' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.VKDynamicOffset' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.VKDynamicOffset' objects>, 'descriptorByteOffset': <attribute 'descriptorByteOffset' of 'renderdoc.VKDynamicOffset' objects>, 'dynamicBufferByteOffset': <attribute 'dynamicBufferByteOffset' of 'renderdoc.VKDynamicOffset' objects>, '__doc__': 'A dynamic offset applied to a single descriptor access.'})"
 
 

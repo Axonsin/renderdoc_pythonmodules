@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module qrenderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\qrenderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\qrenderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -65,6 +65,6 @@ class DescriptorViewer(): # skipped bases: <class 'SwigPyObject'>
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85B624330>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.DescriptorViewer' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.DescriptorViewer' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.DescriptorViewer' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.DescriptorViewer' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.DescriptorViewer' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.DescriptorViewer' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.DescriptorViewer' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.DescriptorViewer' objects>, 'Widget': <method 'Widget' of 'qrenderdoc.DescriptorViewer' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.DescriptorViewer' objects>, '__doc__': '\\nA descriptor viewer window.\\n\\nThis window is retrieved by calling :meth:`CaptureContext.ViewDescriptorStore` or :meth:`CaptureContext.ViewDescriptors`.\\n\\n'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD796279B0>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.DescriptorViewer' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.DescriptorViewer' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.DescriptorViewer' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.DescriptorViewer' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.DescriptorViewer' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.DescriptorViewer' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.DescriptorViewer' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.DescriptorViewer' objects>, 'Widget': <method 'Widget' of 'qrenderdoc.DescriptorViewer' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.DescriptorViewer' objects>, '__doc__': '\\nA descriptor viewer window.\\n\\nThis window is retrieved by calling :meth:`CaptureContext.ViewDescriptorStore` or :meth:`CaptureContext.ViewDescriptors`.\\n\\n'})"
 
 

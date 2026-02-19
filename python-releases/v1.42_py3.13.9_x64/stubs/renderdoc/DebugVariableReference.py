@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module renderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\renderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\renderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -92,6 +92,6 @@ The type of variable this is referring to.
         pass
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85BC69620>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.DebugVariableReference' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.DebugVariableReference' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.DebugVariableReference' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.DebugVariableReference' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.DebugVariableReference' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.DebugVariableReference' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.DebugVariableReference' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.DebugVariableReference' objects>, 'name': <attribute 'name' of 'renderdoc.DebugVariableReference' objects>, 'component': <attribute 'component' of 'renderdoc.DebugVariableReference' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.DebugVariableReference' objects>, 'type': <attribute 'type' of 'renderdoc.DebugVariableReference' objects>, '__doc__': 'A particular component of a debugging variable that a high-level variable component maps to'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD79D8D5C0>, '__hash__': <slot wrapper '__hash__' of 'renderdoc.DebugVariableReference' objects>, '__lt__': <slot wrapper '__lt__' of 'renderdoc.DebugVariableReference' objects>, '__le__': <slot wrapper '__le__' of 'renderdoc.DebugVariableReference' objects>, '__eq__': <slot wrapper '__eq__' of 'renderdoc.DebugVariableReference' objects>, '__ne__': <slot wrapper '__ne__' of 'renderdoc.DebugVariableReference' objects>, '__gt__': <slot wrapper '__gt__' of 'renderdoc.DebugVariableReference' objects>, '__ge__': <slot wrapper '__ge__' of 'renderdoc.DebugVariableReference' objects>, '__init__': <slot wrapper '__init__' of 'renderdoc.DebugVariableReference' objects>, 'name': <attribute 'name' of 'renderdoc.DebugVariableReference' objects>, 'component': <attribute 'component' of 'renderdoc.DebugVariableReference' objects>, '__dict__': <attribute '__dict__' of 'renderdoc.DebugVariableReference' objects>, 'type': <attribute 'type' of 'renderdoc.DebugVariableReference' objects>, '__doc__': 'A particular component of a debugging variable that a high-level variable component maps to'})"
 
 

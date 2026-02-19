@@ -1,6 +1,6 @@
 # encoding: utf-8
 # module qrenderdoc
-# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Release\pymodules\qrenderdoc.pyd
+# from C:\Users\13908\Desktop\works\renderdoc_pythonmodules\x64\Development\pymodules\qrenderdoc.pyd
 # by generator 1.147
 # no doc
 
@@ -79,6 +79,6 @@ The actual output data from the tool
     thisown = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
 
 
-    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FF85B627EE0>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.ShaderToolOutput' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.ShaderToolOutput' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.ShaderToolOutput' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.ShaderToolOutput' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.ShaderToolOutput' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.ShaderToolOutput' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.ShaderToolOutput' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.ShaderToolOutput' objects>, 'log': <attribute 'log' of 'qrenderdoc.ShaderToolOutput' objects>, 'result': <attribute 'result' of 'qrenderdoc.ShaderToolOutput' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.ShaderToolOutput' objects>, '__doc__': '\\nContains the output from invoking a :class:`ShaderProcessingTool`, including both the\\nactual output data desired as well as any stdout/stderr messages.\\n\\n'})"
+    __dict__ = None # (!) real value is "mappingproxy({'this': <attribute 'this' of 'SwigPyObject' objects>, 'thisown': <attribute 'thisown' of 'SwigPyObject' objects>, '__new__': <built-in method __new__ of SwigPyObjectType object at 0x00007FFD7962B560>, '__hash__': <slot wrapper '__hash__' of 'qrenderdoc.ShaderToolOutput' objects>, '__lt__': <slot wrapper '__lt__' of 'qrenderdoc.ShaderToolOutput' objects>, '__le__': <slot wrapper '__le__' of 'qrenderdoc.ShaderToolOutput' objects>, '__eq__': <slot wrapper '__eq__' of 'qrenderdoc.ShaderToolOutput' objects>, '__ne__': <slot wrapper '__ne__' of 'qrenderdoc.ShaderToolOutput' objects>, '__gt__': <slot wrapper '__gt__' of 'qrenderdoc.ShaderToolOutput' objects>, '__ge__': <slot wrapper '__ge__' of 'qrenderdoc.ShaderToolOutput' objects>, '__init__': <slot wrapper '__init__' of 'qrenderdoc.ShaderToolOutput' objects>, 'log': <attribute 'log' of 'qrenderdoc.ShaderToolOutput' objects>, 'result': <attribute 'result' of 'qrenderdoc.ShaderToolOutput' objects>, '__dict__': <attribute '__dict__' of 'qrenderdoc.ShaderToolOutput' objects>, '__doc__': '\\nContains the output from invoking a :class:`ShaderProcessingTool`, including both the\\nactual output data desired as well as any stdout/stderr messages.\\n\\n'})"
 
 
