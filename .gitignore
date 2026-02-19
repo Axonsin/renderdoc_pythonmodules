@@ -36,7 +36,6 @@ obj/
 *.lib
 *.sdf
 *.suo
-*.dll
 *.swp
 *.orig
 symsrv.yes
@@ -51,8 +50,3 @@ __pycache__
 
 # Python releases (built modules)
 !python-releases/
-!python-releases/**/*.dll
-!python-releases/**/*.lib
-!python-releases/**/*.pdb
-!python-releases/**/*.exp
-!python-releases/**/*.pyd
