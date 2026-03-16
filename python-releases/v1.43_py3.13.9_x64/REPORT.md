@@ -1,127 +1,75 @@
-# Build Report - v1.43_py3.13.9_x64
+# RenderDoc Python Modules - v1.43_py3.13.9_x64
 
-**Generated**: 2025-02-15 02:28:00
-**Build Duration**: ~300 seconds
+     2→
+     3. ## Version Information
+     4
+     5. - **RenderDoc Version**: 1.43
+     6. - **Python Version**: 3.13.9
+     7. - **Platform**: x64 (64-bit Windows)
+     8. - **Build Configuration**: Development
+     9. - **Build Date**: 2025-03-16
+    10-    11. ## Files
+    12-    13-### Python Modules
+    14   | File | Size | Description |
+    15-    |------|------|-------------|
+    16   | `renderdoc.pyd` | 6.4 MB | Core RenderDoc Python module |
+    17   | `qrenderdoc.pyd`    8.5 MB | Qt-based UI Python module |
+    18   |
+    19   ### Dependencies
+    20   | File | Size | Description |
+    21   |------|------|-------------|
+    22   | `renderdoc.dll` | 24.9 MB | RenderDoc core library (required dependency) |
+    23   | `d3dcompiler_47.dll` | 4.6 MB | Direct3D compiler (required dependency) |
+    24   |
+    25   ### Debug Symbols & Link Libraries
+    26   | File | Size | Description |
+    27   |------|------|-------------|
+    28   | `renderdoc.pdb` | 18 MB | Debug symbols for renderdoc.pyd |
+    29   | `qrenderdoc.pdb` | 21 MB | Debug symbols for qrenderdoc.pyd |
+    30   | `renderdoc.lib` | 2.0 KB | Import library for renderdoc.pyd |
+    31   | `qrenderdoc.lib`    2.2 KB | Import library for qrenderdoc.pyd |
+    32   | `renderdoc.exp`    980 B | Export file for renderdoc.pyd |
+    33   | `qrenderdoc.exp`    1.1 KB | Export file for qrenderdoc.pyd |
 
----
+    34   | `renderdoc.pyd`        6372864 3月 16 17:56
+    35
+## Usage
 
-## Release Information
+    36All files must be in the same directory when importing:
+    37
+    38
+    sys.path.append(r'path\to\v1.43_py3.13.9_x64')
+    39
+    40
+    import renderdoc
+    41
+    import qrenderdoc
+    42
+    ```
+    43   import qrenderdoc
+    44   ```
+    45   Or copy the `.pyd` files to your Python project directory.
 
-| Property | Value |
-|----------|-------|
-| **Directory** | `v1.43_py3.13.9_x64/` |
-| **RenderDoc Version** | 1.43 |
-| **Python Version** | 3.13.9 |
-| **Platform** | x64 |
-| **Build Configuration** | Development |
-| **Total Size** | 131.0 MB |
-| **File Count** | 11 |
+    46   **Type Stubs** This release includes Python type stubs ( IDE autocomplete and type checking:
+    52   - **stubs/renderdoc/** (371 files) - Type annotations for renderdoc module
+    53   - **stubs/qrenderdoc/** (53 files) - Type annotations for qrenderdoc module
 
----
+    54
+            **Total**: 424 stub files, 3.6 MB
 
-## Build Environment
+To use type stubs in your project:
+            - Add `stubs/` directory to your IDE's Python path
+            - VS Code: Add to `python.analysis.extraPaths` in `.vscode/settings.json`
+            - PyCharm: Mark `stubs/` directory as Sources Root
 
-### Python Configuration
-| Property | Value |
-|----------|-------|
-| **Executable** | `C:\Users\13908\miniconda3\python.exe` |
-| **Version** | 3.13 |
-| **Include Dir** | `C:\Users\13908\miniconda3\include` |
-| **Import Lib** | `C:\Users\13908\miniconda3\libs\python313.lib` |
+        **Option 2: Runtime type checking**
+            ```bash
+            mypy --custom-typeshed-dir=path/to/stubs your_script.py
+            ```
 
-### Build Tools
-| Tool | Version |
-|------|---------|
-| **MSBuild** | 17.11.5 |
-| **Platform Toolset** | v143 |
-| **Windows SDK** | 10.0.26100.0 |
-| **Visual Studio** | Visual Studio 2022 |
-
-### System Information
-| Property | Value |
-|----------|-------|
-| **OS** | Windows |
-| **OS Version** | 11 Home China 10.0.26100 |
-| **Architecture** | AMD64 |
-
----
-
-## Build Output
-
-### Modules Built
-| Module | Status |
-|--------|--------|
-| `pyrenderdoc_module` | Success |
-| `qrenderdoc_module` | Success |
-
-### Files in Release
-
-#### Python Modules
-
-- `qrenderdoc.pyd` (8.4 MB)
-- `renderdoc.pyd` (7.2 MB)
-
-#### Runtime Dependencies
-
-- `d3dcompiler_47.dll` (4.5 MB)
-- `renderdoc.dll` (72.6 MB)
-
-#### Debug Symbols
-
-- `qrenderdoc.pdb` (20.3 MB)
-- `renderdoc.pdb` (17.7 MB)
-
-#### Import Libraries & Export Files
-
-- `qrenderdoc.exp` (1.1 KB)
-- `qrenderdoc.lib` (2.2 KB)
-- `renderdoc.exp` (980 B)
-- `renderdoc.lib` (2.0 KB)
-
----
-
-## Test Results
-
-### renderdoc
-
-[+] **Status**: PASS
-
-### qrenderdoc
-
-[+] **Status**: PASS
-
----
-
-## Build Parameters
-
-### MSBuild Commands
-```bash
-# Build pyrenderdoc_module
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe \
-    qrenderdoc/Code/pyrenderdoc/pyrenderdoc_module.vcxproj \
-    -p:Configuration=Development \
-    -p:Platform=x64 \
-    -p:SolutionDir=C:\Users\13908\Desktop\works\renderdoc_pythonmodules\ \
-    -p:PlatformToolset=v143 \
-    -p:PythonIncludeDir=C:\Users\13908\miniconda3\include \
-    -p:PythonLibraryDir=C:\Users\13908\miniconda3\libs
-
-# Build qrenderdoc_module
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe \
-    qrenderdoc/Code/pyrenderdoc/qrenderdoc_module.vcxproj \
-    -p:Configuration=Development \
-    -p:Platform=x64 \
-    -p:SolutionDir=C:\Users\13908\Desktop\works\renderdoc_pythonmodules\ \
-    -p:PlatformToolset=v143 \
-    -p:PythonIncludeDir=C:\Users\13908\miniconda3\include \
-    -p:PythonLibraryDir=C:\Users\13908\miniconda3\libs
-```
-
-### Project Configuration
-- **Source Directory**: `C:\Users\13908\Desktop\works\renderdoc_pythonmodules`
-- **Output Directory**: `x64/Development/pymodules`
-- **Release Directory**: `python-releases/v1.43_py3.13.9_x64/`
-
----
-
-*This report was automatically generated by the RenderDoc Python Module Builder*
+## Requirements
+            - Windows 10/11 x64
+            - Python 3.13.x
+            - Visual C++ Redistributable (usually pre-installed)
+            - Visual C++ Redistributable (usually pre-installed)
+            - **Build Date**: 2025-03-16
