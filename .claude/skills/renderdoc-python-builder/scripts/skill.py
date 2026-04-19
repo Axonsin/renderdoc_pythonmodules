@@ -792,6 +792,7 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
 **Generated**: {self.build_start_time.strftime("%Y-%m-%d %H:%M:%S")}
 **Build Duration**: {build_duration:.1f} seconds
 **Status**: {"[+] SUCCESS" if all(m["success"] for m in self.build_results["modules"].values()) else "[-] FAILED"}
+**Source Commit**: `{self.git_commit_hash}`
 
 ---
 
