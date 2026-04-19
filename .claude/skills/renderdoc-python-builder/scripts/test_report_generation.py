@@ -6,33 +6,31 @@ Test script to verify report generation functionality.
 import sys
 from pathlib import Path
 
-# Add scripts directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from skill import RenderDocPyBuilder
 
 
 def test_report_generation():
-    """Test the report generation with minimal build."""
+    """Test the report generation with simulated build."""
 
     print("[*] Testing Report Generation")
     print("=" * 60)
 
-    # Create builder instance (this collects all environment info)
-    builder = RenderDocPyBuilder(config="Development", platform="x64")
+    builder = RenderDocPyBuilder(config="Development", platform_arch="x64")
 
     # Simulate build results
     builder.build_results = {
         "modules": {
             "pyrenderdoc_module": {
-                "project": "qrenderdoc/Code/pyrenderdoc/pyrenderdoc_module.vcxproj",
+                "project": str(builder.pyrenderdoc_project),
                 "success": True,
                 "duration": 123.5,
                 "stdout": "Build output...",
                 "stderr": "",
             },
             "qrenderdoc_module": {
-                "project": "qrenderdoc/Code/pyrenderdoc/qrenderdoc_module.vcxproj",
+                "project": str(builder.qrenderdoc_project),
                 "success": True,
                 "duration": 45.2,
                 "stdout": "Build output...",
@@ -41,12 +39,12 @@ def test_report_generation():
         },
         "dependencies": {
             "renderdoc.dll": {
-                "path": "x64/Development/pymodules/renderdoc.dll",
+                "path": str(builder.output_dir / "renderdoc.dll"),
                 "size_mb": 72.5,
                 "copied": True,
             },
             "d3dcompiler_47.dll": {
-                "path": "x64/Development/pymodules/d3dcompiler_47.dll",
+                "path": str(builder.output_dir / "d3dcompiler_47.dll"),
                 "size_mb": 4.5,
                 "copied": False,
             },
@@ -57,7 +55,6 @@ def test_report_generation():
         },
     }
 
-    # Generate report
     print("\nGenerating report...")
     report_path = builder.generate_report()
 
@@ -65,7 +62,6 @@ def test_report_generation():
     print(f"    Location: {report_path}")
     print(f"    Size: {report_path.stat().st_size / 1024:.1f} KB")
 
-    # Display first few lines
     print("\n" + "=" * 60)
     print("Report Preview (first 30 lines):")
     print("=" * 60)

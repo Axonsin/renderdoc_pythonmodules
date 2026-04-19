@@ -6,7 +6,6 @@ Tests the built RenderDoc Python modules to ensure they work correctly.
 """
 
 import sys
-import os
 from pathlib import Path
 
 
@@ -16,19 +15,16 @@ def test_module_import(module_path):
     print(f"Testing: {module_path.name}")
     print(f"{'='*60}")
 
-    # Clear module cache and add module path to sys.path
     module_dir = str(module_path)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
 
-    # Remove from cache if present
     for mod in list(sys.modules.keys()):
         if mod.startswith('renderdoc') or mod.startswith('qrenderdoc'):
             del sys.modules[mod]
 
     results = {}
 
-    # Test renderdoc
     print("\n[*] Testing renderdoc module...")
     try:
         import renderdoc
@@ -36,7 +32,6 @@ def test_module_import(module_path):
         results["renderdoc"] = {"status": "PASS", "error": None}
         print("   [+] Import successful")
 
-        # Check for key attributes
         attrs_to_check = [
             "CaptureFile",
             "ReplayStatus",
@@ -51,7 +46,6 @@ def test_module_import(module_path):
             else:
                 print(f"      [-] {attr} (missing)")
 
-        # Check version info
         if hasattr(renderdoc, "VERSION_STRING"):
             print(f"      [*] Version: {renderdoc.VERSION_STRING}")
 
@@ -59,7 +53,6 @@ def test_module_import(module_path):
         results["renderdoc"] = {"status": "FAIL", "error": str(e)}
         print(f"   [-] Import failed: {e}")
 
-    # Test qrenderdoc
     print("\n[*] Testing qrenderdoc module...")
     try:
         import qrenderdoc
@@ -67,7 +60,6 @@ def test_module_import(module_path):
         results["qrenderdoc"] = {"status": "PASS", "error": None}
         print("   [+] Import successful")
 
-        # Check for key attributes
         attrs_to_check = [
             "CaptureContext",
             "ReplayController",
@@ -86,11 +78,10 @@ def test_module_import(module_path):
     return results
 
 
-def check_dll_dependencies(module_path):
+def check_dll_dependencies(module_path, required_dlls):
     """Check if required DLLs are present."""
     print(f"\n[*] Checking DLL dependencies...")
 
-    required_dlls = ["renderdoc.dll", "d3dcompiler_47.dll"]
     missing_dlls = []
 
     for dll in required_dlls:
@@ -123,15 +114,28 @@ def check_module_files(module_path):
             print(f"   [-] {pyd}: MISSING - {description}")
 
 
+def _load_required_dlls():
+    """Load required DLL list from config, with fallback."""
+    try:
+        import json
+
+        config_path = Path(__file__).parent.parent / "assets" / "config.json"
+        if config_path.exists():
+            with open(config_path, encoding="utf-8") as f:
+                cfg = json.load(f)
+            return cfg["dependencies"]["required_dlls"]
+    except Exception:
+        pass
+    return ["renderdoc.dll", "d3dcompiler_47.dll"]
+
+
 def run_all_tests(module_path=None):
     """Run complete test suite."""
     print("\n" + "=" * 60)
     print("RenderDoc Python Module Test Suite")
     print("=" * 60)
 
-    # Determine module path
     if module_path is None:
-        # Default path
         module_path = Path.cwd() / "x64" / "Development" / "pymodules"
     else:
         module_path = Path(module_path)
@@ -142,16 +146,13 @@ def run_all_tests(module_path=None):
         print(f"\n[!] ERROR: Module path does not exist: {module_path}")
         return False
 
-    # Check files
     check_module_files(module_path)
 
-    # Check DLLs
-    missing_dlls = check_dll_dependencies(module_path)
+    required_dlls = _load_required_dlls()
+    missing_dlls = check_dll_dependencies(module_path, required_dlls)
 
-    # Test imports
     results = test_module_import(module_path)
 
-    # Summary
     print(f"\n{'='*60}")
     print("Test Summary")
     print(f"{'='*60}")
@@ -162,7 +163,7 @@ def run_all_tests(module_path=None):
         symbol = "[+]" if status == "PASS" else "[-]"
         print(f"   {symbol} {module}: {status}")
         if result["error"]:
-            print(f"      Error: {result["error"]}")
+            print(f"      Error: {result['error']}")
         if status == "FAIL":
             all_passed = False
 

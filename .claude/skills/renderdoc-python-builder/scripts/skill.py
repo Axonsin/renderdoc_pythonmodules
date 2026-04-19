@@ -2,11 +2,11 @@
 """
 RenderDoc Python Module Builder
 
-This script automates the process of building RenderDoc Python modules
-for a specific Python version and testing them.
+Automates building RenderDoc Python modules for a specific Python version.
+Reads all configurable paths and settings from assets/config.json.
 
 Usage:
-    python build_pyrenderdoc.py [--python-version VERSION] [--config CONFIG]
+    python skill.py [--python-version VERSION] [--config CONFIG] [--platform PLATFORM]
 
 Requirements:
     - Visual Studio 2022 with MSBuild
@@ -15,7 +15,7 @@ Requirements:
 """
 
 import argparse
-import os
+import json
 import subprocess
 import sys
 import shutil
@@ -26,14 +26,62 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 
+SKILL_DIR = Path(__file__).parent.parent  # scripts/ -> renderdoc-python-builder/
+CONFIG_PATH = SKILL_DIR / "assets" / "config.json"
+
+
+def load_config():
+    """Load configuration from assets/config.json."""
+    if not CONFIG_PATH.exists():
+        raise FileNotFoundError(
+            f"Configuration file not found: {CONFIG_PATH}. "
+            f"Ensure assets/config.json exists."
+        )
+    with open(CONFIG_PATH, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def find_project_root(config):
+    """Find RenderDoc project root by searching upward for a marker file.
+
+    This replaces the fragile N-level .parent chain with a marker-based search
+    that works regardless of how deeply the skill directory is nested.
+    """
+    marker = config["project"]["root_marker"]
+    current = SKILL_DIR
+    for _ in range(20):  # Safety limit
+        candidate = current / marker
+        if candidate.exists():
+            return current
+        parent = current.parent
+        if parent == current:
+            break
+        current = parent
+    raise FileNotFoundError(
+        f"Cannot find RenderDoc project root. "
+        f"Searched upward from {SKILL_DIR} looking for marker: {marker}"
+    )
+
+
 class RenderDocPyBuilder:
     """Build RenderDoc Python modules for a specific Python version."""
 
-    def __init__(self, python_version=None, config="Development", platform="x64"):
-        self.project_root = Path(__file__).parent.parent.parent.parent.parent.absolute()
+    def __init__(self, python_version=None, config="Development", platform_arch="x64"):
+        # Load configuration
+        self.cfg = load_config()
+
+        # Resolve project root dynamically via marker file
+        self.project_root = find_project_root(self.cfg)
+
         self.config = config
-        self.platform = platform
+        self.platform = platform_arch
         self.build_start_time = datetime.datetime.now()
+
+        # Tool paths from config
+        tools = self.cfg["tools"]
+        self.vswhere_path = Path(tools["vswhere_path"])
+        self.windows_kits_root = Path(tools["windows_kits_root"])
+        self.platform_toolset = tools["platform_toolset"]
 
         # Detect Python environment
         self.python_exe = Path(sys.executable)
@@ -49,7 +97,6 @@ class RenderDocPyBuilder:
         # MSBuild information
         self.msbuild_path = self._find_msbuild()
         self.msbuild_version = self._get_msbuild_version()
-        self.platform_toolset = "v143"  # Hardcoded for VS2022
 
         # Visual Studio information
         self.vs_info = self._get_visual_studio_info()
@@ -66,13 +113,16 @@ class RenderDocPyBuilder:
         # Windows SDK version
         self.windows_sdk_version = self._get_windows_sdk_version()
 
-        # Project paths
-        self.pyrenderdoc_project = (
-            self.project_root / "qrenderdoc" / "Code" / "pyrenderdoc" / "pyrenderdoc_module.vcxproj"
-        )
-        self.qrenderdoc_project = (
-            self.project_root / "qrenderdoc" / "Code" / "pyrenderdoc" / "qrenderdoc_module.vcxproj"
-        )
+        # Project paths from config
+        proj = self.cfg["project"]
+        self.pyrenderdoc_project = self.project_root / proj["vcxproj_paths"]["pyrenderdoc"]
+        self.qrenderdoc_project = self.project_root / proj["vcxproj_paths"]["qrenderdoc"]
+        self.version_header = self.project_root / proj["version_header"]
+        self.stubs_script = self.project_root / proj["stubs_script"]
+
+        # Dependency names from config
+        self.required_dlls = self.cfg["dependencies"]["required_dlls"]
+        self.file_descriptions = self.cfg["dependencies"]["file_descriptions"]
 
         # Output paths
         self.output_dir = self.project_root / self.platform / self.config / "pymodules"
@@ -98,15 +148,9 @@ class RenderDocPyBuilder:
         print(f"    Git Commit: {self.git_commit_hash[:12]}")
 
     def _detect_python_version(self):
-        """Detect Python version from executable."""
-        result = subprocess.run(
-            [str(self.python_exe), "--version"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        version_str = result.stdout.strip().split()[-1]
-        return f"3.{version_str.split('.')[1]}"
+        """Detect Python version using sys.version_info (works for any major version)."""
+        vi = sys.version_info
+        return f"{vi.major}.{vi.minor}"
 
     def _get_python_full_version(self):
         """Get full Python version string."""
@@ -127,7 +171,6 @@ class RenderDocPyBuilder:
                 text=True,
                 check=True,
             )
-            # Extract version from output
             match = re.search(r'(\d+\.\d+\.\d+\.\d+)', result.stdout)
             if match:
                 return match.group(1)
@@ -136,16 +179,14 @@ class RenderDocPyBuilder:
             return "Unknown"
 
     def _get_visual_studio_info(self):
-        """Get Visual Studio installation information."""
+        """Get Visual Studio installation information via vswhere."""
         try:
             result = subprocess.run(
                 [
-                    "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
+                    str(self.vswhere_path),
                     "-latest",
-                    "-property",
-                    "installationPath",
-                    "-property",
-                    "displayName",
+                    "-property", "installationPath",
+                    "-property", "displayName",
                 ],
                 capture_output=True,
                 text=True,
@@ -173,19 +214,14 @@ class RenderDocPyBuilder:
     def _get_renderdoc_version(self):
         """Get RenderDoc version from version.h header file."""
         try:
-            # Read version from version.h
-            version_file = self.project_root / "renderdoc" / "api" / "replay" / "version.h"
+            version_file = self.version_header
             if version_file.exists():
                 content = version_file.read_text()
-                # Look for RENDERDOC_VERSION_MAJOR and RENDERDOC_VERSION_MINOR
                 major_match = re.search(r'RENDERDOC_VERSION_MAJOR\s+(\d+)', content)
                 minor_match = re.search(r'RENDERDOC_VERSION_MINOR\s+(\d+)', content)
 
                 if major_match and minor_match:
-                    major = major_match.group(1)
-                    minor = minor_match.group(1)
-                    # Return as tuple for easier use
-                    return (major, minor)
+                    return (major_match.group(1), minor_match.group(1))
             return (None, None)
         except Exception:
             return (None, None)
@@ -205,44 +241,31 @@ class RenderDocPyBuilder:
             return "unknown"
 
     def _get_windows_sdk_version(self):
-        """Get detailed Windows SDK version."""
+        """Get Windows SDK version from the configured Kits directory."""
         try:
-            import os
-
-            # Method 1: Try to read from Windows Kits installation directory
-            kits_root = Path("C:/Program Files (x86)/Windows Kits/10")
+            kits_root = self.windows_kits_root
             if kits_root.exists():
                 include_dir = kits_root / "include"
                 if include_dir.exists():
-                    # Find all version directories
-                    versions = []
-                    for item in include_dir.iterdir():
-                        if item.is_dir() and re.match(r'10\.0\.\d+\.\d+', item.name):
-                            versions.append(item.name)
-
+                    versions = [
+                        item.name
+                        for item in include_dir.iterdir()
+                        if item.is_dir() and re.match(r'10\.0\.\d+\.\d+', item.name)
+                    ]
                     if versions:
-                        # Sort and return the latest version
                         versions.sort(reverse=True)
                         return versions[0]
 
-            # Method 2: Try to read from project files
+            # Fallback: read from project files
             project_file = self.project_root / "renderdoc" / "renderdoc.vcxproj"
             if project_file.exists():
                 content = project_file.read_text()
-                version_match = re.search(r'<WindowsTargetPlatformVersion>([^<]+)</WindowsTargetPlatformVersion>', content)
+                version_match = re.search(
+                    r'<WindowsTargetPlatformVersion>([^<]+)</WindowsTargetPlatformVersion>',
+                    content,
+                )
                 if version_match:
-                    base_version = version_match.group(1)
-
-                    # Try to enhance with system version
-                    import platform
-                    system_version = platform.version()
-                    if system_version and system_version.startswith("10.0."):
-                        # Combine base version with detailed build number
-                        build_number = system_version.split(".")[2] if len(system_version.split(".")) > 2 else ""
-                        if build_number:
-                            return f"{base_version}.{build_number}"
-
-                    return base_version
+                    return version_match.group(1)
 
             return "Unknown"
         except Exception:
@@ -250,11 +273,9 @@ class RenderDocPyBuilder:
 
     def _find_python_lib(self):
         """Find Python import library (.lib file)."""
-        # Try to find python3XX.lib
-        version_parts = self.python_version.split(".")
-        major_minor = f"python{version_parts[0]}{version_parts[1]}"
+        vi = sys.version_info
+        major_minor = f"python{vi.major}{vi.minor}"
 
-        # Common lib names
         possible_libs = [
             f"{major_minor}.lib",
             f"{major_minor}.dll.a",  # MinGW
@@ -266,7 +287,7 @@ class RenderDocPyBuilder:
             if lib_path.exists():
                 return lib_path
 
-        # List available libs for debugging
+        # Fallback: list available libs
         libs = list(self.python_libs.glob("python*.lib"))
         if libs:
             print(f"[!]  Warning: Using fallback library: {libs[0].name}")
@@ -278,72 +299,71 @@ class RenderDocPyBuilder:
         )
 
     def _find_msbuild(self):
-        """Find MSBuild executable."""
-        # Common VS2022 paths
-        vs_paths = [
-            Path("C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe"),
-            Path("C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/MSBuild.exe"),
-            Path("C:/Program Files/Microsoft Visual Studio/2022/Professional/MSBuild/Current/Bin/MSBuild.exe"),
-        ]
-
-        for vs_path in vs_paths:
-            if vs_path.exists():
-                return vs_path
-
-        # Try using vswhere
+        """Find MSBuild executable via vswhere (no hardcoded VS edition paths)."""
         try:
             result = subprocess.run(
                 [
-                    "C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe",
+                    str(self.vswhere_path),
                     "-latest",
-                    "-requires",
-                    "Microsoft.Component.MSBuild",
-                    "-find",
-                    "MSBuild/**/Bin/MSBuild.exe",
+                    "-requires", "Microsoft.Component.MSBuild",
+                    "-find", "MSBuild/**/Bin/MSBuild.exe",
                 ],
                 capture_output=True,
                 text=True,
                 check=True,
             )
             if result.stdout.strip():
-                return Path(result.stdout.strip())
+                return Path(result.stdout.strip().split('\n')[0])
         except Exception:
             pass
 
-        raise FileNotFoundError("Cannot find MSBuild.exe")
+        raise FileNotFoundError(
+            "Cannot find MSBuild.exe via vswhere. "
+            f"Ensure Visual Studio is installed and vswhere is at: {self.vswhere_path}"
+        )
 
     def _fix_project_warnings(self, project_path):
         """Fix project file to ignore Python 3.13+ deprecation warnings."""
         project_path = Path(project_path)
+        auto_fix = self.cfg["auto_fixes"]["python_313_compat"]
+
+        if not auto_fix["enabled"]:
+            return
+
+        ns_uri = auto_fix["xml_namespace"]
+        flag = auto_fix["flag"]
+
+        # Register the default namespace so ET.write() preserves the original
+        # xmlns="..." form instead of emitting ns0: prefixes that break .vcxproj
+        ET.register_namespace('', ns_uri)
 
         tree = ET.parse(project_path)
         root = tree.getroot()
+        ns = {"ms": ns_uri}
 
-        # Define namespace
-        ns = {"ms": "http://schemas.microsoft.com/developer/msbuild/2003"}
-
-        # Find AdditionalOptions and add /wd4996 if not present
+        modified = False
         for item_group in root.findall(".//ms:ItemDefinitionGroup", ns):
             for cl_compile in item_group.findall("ms:ClCompile", ns):
                 add_opts = cl_compile.find("ms:AdditionalOptions", ns)
                 if add_opts is not None and add_opts.text:
-                    if "/wd4996" not in add_opts.text:
-                        add_opts.text = add_opts.text.strip() + " /wd4996"
-                        print(f"   [E]  Updated {project_path.name} with /wd4996")
+                    if flag not in add_opts.text:
+                        add_opts.text = add_opts.text.strip() + f" {flag}"
+                        modified = True
+                        print(f"   [E]  Updated {project_path.name} with {flag}")
 
-        tree.write(project_path, encoding="utf-8", xml_declaration=True)
+        # Only rewrite the file if we actually changed something
+        if modified:
+            tree.write(str(project_path), encoding="utf-8", xml_declaration=True)
 
     def clean_build_artifacts(self):
         """Clean previous build artifacts."""
         print("\n🧹 Cleaning build artifacts...")
 
-        # Remove .pyd files
         if self.output_dir.exists():
             for pyd in self.output_dir.glob("*.pyd"):
                 pyd.unlink()
                 print(f"   Removed {pyd.name}")
 
-            # Remove object files
             obj_dirs = [
                 self.project_root / self.platform / self.config / "obj" / "pyrenderdoc_module",
                 self.project_root / self.platform / self.config / "obj" / "qrenderdoc_module",
@@ -375,7 +395,6 @@ class RenderDocPyBuilder:
         build_end = datetime.datetime.now()
         build_duration = (build_end - build_start).total_seconds()
 
-        # Record build result
         self.build_results["modules"][module_name] = {
             "project": str(project_path),
             "success": result.returncode == 0,
@@ -390,7 +409,7 @@ class RenderDocPyBuilder:
         else:
             print(f"   [-] {module_name} build failed")
             print("\n--- Error Output ---")
-            print(result.stderr[-1000:])  # Last 1000 chars
+            print(result.stderr[-1000:])
             return False
 
     def copy_dependencies(self):
@@ -399,7 +418,7 @@ class RenderDocPyBuilder:
 
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Copy renderdoc.dll
+        # Copy the primary DLL (renderdoc.dll) from build output
         if self.renderdoc_dll.exists():
             dest = self.output_dir / "renderdoc.dll"
             shutil.copy2(self.renderdoc_dll, dest)
@@ -417,22 +436,24 @@ class RenderDocPyBuilder:
                 "copied": False,
             }
 
-        # d3dcompiler_47.dll might already be there
-        d3dcompiler = self.output_dir / "d3dcompiler_47.dll"
-        if d3dcompiler.exists():
-            size_mb = d3dcompiler.stat().st_size / (1024 * 1024)
-            print(f"   [+] d3dcompiler_47.dll (already present, {size_mb:.1f} MB)")
-            self.build_results["dependencies"]["d3dcompiler_47.dll"] = {
-                "path": str(d3dcompiler),
-                "size_mb": size_mb,
-                "copied": False,  # Already present
-            }
+        # Check remaining required DLLs (already in output dir)
+        for dll_name in self.required_dlls:
+            if dll_name == "renderdoc.dll":
+                continue
+            dll_path = self.output_dir / dll_name
+            if dll_path.exists():
+                size_mb = dll_path.stat().st_size / (1024 * 1024)
+                print(f"   [+] {dll_name} (already present, {size_mb:.1f} MB)")
+                self.build_results["dependencies"][dll_name] = {
+                    "path": str(dll_path),
+                    "size_mb": size_mb,
+                    "copied": False,
+                }
 
     def copy_to_releases(self):
         """Copy built modules to python-releases directory."""
         print("\n[+] Copying to python-releases...")
 
-        # Get RenderDoc version
         rd_major, rd_minor = self.renderdoc_version
         if rd_major is None or rd_minor is None:
             print("   [!]  Warning: Could not determine RenderDoc version")
@@ -440,18 +461,13 @@ class RenderDocPyBuilder:
         else:
             rd_version_str = f"{rd_major}.{rd_minor}"
 
-        # Get full Python version (e.g., 3.13.9)
-        python_full_version_str = self._get_python_full_version().split()[0]  # Extract version from "3.13.9 ..."
+        python_full_version_str = self._get_python_full_version().split()[0]
 
-        # Determine release directory name: v{rd_version}_py{python_full_version}_{platform}
-        # Example: v1.43_py3.13.9_x64
         release_dir_name = f"v{rd_version_str}_py{python_full_version_str}_{self.platform.lower()}"
         release_dir = self.project_root / "python-releases" / release_dir_name
 
-        # Create directory
         release_dir.mkdir(parents=True, exist_ok=True)
 
-        # Copy all files from pymodules directory
         copied_files = []
         for src_file in self.output_dir.iterdir():
             if src_file.is_file():
@@ -461,17 +477,16 @@ class RenderDocPyBuilder:
                 print(f"   [+] {src_file.name} -> {release_dir_name}/ ({size_mb:.1f} MB)")
                 copied_files.append(src_file.name)
 
-        # Generate stubs
         self._generate_stubs(release_dir, release_dir_name)
 
-        # Generate README
+        # Generate README using file descriptions from config
         readme_content = f"""# RenderDoc Python Modules - {release_dir_name}
 
 ## Version Information
 
 - **RenderDoc Version**: {rd_version_str}
 - **Python Version**: {self.python_full_version}
-- **Platform**: {self.platform} ({"Windows" if self.platform == "x64" or self.platform == "x86" else "Unknown"})
+- **Platform**: {self.platform} ({"Windows" if self.platform in ("x64", "x86") else "Unknown"})
 - **Build Configuration**: {self.config}
 - **Build Date**: {datetime.datetime.now().strftime("%Y-%m-%d")}
 
@@ -484,12 +499,7 @@ class RenderDocPyBuilder:
         for filename in copied_files:
             filepath = release_dir / filename
             size_mb = filepath.stat().st_size / (1024 * 1024)
-            description = {
-                "renderdoc.pyd": "Core RenderDoc Python module",
-                "qrenderdoc.pyd": "Qt-based UI Python module",
-                "renderdoc.dll": "RenderDoc core library (required dependency)",
-                "d3dcompiler_47.dll": "Direct3D compiler (required dependency)",
-            }.get(filename, "")
+            description = self.file_descriptions.get(filename, "")
             readme_content += f"| `{filename}` | {size_mb:.1f} MB | {description} |\n"
 
         readme_content += f"""
@@ -537,7 +547,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
         readme_path.write_text(readme_content, encoding="utf-8")
         print(f"   [+] README.md -> {release_dir_name}/")
 
-        # Generate REPORT.md for this release
         self._generate_release_report(release_dir, release_dir_name, rd_version_str, copied_files)
 
         print(f"\n   Release directory: {release_dir.relative_to(self.project_root)}")
@@ -546,7 +555,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
     def _generate_release_report(self, release_dir, release_dir_name, rd_version_str, copied_files):
         """Generate a detailed REPORT.md for the release directory."""
 
-        # Calculate total size
         total_size = sum((release_dir / f).stat().st_size for f in copied_files if (release_dir / f).exists())
         total_size_mb = total_size / (1024 * 1024)
 
@@ -611,7 +619,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
 
 """
 
-        # Group files by type
         pyd_files = [f for f in copied_files if f.endswith('.pyd')]
         dll_files = [f for f in copied_files if f.endswith('.dll')]
         pdb_files = [f for f in copied_files if f.endswith('.pdb')]
@@ -649,7 +656,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
                 report_content += f"- `{f}` ({size_kb:.1f} KB)\n"
             report_content += "\n"
 
-        # Add test results
         report_content += "---\n\n## Test Results\n\n"
 
         for module_name, test_result in self.build_results.get("tests", {}).items():
@@ -658,7 +664,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
             error_msg = f"\n**Error**: {test_result.get('error')}" if test_result.get("error") else ""
             report_content += f"### {module_name}\n\n{status_icon} **Status**: {status_text}{error_msg}\n\n"
 
-        # Add build parameters
         report_content += f"""---
 
 ## Build Parameters
@@ -696,7 +701,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
 *This report was automatically generated by the RenderDoc Python Module Builder*
 """
 
-        # Write report
         report_path = release_dir / "REPORT.md"
         report_path.write_text(report_content, encoding="utf-8")
         print(f"   [+] REPORT.md -> {release_dir_name}/")
@@ -705,38 +709,30 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
         """Generate Python type stubs for the built modules."""
         print("\n[+] Generating Python type stubs...")
 
-        # Path to regenerate_stubs.py script
-        stubs_script = self.project_root / "docs" / "regenerate_stubs.py"
-
-        if not stubs_script.exists():
-            print(f"   [!]  Warning: Stubs generation script not found at {stubs_script}")
+        if not self.stubs_script.exists():
+            print(f"   [!]  Warning: Stubs generation script not found at {self.stubs_script}")
             return
 
-        # Output directory for stubs
         stubs_output_dir = release_dir / "stubs"
 
         try:
-            # Run the stubs generation script
-            import subprocess
             result = subprocess.run(
-                [str(self.python_exe), str(stubs_script), str(stubs_output_dir)],
+                [str(self.python_exe), str(self.stubs_script), str(stubs_output_dir)],
                 capture_output=True,
                 text=True,
-                cwd=stubs_script.parent,
-                timeout=120,  # 2 minutes timeout
+                cwd=self.stubs_script.parent,
+                timeout=120,
             )
 
             if result.returncode == 0:
-                # Count generated stubs
                 renderdoc_stubs = list((stubs_output_dir / "renderdoc").glob("*.py")) if (stubs_output_dir / "renderdoc").exists() else []
                 qrenderdoc_stubs = list((stubs_output_dir / "qrenderdoc").glob("*.py")) if (stubs_output_dir / "qrenderdoc").exists() else []
                 total_stubs = len(renderdoc_stubs) + len(qrenderdoc_stubs)
 
                 print(f"   [+] Generated {total_stubs} stub files")
-                print(f"      • renderdoc: {len(renderdoc_stubs)} files")
-                print(f"      • qrenderdoc: {len(qrenderdoc_stubs)} files")
+                print(f"      - renderdoc: {len(renderdoc_stubs)} files")
+                print(f"      - qrenderdoc: {len(qrenderdoc_stubs)} files")
 
-                # Store stubs info in build results
                 self.build_results["stubs"] = {
                     "renderdoc_count": len(renderdoc_stubs),
                     "qrenderdoc_count": len(qrenderdoc_stubs),
@@ -756,7 +752,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
         """Test if modules can be imported."""
         print("\n🧪 Testing modules...")
 
-        # Add output directory to Python path
         sys.path.insert(0, str(self.output_dir))
 
         results = {}
@@ -767,7 +762,7 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
             results["renderdoc"] = {"status": "Pass", "error": None}
             print("   [+] renderdoc module loaded successfully")
             if hasattr(renderdoc, "CaptureFile"):
-                print("      • Has CaptureFile attribute")
+                print("      - Has CaptureFile attribute")
         except Exception as e:
             results["renderdoc"] = {"status": "Failed", "error": str(e)}
             print(f"   [-] renderdoc: {e}")
@@ -781,7 +776,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
             results["qrenderdoc"] = {"status": "Failed", "error": str(e)}
             print(f"   [-] qrenderdoc: {e}")
 
-        # Store test results
         self.build_results["tests"] = results
 
         return results
@@ -856,14 +850,14 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
 ### pyrenderdoc_module
 | Property | Value |
 |----------|-------|
-| **Project File** | `qrenderdoc/Code/pyrenderdoc/pyrenderdoc_module.vcxproj` |
+| **Project File** | `{self.pyrenderdoc_project.relative_to(self.project_root)}` |
 | **Status** | {"[+] SUCCESS" if self.build_results["modules"].get("pyrenderdoc_module", {}).get("success") else "[-] FAILED"} |
 | **Build Time** | {self.build_results["modules"].get("pyrenderdoc_module", {}).get("duration", 0):.1f}s |
 
 ### qrenderdoc_module
 | Property | Value |
 |----------|-------|
-| **Project File** | `qrenderdoc/Code/pyrenderdoc/qrenderdoc_module.vcxproj` |
+| **Project File** | `{self.qrenderdoc_project.relative_to(self.project_root)}` |
 | **Status** | {"[+] SUCCESS" if self.build_results["modules"].get("qrenderdoc_module", {}).get("success") else "[-] FAILED"} |
 | **Build Time** | {self.build_results["modules"].get("qrenderdoc_module", {}).get("duration", 0):.1f}s |
 
@@ -874,7 +868,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
 ### Python Extension Modules (.pyd)
 """
 
-        # List all .pyd files
         for pyd_file in sorted(self.output_dir.glob("*.pyd")):
             size_mb = pyd_file.stat().st_size / (1024 * 1024)
             report_content += f"| **{pyd_file.name}** | {size_mb:.2f} MB | `{pyd_file.relative_to(self.project_root)}` |\n"
@@ -883,11 +876,10 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
 ### Dependencies (DLLs)
 """
 
-        # List DLL dependencies
         for dll_name, dll_info in self.build_results.get("dependencies", {}).items():
             if dll_info.get("copied") or dll_info.get("size_mb"):
                 size = dll_info.get("size_mb", 0)
-                status = "[+] Copied" if dll_info.get("copied") else "✓ Present"
+                status = "[+] Copied" if dll_info.get("copied") else "Present"
                 report_content += f"| **{dll_name}** | {size:.2f} MB | {status} |\n"
 
         report_content += f"""
@@ -900,7 +892,6 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
 
 """
 
-        # Test results
         for module_name, test_result in self.build_results.get("tests", {}).items():
             status_icon = "[+]" if test_result.get("status") == "Pass" else "[-]"
             status_text = test_result.get("status", "Unknown").upper()
@@ -955,24 +946,23 @@ import qrenderdoc
 ## Notes
 
 ### Python 3.13+ Compatibility
-The build process automatically modifies project files to ignore Python 3.13+ deprecation warnings (`/wd4996` compiler option).
+The build process automatically modifies project files to ignore Python 3.13+ deprecation warnings (`{self.cfg["auto_fixes"]["python_313_compat"]["flag"]}` compiler option).
 
 ### Modified Files
-- `qrenderdoc/Code/pyrenderdoc/pyrenderdoc_module.vcxproj`
-- `qrenderdoc/Code/pyrenderdoc/qrenderdoc_module.vcxproj`
+- `{self.pyrenderdoc_project.relative_to(self.project_root)}`
+- `{self.qrenderdoc_project.relative_to(self.project_root)}`
 
 ### Compilation Flags
 ```
-/wd4100 /wd4512 /wd4996
+/wd4100 /wd4512 {self.cfg["auto_fixes"]["python_313_compat"]["flag"]}
 ```
 
 ---
 
 *Report generated by RenderDoc Python Module Builder*
-*For more information, see `skills/README.md`*
+*Configuration: assets/config.json*
 """
 
-        # Write report to file
         report_path.write_text(report_content, encoding="utf-8")
 
         print(f"\n[R] Build report saved to: {report_path}")
@@ -1027,12 +1017,12 @@ The build process automatically modifies project files to ignore Python 3.13+ de
 
         for pyd in self.output_dir.glob("*.pyd"):
             size_mb = pyd.stat().st_size / (1024 * 1024)
-            print(f"      • {pyd.name} ({size_mb:.1f} MB)")
+            print(f"      - {pyd.name} ({size_mb:.1f} MB)")
 
         print(f"\n   Test Results:")
         for module, result in results.items():
             status = result.get("status", result) if isinstance(result, dict) else result
-            print(f"      • {module}: {status}")
+            print(f"      - {module}: {status}")
 
         if all(isinstance(r, dict) and r.get("status") == "Pass" for r in results.values()):
             print("\n   [OK] All tests passed!")
@@ -1069,7 +1059,7 @@ def main():
         builder = RenderDocPyBuilder(
             python_version=args.python_version,
             config=args.config,
-            platform=args.platform,
+            platform_arch=args.platform,
         )
         success = builder.build()
         sys.exit(0 if success else 1)
