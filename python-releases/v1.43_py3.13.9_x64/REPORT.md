@@ -1,7 +1,7 @@
-# Build Report - v1.43_py3.13.9_x64
+# Build Report - vunknown_py3.13.9_x64
 
-**Generated**: 2025-02-15 02:28:00
-**Build Duration**: ~300 seconds
+**Generated**: 2026-04-20 00:50:24
+**Build Duration**: 143.2 seconds
 
 ---
 
@@ -9,13 +9,14 @@
 
 | Property | Value |
 |----------|-------|
-| **Directory** | `v1.43_py3.13.9_x64/` |
-| **RenderDoc Version** | 1.43 |
-| **Python Version** | 3.13.9 |
+| **Directory** | `vunknown_py3.13.9_x64/` |
+| **RenderDoc Version** | unknown |
+| **Python Version** | 3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:09:58) [MSC v.1929 64 bit (AMD64)] |
 | **Platform** | x64 |
 | **Build Configuration** | Development |
-| **Total Size** | 131.0 MB |
-| **File Count** | 11 |
+| **Total Size** | 130.6 MB |
+| **File Count** | 10 |
+| **Git Commit** | `286e07140d96bf3acda4059e085e8f5eb0e92608` |
 
 ---
 
@@ -24,24 +25,24 @@
 ### Python Configuration
 | Property | Value |
 |----------|-------|
-| **Executable** | `C:\Users\13908\miniconda3\python.exe` |
+| **Executable** | `C:\ProgramData\miniconda3\python.exe` |
 | **Version** | 3.13 |
-| **Include Dir** | `C:\Users\13908\miniconda3\include` |
-| **Import Lib** | `C:\Users\13908\miniconda3\libs\python313.lib` |
+| **Include Dir** | `C:\ProgramData\miniconda3\include` |
+| **Import Lib** | `C:\ProgramData\miniconda3\libs\python313.lib` |
 
 ### Build Tools
 | Tool | Version |
 |------|---------|
-| **MSBuild** | 17.11.5 |
-| **Platform Toolset** | v143 |
-| **Windows SDK** | 10.0.26100.0 |
-| **Visual Studio** | Visual Studio 2022 |
+| **MSBuild** | 18.4.0.7901 |
+| **Platform Toolset** | v145 |
+| **Windows SDK** | Unknown |
+| **Visual Studio** | Unknown |
 
 ### System Information
 | Property | Value |
 |----------|-------|
 | **OS** | Windows |
-| **OS Version** | 11 Home China 10.0.26100 |
+| **OS Version** | 10.0.26200 |
 | **Architecture** | AMD64 |
 
 ---
@@ -64,18 +65,18 @@
 #### Runtime Dependencies
 
 - `d3dcompiler_47.dll` (4.5 MB)
-- `renderdoc.dll` (72.6 MB)
+- `renderdoc.dll` (72.3 MB)
 
 #### Debug Symbols
 
-- `qrenderdoc.pdb` (20.3 MB)
+- `qrenderdoc.pdb` (20.4 MB)
 - `renderdoc.pdb` (17.7 MB)
 
 #### Import Libraries & Export Files
 
 - `qrenderdoc.exp` (1.1 KB)
 - `qrenderdoc.lib` (2.2 KB)
-- `renderdoc.exp` (980 B)
+- `renderdoc.exp` (0.9 KB)
 - `renderdoc.lib` (2.0 KB)
 
 ---
@@ -97,30 +98,30 @@
 ### MSBuild Commands
 ```bash
 # Build pyrenderdoc_module
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe \
-    qrenderdoc/Code/pyrenderdoc/pyrenderdoc_module.vcxproj \
+D:\Program Files\Microsoft VisualStudio\VisualStudio 2026\MSBuild\Current\Bin\MSBuild.exe \
+    qrenderdoc\Code\pyrenderdoc\pyrenderdoc_module.vcxproj \
     -p:Configuration=Development \
     -p:Platform=x64 \
-    -p:SolutionDir=C:\Users\13908\Desktop\works\renderdoc_pythonmodules\ \
-    -p:PlatformToolset=v143 \
-    -p:PythonIncludeDir=C:\Users\13908\miniconda3\include \
-    -p:PythonLibraryDir=C:\Users\13908\miniconda3\libs
+    -p:SolutionDir=D:\Projects\renderdoc_pythonmodules\ \
+    -p:PlatformToolset=v145 \
+    -p:PythonIncludeDir=C:\ProgramData\miniconda3\include \
+    -p:PythonLibraryDir=C:\ProgramData\miniconda3\libs
 
 # Build qrenderdoc_module
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe \
-    qrenderdoc/Code/pyrenderdoc/qrenderdoc_module.vcxproj \
+D:\Program Files\Microsoft VisualStudio\VisualStudio 2026\MSBuild\Current\Bin\MSBuild.exe \
+    qrenderdoc\Code\pyrenderdoc\qrenderdoc_module.vcxproj \
     -p:Configuration=Development \
     -p:Platform=x64 \
-    -p:SolutionDir=C:\Users\13908\Desktop\works\renderdoc_pythonmodules\ \
-    -p:PlatformToolset=v143 \
-    -p:PythonIncludeDir=C:\Users\13908\miniconda3\include \
-    -p:PythonLibraryDir=C:\Users\13908\miniconda3\libs
+    -p:SolutionDir=D:\Projects\renderdoc_pythonmodules\ \
+    -p:PlatformToolset=v145 \
+    -p:PythonIncludeDir=C:\ProgramData\miniconda3\include \
+    -p:PythonLibraryDir=C:\ProgramData\miniconda3\libs
 ```
 
 ### Project Configuration
-- **Source Directory**: `C:\Users\13908\Desktop\works\renderdoc_pythonmodules`
-- **Output Directory**: `x64/Development/pymodules`
-- **Release Directory**: `python-releases/v1.43_py3.13.9_x64/`
+- **Source Directory**: `D:\Projects\renderdoc_pythonmodules`
+- **Output Directory**: `x64\Development\pymodules`
+- **Release Directory**: `python-releases/vunknown_py3.13.9_x64/`
 
 ---
 

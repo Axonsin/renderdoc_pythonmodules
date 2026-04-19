@@ -785,7 +785,7 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
         build_end_time = datetime.datetime.now()
         build_duration = (build_end_time - self.build_start_time).total_seconds()
 
-        report_path = self.project_root / "REPORT.md"
+        report_path = self.project_root / "REPORT_GLOBAL.md"
 
         report_content = f"""# RenderDoc Python Module Build Report
 
