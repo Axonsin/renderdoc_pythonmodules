@@ -6,10 +6,10 @@ Test script to verify report generation functionality.
 import sys
 from pathlib import Path
 
-# Add skills directory to path
+# Add scripts directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from build_pyrenderdoc import RenderDocPyBuilder
+from skill import RenderDocPyBuilder
 
 
 def test_report_generation():

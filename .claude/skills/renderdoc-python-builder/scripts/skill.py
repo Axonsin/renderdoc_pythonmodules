@@ -30,7 +30,7 @@ class RenderDocPyBuilder:
     """Build RenderDoc Python modules for a specific Python version."""
 
     def __init__(self, python_version=None, config="Development", platform="x64"):
-        self.project_root = Path(__file__).parent.parent.absolute()
+        self.project_root = Path(__file__).parent.parent.parent.parent.parent.absolute()
         self.config = config
         self.platform = platform
         self.build_start_time = datetime.datetime.now()
@@ -59,6 +59,9 @@ class RenderDocPyBuilder:
 
         # RenderDoc version
         self.renderdoc_version = self._get_renderdoc_version()
+
+        # Git commit hash
+        self.git_commit_hash = self._get_git_commit_hash()
 
         # Windows SDK version
         self.windows_sdk_version = self._get_windows_sdk_version()
@@ -92,6 +95,7 @@ class RenderDocPyBuilder:
         print(f"    Platform Toolset: {self.platform_toolset}")
         print(f"    Windows SDK: {self.windows_sdk_version}")
         print(f"    Configuration: {self.config} | {self.platform}")
+        print(f"    Git Commit: {self.git_commit_hash[:12]}")
 
     def _detect_python_version(self):
         """Detect Python version from executable."""
@@ -185,6 +189,20 @@ class RenderDocPyBuilder:
             return (None, None)
         except Exception:
             return (None, None)
+
+    def _get_git_commit_hash(self):
+        """Get the current git commit hash of the project."""
+        try:
+            result = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                capture_output=True,
+                text=True,
+                cwd=str(self.project_root),
+                check=True,
+            )
+            return result.stdout.strip()
+        except Exception:
+            return "unknown"
 
     def _get_windows_sdk_version(self):
         """Get detailed Windows SDK version."""
@@ -550,6 +568,7 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
 | **Build Configuration** | {self.config} |
 | **Total Size** | {total_size_mb:.1f} MB |
 | **File Count** | {len(copied_files)} |
+| **Git Commit** | `{self.git_commit_hash}` |
 
 ---
 
@@ -827,6 +846,7 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
 | **Configuration** | {self.config} |
 | **Platform** | {self.platform} |
 | **RenderDoc Version** | {self.renderdoc_version} |
+| **Git Commit** | `{self.git_commit_hash}` |
 | **Project Root** | `{self.project_root}` |
 
 ---
@@ -1002,6 +1022,7 @@ The build process automatically modifies project files to ignore Python 3.13+ de
         print(f"   Python Version: {self.python_version}")
         print(f"   Output Directory: {self.output_dir}")
         print(f"   Build Report: {report_path.relative_to(self.project_root)}")
+        print(f"   Git Commit: {self.git_commit_hash[:12]}")
         print(f"\n   Modules:")
 
         for pyd in self.output_dir.glob("*.pyd"):

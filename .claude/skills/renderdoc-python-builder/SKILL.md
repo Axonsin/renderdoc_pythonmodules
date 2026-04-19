@@ -1,66 +1,64 @@
+---
+name: renderdoc-python-builder
+description: >
+  Builds pyrenderdoc and qrenderdoc Python extension modules (.pyd) for RenderDoc on Windows
+  with Visual Studio 2022. Automatically detects Python version and build environment,
+  fixes Python 3.13+ compatibility, generates type stubs, copies to python-releases/,
+  and produces a detailed build report with git commit hash.
+  Use this skill whenever the user wants to build RenderDoc Python modules, compile
+  renderdoc.pyd or qrenderdoc.pyd, build pyrenderdoc_module/qrenderdoc_module, create
+  Python bindings for RenderDoc, or mentions Python 3.13+ compatibility issues with
+  RenderDoc builds. Also trigger when the user asks to rebuild, recompile, or update
+  the RenderDoc Python extensions.
+---
+
 # RenderDoc Python Module Builder
 
-Automates building RenderDoc Python extension modules (.pyd files) for Windows with Visual Studio.
-
-## Description
-
-Builds pyrenderdoc and qrenderdoc Python extension modules for RenderDoc graphics debugging tool. Supports multiple Python versions (3.6-3.13), automatically detects build environment, configures MSBuild parameters, fixes Python 3.13+ compatibility issues, generates detailed build reports, and automatically copies built modules to the python-releases directory for version tracking.
-
-Use this skill when:
-- User needs to build RenderDoc Python modules (renderdoc.pyd, qrenderdoc.pyd)
-- User asks to compile Python extensions for RenderDoc
-- User wants to build pyrenderdoc_module or qrenderdoc_module
-- User needs to create Python bindings for RenderDoc on Windows
-- User mentions building RenderDoc with Python 3.13+ (needs /wd4996 fix)
-
-## Capabilities
-
-- Auto-detects Python environment (version, include dirs, import libraries)
-- Finds MSBuild and Visual Studio installation
-- Configures correct PlatformToolset (v143 for VS2022)
-- Fixes Python 3.13+ deprecation warnings automatically
-- Builds both pyrenderdoc and qrenderdoc modules
-- Copies DLL dependencies (renderdoc.dll, d3dcompiler_47.dll)
-- Tests module imports
-- **Automatically copies built modules to python-releases/ directory**
-  - Organized by Python version and platform (e.g., py3.13-x64/)
-  - Includes README.md with build information
-  - Ready for git version control
-- Generates detailed build report (REPORT.md) with:
-  - Complete environment information
-  - Build tool versions
-  - Module build status and timing
-  - Output file manifest
-  - Test results
+Automates building RenderDoc Python extension modules (.pyd) for Windows with Visual Studio 2022.
 
 ## Requirements
 
+The host machine must have:
 - Windows 10/11
-- Visual Studio 2022 with C++ tools
-- Python 3.6+ (any version)
-- RenderDoc source code
-- MSBuild
+- Visual Studio 2022 with C++ desktop workload and MSBuild
+- Python 3.6+ (the version to build modules for)
+- RenderDoc source code checkout (the project root is the parent of `.claude/`)
 
-## Usage
+## Build Steps
+
+Execute the main build script from the RenderDoc project root:
 
 ```bash
-# Basic usage
-python skill.py
-
-# With options
-python skill.py --python-version 3.13 --config Release --platform x64
+python .claude/skills/renderdoc-python-builder/scripts/skill.py [OPTIONS]
 ```
 
-## Author
+Options:
+- `--python-version VERSION` — e.g. `3.13`. Auto-detected from current interpreter if omitted.
+- `--config CONFIG` — `Development` (default) or `Release`.
+- `--platform PLATFORM` — `x64` (default) or `x86`.
 
-RenderDoc Python Modules Team
+The script performs these steps in order:
 
-## Version
+1. **Detect environment** — Python version, include dirs, import libs, MSBuild path, VS installation, Windows SDK, RenderDoc version, and git commit hash.
+2. **Fix project files** — patches `.vcxproj` files with `/wd4996` to suppress Python 3.13+ deprecation warnings.
+3. **Clean artifacts** — removes previous `.pyd` and object files.
+4. **Build modules** — runs MSBuild for `pyrenderdoc_module` then `qrenderdoc_module`.
+5. **Copy dependencies** — copies `renderdoc.dll` and verifies `d3dcompiler_47.dll`.
+6. **Test imports** — imports `renderdoc` and `qrenderdoc` to verify the modules load.
+7. **Copy to releases** — copies all built files to `python-releases/v{RD_VER}_py{PY_VER}_{PLATFORM}/` with README, type stubs, and a per-release REPORT.md.
+8. **Generate report** — writes a `REPORT.md` at the project root with full build details including git commit hash.
 
-1.1.0
+## Output
 
-## Files
+- **Build output**: `{platform}/{config}/pymodules/` (e.g. `x64/Development/pymodules/`)
+- **Release directory**: `python-releases/v{RD_VER}_py{PY_VER}_{PLATFORM}/`
+- **Build report**: `REPORT.md` at project root and inside the release directory
 
-- `skill.py` - Main builder script
-- `test_modules.py` - Module testing utility
-- `SKILL.md` - This file
+The report includes: environment info, build tool versions, git commit hash, module build status and timing, output file manifest, and test results.
+
+## Bundled Files
+
+- `scripts/skill.py` — main builder script (run this)
+- `scripts/test_modules.py` — standalone module test utility
+- `scripts/test_report_generation.py` — tests report generation with simulated build
+- `assets/config.example.json` — example configuration schema
