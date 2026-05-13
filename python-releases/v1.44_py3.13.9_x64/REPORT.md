@@ -1,6 +1,6 @@
 # Build Report - v1.44_py3.13.9_x64
 
-**Generated**: 2026-05-13 17:43:02
+**Generated**: 2026-05-13 22:20:00
 **Build Duration**: 249.6 seconds
 
 ---
@@ -13,8 +13,8 @@
 | **RenderDoc Version** | 1.44 |
 | **Python Version** | 3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:09:58) [MSC v.1929 64 bit (AMD64)] |
 | **Platform** | x64 |
-| **Build Configuration** | Release |
-| **Total Size** | 49.8 MB |
+| **Build Configuration** | Development |
+| **Total Size** | 130.8 MB |
 | **File Count** | 10 |
 | **Git Commit** | `050034a0faa37d606ce1b8cf677dba4bc36984ea` |
 
@@ -59,18 +59,18 @@
 
 #### Python Modules
 
-- `qrenderdoc.pyd` (7.2 MB)
-- `renderdoc.pyd` (5.5 MB)
+- `qrenderdoc.pyd` (8.4 MB)
+- `renderdoc.pyd` (7.2 MB)
 
 #### Runtime Dependencies
 
 - `d3dcompiler_47.dll` (4.5 MB)
-- `renderdoc.dll` (23.8 MB)
+- `renderdoc.dll` (72.8 MB)
 
 #### Debug Symbols
 
-- `qrenderdoc.pdb` (4.6 MB)
-- `renderdoc.pdb` (4.0 MB)
+- `qrenderdoc.pdb` (20.7 MB)
+- `renderdoc.pdb` (18.0 MB)
 
 #### Import Libraries & Export Files
 
@@ -100,7 +100,7 @@
 # Build pyrenderdoc_module
 D:\Program Files\Microsoft VisualStudio\VisualStudio 2026\MSBuild\Current\Bin\MSBuild.exe \
     qrenderdoc\Code\pyrenderdoc\pyrenderdoc_module.vcxproj \
-    -p:Configuration=Release \
+    -p:Configuration=Development \
     -p:Platform=x64 \
     -p:SolutionDir=D:\Projects\renderdoc_pythonmodules\ \
     -p:PlatformToolset=v145 \
@@ -110,7 +110,7 @@ D:\Program Files\Microsoft VisualStudio\VisualStudio 2026\MSBuild\Current\Bin\MS
 # Build qrenderdoc_module
 D:\Program Files\Microsoft VisualStudio\VisualStudio 2026\MSBuild\Current\Bin\MSBuild.exe \
     qrenderdoc\Code\pyrenderdoc\qrenderdoc_module.vcxproj \
-    -p:Configuration=Release \
+    -p:Configuration=Development \
     -p:Platform=x64 \
     -p:SolutionDir=D:\Projects\renderdoc_pythonmodules\ \
     -p:PlatformToolset=v145 \
@@ -120,7 +120,7 @@ D:\Program Files\Microsoft VisualStudio\VisualStudio 2026\MSBuild\Current\Bin\MS
 
 ### Project Configuration
 - **Source Directory**: `D:\Projects\renderdoc_pythonmodules`
-- **Output Directory**: `x64\Release\pymodules`
+- **Output Directory**: `x64\Development\pymodules`
 - **Release Directory**: `python-releases/v1.44_py3.13.9_x64/`
 
 ---
