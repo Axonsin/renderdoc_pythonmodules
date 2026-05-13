@@ -9,7 +9,7 @@ Usage:
     python skill.py [--python-version VERSION] [--config CONFIG] [--platform PLATFORM]
 
 Requirements:
-    - Visual Studio 2022 with MSBuild
+    - Visual Studio 2019/2022/2026 with MSBuild
     - Python 3.x installed
     - RenderDoc source code
 """
@@ -81,7 +81,17 @@ class RenderDocPyBuilder:
         tools = self.cfg["tools"]
         self.vswhere_path = Path(tools["vswhere_path"])
         self.windows_kits_root = Path(tools["windows_kits_root"])
-        self.platform_toolset = tools["platform_toolset"]
+
+        # MSBuild information (must come before toolset auto-detect)
+        self.msbuild_path = self._find_msbuild()
+        self.msbuild_version = self._get_msbuild_version()
+
+        # Auto-detect platform toolset if set to "auto"
+        raw_toolset = tools.get("platform_toolset", "auto")
+        if raw_toolset == "auto":
+            self.platform_toolset = self._detect_platform_toolset()
+        else:
+            self.platform_toolset = raw_toolset
 
         # Detect Python environment
         self.python_exe = Path(sys.executable)
@@ -94,15 +104,18 @@ class RenderDocPyBuilder:
         # Find Python import library
         self.python_import_lib = self._find_python_lib()
 
-        # MSBuild information
-        self.msbuild_path = self._find_msbuild()
-        self.msbuild_version = self._get_msbuild_version()
-
         # Visual Studio information
         self.vs_info = self._get_visual_studio_info()
 
         # System information
         self.system_info = self._get_system_info()
+
+        # Project paths from config
+        proj = self.cfg["project"]
+        self.pyrenderdoc_project = self.project_root / proj["vcxproj_paths"]["pyrenderdoc"]
+        self.qrenderdoc_project = self.project_root / proj["vcxproj_paths"]["qrenderdoc"]
+        self.version_header = self.project_root / proj["version_header"]
+        self.stubs_script = self.project_root / proj["stubs_script"]
 
         # RenderDoc version
         self.renderdoc_version = self._get_renderdoc_version()
@@ -112,13 +125,6 @@ class RenderDocPyBuilder:
 
         # Windows SDK version
         self.windows_sdk_version = self._get_windows_sdk_version()
-
-        # Project paths from config
-        proj = self.cfg["project"]
-        self.pyrenderdoc_project = self.project_root / proj["vcxproj_paths"]["pyrenderdoc"]
-        self.qrenderdoc_project = self.project_root / proj["vcxproj_paths"]["qrenderdoc"]
-        self.version_header = self.project_root / proj["version_header"]
-        self.stubs_script = self.project_root / proj["stubs_script"]
 
         # Dependency names from config
         self.required_dlls = self.cfg["dependencies"]["required_dlls"]
@@ -152,12 +158,43 @@ class RenderDocPyBuilder:
         vi = sys.version_info
         return f"{vi.major}.{vi.minor}"
 
+    def _detect_platform_toolset(self):
+        """Auto-detect the platform toolset from the VS installation."""
+        try:
+            msbuild_dir = self.msbuild_path.parent.parent.parent
+            props_dir = msbuild_dir / "Microsoft" / "VC"
+            if not props_dir.exists():
+                raise FileNotFoundError(f"VC props dir not found: {props_dir}")
+
+            def _version_key(d):
+                m = re.match(r'v(\d+)', d.name)
+                return int(m.group(1)) if m else 0
+
+            vc_dirs = sorted(
+                [d for d in props_dir.iterdir() if d.is_dir()],
+                key=_version_key,
+                reverse=True,
+            )
+            for vc_dir in vc_dirs:
+                platform_props = vc_dir / "Platforms" / "x64" / "Platform.Default.props"
+                if platform_props.exists():
+                    content = platform_props.read_text(encoding="utf-8")
+                    match = re.search(r'<DefaultPlatformToolset[^>]*>(\w+)</DefaultPlatformToolset>', content)
+                    if match:
+                        return match.group(1)
+        except Exception as e:
+            print(f"   [!]  Warning: Toolset auto-detection failed ({e})")
+        print("   [!]  Warning: Could not auto-detect platform toolset, falling back to v143")
+        return "v143"
+
     def _get_python_full_version(self):
         """Get full Python version string."""
         result = subprocess.run(
             [str(self.python_exe), "-c", "import sys; print(sys.version)"],
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             check=True,
         )
         return result.stdout.strip()
@@ -169,6 +206,8 @@ class RenderDocPyBuilder:
                 [str(self.msbuild_path), "-version", "-nologo"],
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 check=True,
             )
             match = re.search(r'(\d+\.\d+\.\d+\.\d+)', result.stdout)
@@ -190,6 +229,8 @@ class RenderDocPyBuilder:
                 ],
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 check=True,
             )
             lines = result.stdout.strip().split('\n')
@@ -233,6 +274,8 @@ class RenderDocPyBuilder:
                 ["git", "rev-parse", "HEAD"],
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 cwd=str(self.project_root),
                 check=True,
             )
@@ -310,6 +353,8 @@ class RenderDocPyBuilder:
                 ],
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 check=True,
             )
             if result.stdout.strip():
@@ -355,6 +400,41 @@ class RenderDocPyBuilder:
         if modified:
             tree.write(str(project_path), encoding="utf-8", xml_declaration=True)
 
+    def _build_breakpad_dependencies(self):
+        """Build breakpad libraries required by renderdoc.dll in Release config."""
+        breakpad_projects = self.cfg["project"].get("breakpad_projects", [])
+        if not breakpad_projects:
+            return True
+
+        print("\n🔧 Building breakpad dependencies...")
+        all_ok = True
+        for rel_path in breakpad_projects:
+            project_path = self.project_root / rel_path
+            if not project_path.exists():
+                print(f"   [!]  Warning: {rel_path} not found, skipping")
+                continue
+
+            cmd = [
+                str(self.msbuild_path),
+                str(project_path),
+                f"-p:Configuration={self.config}",
+                f"-p:Platform={self.platform}",
+                f"-p:SolutionDir={self.project_root}\\",
+                f"-p:PlatformToolset={self.platform_toolset}",
+                "-v:minimal",
+            ]
+
+            result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+
+            if result.returncode == 0:
+                print(f"   [+] {project_path.name}")
+            else:
+                print(f"   [-] {project_path.name} failed")
+                print(f"      {result.stderr[-500:]}")
+                all_ok = False
+
+        return all_ok
+
     def clean_build_artifacts(self):
         """Clean previous build artifacts."""
         print("\n🧹 Cleaning build artifacts...")
@@ -391,7 +471,7 @@ class RenderDocPyBuilder:
             "-v:minimal",
         ]
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
         build_end = datetime.datetime.now()
         build_duration = (build_end - build_start).total_seconds()
 
@@ -409,7 +489,7 @@ class RenderDocPyBuilder:
         else:
             print(f"   [-] {module_name} build failed")
             print("\n--- Error Output ---")
-            print(result.stderr[-1000:])
+            print(result.stderr[-3000:])
             return False
 
     def copy_dependencies(self):
@@ -720,6 +800,8 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
                 [str(self.python_exe), str(self.stubs_script), str(stubs_output_dir)],
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 cwd=self.stubs_script.parent,
                 timeout=120,
             )
@@ -982,6 +1064,9 @@ The build process automatically modifies project files to ignore Python 3.13+ de
 
         # Step 2: Clean
         self.clean_build_artifacts()
+
+        # Step 2.5: Build breakpad dependencies (needed for Release linker)
+        self._build_breakpad_dependencies()
 
         # Step 3: Build pyrenderdoc_module
         success = self.build_module(self.pyrenderdoc_project, "pyrenderdoc_module")
