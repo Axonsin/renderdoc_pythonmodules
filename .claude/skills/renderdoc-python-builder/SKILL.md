@@ -51,6 +51,8 @@ Options:
 - `--python-version VERSION` — e.g. `3.13`. Auto-detected from `sys.version_info` if omitted.
 - `--config CONFIG` — `Development` (default) or `Release`.
 - `--platform PLATFORM` — `x64` (default) or `x86`.
+- `--project-root PATH` — explicit RenderDoc source checkout path. Auto-detected if omitted.
+- `--strict-stubs` — fail the build if `renderdoc` and `qrenderdoc` stubs are not generated.
 
 The script performs these steps in order:
 
@@ -65,6 +67,20 @@ The script performs these steps in order:
 9. **Test imports** — imports `renderdoc` and `qrenderdoc` to verify the modules load.
 10. **Copy to releases** — copies all built files to `python-releases/v{RD_VER}_py{PY_VER}_{PLATFORM}/` with README, type stubs, and REPORT.md.
 11. **Generate report** — writes a `REPORT.md` at the project root with full build details.
+
+## GitHub Actions Usage
+
+For CI builds where the skill lives outside the RenderDoc checkout, pass the checkout path explicitly:
+
+```bash
+python .claude/skills/renderdoc-python-builder/scripts/skill.py \
+  --project-root path/to/renderdoc-src \
+  --config Release \
+  --platform x64 \
+  --strict-stubs
+```
+
+The stubs step prepends the built `pymodules` directory to `PYTHONPATH` and `PATH` before running RenderDoc's `docs/regenerate_stubs.py`, so each release directory gets stubs generated from its own freshly built modules.
 
 ## Output
 

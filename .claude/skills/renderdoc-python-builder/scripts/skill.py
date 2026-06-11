@@ -16,6 +16,7 @@ Requirements:
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import shutil
@@ -41,14 +42,26 @@ def load_config():
         return json.load(f)
 
 
-def find_project_root(config):
+def _validate_project_root(config, project_root):
+    """Validate a RenderDoc project root using the configured marker file."""
+    marker = config["project"]["root_marker"]
+    root = Path(project_root).resolve()
+    if not (root / marker).exists():
+        raise FileNotFoundError(
+            f"Invalid RenderDoc project root: {root}. "
+            f"Expected marker file: {marker}"
+        )
+    return root
+
+
+def find_project_root(config, start_dir=None):
     """Find RenderDoc project root by searching upward for a marker file.
 
     This replaces the fragile N-level .parent chain with a marker-based search
     that works regardless of how deeply the skill directory is nested.
     """
     marker = config["project"]["root_marker"]
-    current = SKILL_DIR
+    current = Path(start_dir or SKILL_DIR).resolve()
     for _ in range(20):  # Safety limit
         candidate = current / marker
         if candidate.exists():
@@ -66,15 +79,26 @@ def find_project_root(config):
 class RenderDocPyBuilder:
     """Build RenderDoc Python modules for a specific Python version."""
 
-    def __init__(self, python_version=None, config="Development", platform_arch="x64"):
+    def __init__(
+        self,
+        python_version=None,
+        config="Development",
+        platform_arch="x64",
+        project_root=None,
+        strict_stubs=False,
+    ):
         # Load configuration
         self.cfg = load_config()
 
-        # Resolve project root dynamically via marker file
-        self.project_root = find_project_root(self.cfg)
+        # Resolve project root dynamically or use an explicit CI checkout path.
+        if project_root:
+            self.project_root = _validate_project_root(self.cfg, project_root)
+        else:
+            self.project_root = find_project_root(self.cfg)
 
         self.config = config
         self.platform = platform_arch
+        self.strict_stubs = strict_stubs
         self.build_start_time = datetime.datetime.now()
 
         # Tool paths from config
@@ -151,6 +175,7 @@ class RenderDocPyBuilder:
         print(f"    Platform Toolset: {self.platform_toolset}")
         print(f"    Windows SDK: {self.windows_sdk_version}")
         print(f"    Configuration: {self.config} | {self.platform}")
+        print(f"    Strict stubs: {self.strict_stubs}")
         print(f"    Git Commit: {self.git_commit_hash[:12]}")
 
     def _detect_python_version(self):
@@ -790,10 +815,20 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
         print("\n[+] Generating Python type stubs...")
 
         if not self.stubs_script.exists():
-            print(f"   [!]  Warning: Stubs generation script not found at {self.stubs_script}")
-            return
+            message = f"Stubs generation script not found at {self.stubs_script}"
+            if self.strict_stubs:
+                raise FileNotFoundError(message)
+            print(f"   [!]  Warning: {message}")
+            return False
 
         stubs_output_dir = release_dir / "stubs"
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.pathsep.join(
+            [str(self.output_dir), env["PYTHONPATH"]]
+            if env.get("PYTHONPATH")
+            else [str(self.output_dir)]
+        )
+        env["PATH"] = os.pathsep.join([str(self.output_dir), env.get("PATH", "")])
 
         try:
             result = subprocess.run(
@@ -803,6 +838,7 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
                 encoding="utf-8",
                 errors="replace",
                 cwd=self.stubs_script.parent,
+                env=env,
                 timeout=120,
             )
 
@@ -821,14 +857,34 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
                     "total_count": total_stubs,
                     "output_dir": str(stubs_output_dir.relative_to(self.project_root)),
                 }
+                if self.strict_stubs and (not renderdoc_stubs or not qrenderdoc_stubs):
+                    raise RuntimeError(
+                        "Stubs generation completed but did not produce both "
+                        "renderdoc and qrenderdoc stub files"
+                    )
+                return True
             else:
-                print(f"   [!]  Stubs generation failed:")
-                print(f"      {result.stderr}")
+                message = (
+                    f"Stubs generation failed with exit code {result.returncode}\n"
+                    f"stdout:\n{result.stdout}\n"
+                    f"stderr:\n{result.stderr}"
+                )
+                if self.strict_stubs:
+                    raise RuntimeError(message)
+                print(f"   [!]  {message}")
+                return False
 
         except subprocess.TimeoutExpired:
-            print(f"   [!]  Stubs generation timed out after 2 minutes")
+            message = "Stubs generation timed out after 2 minutes"
+            if self.strict_stubs:
+                raise RuntimeError(message)
+            print(f"   [!]  {message}")
+            return False
         except Exception as e:
+            if self.strict_stubs:
+                raise
             print(f"   [!]  Error generating stubs: {e}")
+            return False
 
     def test_modules(self):
         """Test if modules can be imported."""
@@ -1138,6 +1194,15 @@ def main():
         choices=["x64", "x86"],
         help="Target platform (default: x64)",
     )
+    parser.add_argument(
+        "--project-root",
+        help="Path to the RenderDoc source checkout. Auto-detected if omitted.",
+    )
+    parser.add_argument(
+        "--strict-stubs",
+        action="store_true",
+        help="Fail the build if per-version renderdoc/qrenderdoc stubs are not generated.",
+    )
 
     args = parser.parse_args()
 
@@ -1146,6 +1211,8 @@ def main():
             python_version=args.python_version,
             config=args.config,
             platform_arch=args.platform,
+            project_root=args.project_root,
+            strict_stubs=args.strict_stubs,
         )
         success = builder.build()
         sys.exit(0 if success else 1)
