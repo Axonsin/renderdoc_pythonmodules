@@ -16,6 +16,8 @@ env:
   BUILD_CONFIG: Release
   BUILD_PLATFORM: x64
   MIN_RENDERDOC_MINOR: "42"
+  PYTHONIOENCODING: utf-8
+  PYTHONUTF8: "1"
   PYTHON_MINOR: "3.13"
   RENDERDOC_REPO_URL: https://github.com/baldurk/renderdoc.git
 
