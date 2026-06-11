@@ -115,12 +115,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view "${{ matrix.release_tag }}" *> $null
+          gh release view "${{ matrix.release_tag }}" --repo "$env:GITHUB_REPOSITORY" *> $null
           if ($LASTEXITCODE -ne 0) {
             $notes = "Built from baldurk/renderdoc ${{ matrix.renderdoc_tag }}`nPython: $env:PYTHON_MINOR`nPlatform: $env:BUILD_PLATFORM`nVerified version: ${{ steps.verify.outputs.version_string }}"
             gh release create "${{ matrix.release_tag }}" `
               --title "RenderDoc Python Modules ${{ matrix.renderdoc_tag }}" `
               --notes $notes `
-              --target "${{ github.sha }}"
+              --target "${{ github.sha }}" `
+              --repo "$env:GITHUB_REPOSITORY"
           }
-          gh release upload "${{ matrix.release_tag }}" "${{ steps.package.outputs.asset_path }}" --clobber
+          gh release upload "${{ matrix.release_tag }}" "${{ steps.package.outputs.asset_path }}" --clobber --repo "$env:GITHUB_REPOSITORY"
