@@ -657,6 +657,25 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
         print(f"\n   Release directory: {release_dir.relative_to(self.project_root)}")
         return release_dir
 
+    def _mirror_pymodules_for_stubs(self, target_dir):
+        """Mirror built modules into RenderDoc stub-script compatibility paths."""
+        target_dir = Path(target_dir)
+        target_dir.mkdir(parents=True, exist_ok=True)
+        for src_file in self.output_dir.iterdir():
+            if src_file.is_file():
+                shutil.copy2(src_file, target_dir / src_file.name)
+
+    def _prepare_stub_compatibility_paths(self):
+        """Create paths expected by RenderDoc's historical regenerate_stubs.py scripts."""
+        candidates = [
+            self.project_root / self.platform / "Release" / "pymodules",
+            self.project_root / self.platform / "Development" / "pymodules",
+            self.project_root / f"{self.platform}Release" / "pymodules",
+            self.project_root / f"{self.platform}Development" / "pymodules",
+        ]
+        for candidate in candidates:
+            self._mirror_pymodules_for_stubs(candidate)
+
     def _generate_release_report(self, release_dir, release_dir_name, rd_version_str, copied_files):
         """Generate a detailed REPORT.md for the release directory."""
 
@@ -822,6 +841,7 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
             return False
 
         stubs_output_dir = release_dir / "stubs"
+        self._prepare_stub_compatibility_paths()
         env = os.environ.copy()
         env["PYTHONPATH"] = os.pathsep.join(
             [str(self.output_dir), env["PYTHONPATH"]]
