@@ -663,7 +663,10 @@ For build scripts and configuration, see the parent project's `.claude/skills/re
         target_dir.mkdir(parents=True, exist_ok=True)
         for src_file in self.output_dir.iterdir():
             if src_file.is_file():
-                shutil.copy2(src_file, target_dir / src_file.name)
+                dest_file = target_dir / src_file.name
+                if src_file.resolve() == dest_file.resolve():
+                    continue
+                shutil.copy2(src_file, dest_file)
 
     def _prepare_stub_compatibility_paths(self):
         """Create paths expected by RenderDoc's historical regenerate_stubs.py scripts."""
