@@ -292,7 +292,7 @@ DECLARE_REFLECTION_STRUCT(BugReport);
       "A :class:`ReplayOptions` containing the configured default replay options to use in most "  \
       "scenarios when no specific options are given.\n"                                            \
       "\n:"                                                                                        \
-      "type: renderdoc.ReplayOptions");                                                            \
+      "type: renderdoc.ReplayOptions");                                                             \
   CONFIG_SETTING(public, QVariant, ReplayOptions, DefaultReplayOptions)                            \
                                                                                                    \
   DOCUMENT(                                                                                        \

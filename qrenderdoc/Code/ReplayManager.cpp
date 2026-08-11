@@ -466,7 +466,7 @@ void ReplayManager::run(int proxyRenderer, const QString &capturefile, const Rep
     return;
   }
 
-  qInfo() << "QRenderDoc - renderer created for" << capturefile;
+  qInfo() << "QRenderDic - renderer created for" << capturefile;
 
   m_Running = true;
 

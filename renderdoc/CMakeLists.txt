@@ -658,6 +658,8 @@ if(APPLE)
     set_target_properties(renderdoc PROPERTIES BUILD_WITH_INSTALL_NAME_DIR TRUE)
 endif()
 
+set_target_properties(renderdoc PROPERTIES OUTPUT_NAME "${RDOC_BASE_NAME}")
+
 if(INTERNAL_SELF_CAPTURE)
     set_target_properties(renderdoc PROPERTIES OUTPUT_NAME "rdocself")
 endif()

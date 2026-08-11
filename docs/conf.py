@@ -243,7 +243,7 @@ html_domain_indices = False
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'renderdoc'
+htmlhelp_basename = 'renderdic'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -295,7 +295,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'renderdoc', 'RenderDoc Documentation',
+    (master_doc, 'renderdic', 'RenderDic Documentation',
      [author], 1)
 ]
 

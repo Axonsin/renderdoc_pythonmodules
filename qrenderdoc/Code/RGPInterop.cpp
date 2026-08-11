@@ -160,7 +160,7 @@ void RGPInterop::InitializeRGP()
   RGPInteropInit init;
 
   init.interop_version = 1;
-  init.interop_name = lit("RenderDoc");
+  init.interop_name = lit("RenderDic");
 
   QString encoded = EncodeCommand(RGPCommand::Initialize, init.toParams(m_Version));
 
