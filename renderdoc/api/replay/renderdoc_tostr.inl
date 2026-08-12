@@ -22,6 +22,15 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
+// This generated stringisation implementation is also compiled by the standalone Python and Qt
+// module projects, which deliberately do not include renderdoc/common/globalconfig.h. Keep its
+// product name self-contained while preserving the upstream name on non-Windows platforms.
+#if defined(_WIN32)
+#define RDOC_TOSTR_PRODUCT_NAME "RenderDic"
+#else
+#define RDOC_TOSTR_PRODUCT_NAME "RenderDoc"
+#endif
+
 template <>
 rdcstr DoStringise(const SDBasic &el)
 {
@@ -52,16 +61,18 @@ rdcstr DoStringise(const ResultCode &el)
     STRINGISE_ENUM_CLASS_NAMED(UnknownError, "Unknown error");
     STRINGISE_ENUM_CLASS_NAMED(InternalError, "Internal error");
     STRINGISE_ENUM_CLASS_NAMED(FileNotFound, "File not found");
-    STRINGISE_ENUM_CLASS_NAMED(InjectionFailed, "RenderDoc injection failed");
+    STRINGISE_ENUM_CLASS_NAMED(InjectionFailed, RDOC_TOSTR_PRODUCT_NAME " injection failed");
     STRINGISE_ENUM_CLASS_NAMED(IncompatibleProcess,
-                               "Process is incompatible with this build of RenderDoc");
+                               "Process is incompatible with this build of "
+                               RDOC_TOSTR_PRODUCT_NAME);
     STRINGISE_ENUM_CLASS_NAMED(NetworkIOFailed, "Network I/O operation failed");
     STRINGISE_ENUM_CLASS_NAMED(NetworkRemoteBusy, "Remote side of network connection is busy");
     STRINGISE_ENUM_CLASS_NAMED(NetworkVersionMismatch, "Incompatible version");
     STRINGISE_ENUM_CLASS_NAMED(FileIOFailed, "File I/O failed");
     STRINGISE_ENUM_CLASS_NAMED(
         FileIncompatibleVersion,
-        "Capture file incompatible due to being made on an different major version of RenderDoc");
+        "Capture file incompatible due to being made on an different major version of "
+        RDOC_TOSTR_PRODUCT_NAME);
     STRINGISE_ENUM_CLASS_NAMED(FileCorrupted, "File is corrupted");
     STRINGISE_ENUM_CLASS_NAMED(FileUnrecognised, "File format is unrecognised");
     STRINGISE_ENUM_CLASS_NAMED(
@@ -71,7 +82,7 @@ rdcstr DoStringise(const ResultCode &el)
                                "API initialisation failed while loading the capture");
     STRINGISE_ENUM_CLASS_NAMED(
         APIIncompatibleVersion,
-        "Captured API data was made on a newer incompatible version of RenderDoc");
+        "Captured API data was made on a newer incompatible version of " RDOC_TOSTR_PRODUCT_NAME);
     STRINGISE_ENUM_CLASS_NAMED(
         APIHardwareUnsupported,
         "Current replaying hardware unsupported or incompatible with captured hardware");
@@ -95,10 +106,12 @@ rdcstr DoStringise(const ResultCode &el)
     STRINGISE_ENUM_CLASS_NAMED(RemoteServerConnectionLost, "Connection lost to remote server");
     STRINGISE_ENUM_CLASS_NAMED(OutOfMemory, "Encountered an out of memory error");
     STRINGISE_ENUM_CLASS_NAMED(DeviceLost, "Encountered a GPU device lost error");
-    STRINGISE_ENUM_CLASS_NAMED(DataNotAvailable,
-                               "Data was requested through RenderDoc's API which is not available");
+    STRINGISE_ENUM_CLASS_NAMED(
+        DataNotAvailable,
+        "Data was requested through " RDOC_TOSTR_PRODUCT_NAME "'s API which is not available");
     STRINGISE_ENUM_CLASS_NAMED(InvalidParameter,
-                               "An invalid parameter was passed to RenderDoc's API");
+                               "An invalid parameter was passed to " RDOC_TOSTR_PRODUCT_NAME
+                               "'s API");
     STRINGISE_ENUM_CLASS_NAMED(CompressionFailed, "Compression or decompression failed");
     STRINGISE_ENUM_CLASS_NAMED(AndroidLayerConfFailed,
                                "Debug layer configuration failed on Android");
@@ -1321,3 +1334,5 @@ rdcstr DoStringise(const ShaderStageMask &el)
   }
   END_BITFIELD_STRINGISE();
 }
+
+#undef RDOC_TOSTR_PRODUCT_NAME

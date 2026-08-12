@@ -891,7 +891,7 @@ propagated and will not be forgotten in the case of crash or otherwise unexpecte
   DOCUMENT(R"(Closes the config file so that subsequent calls to Save() will not write to disk at
 the file the config was loaded from.
 
-This function is rarely directly used, except in the case where RenderDoc is relaunching itself and
+This function is rarely directly used, except in the case where RenderDic is relaunching itself and
 wants to avoid file locking conflicts between the closing instance saving, and the loading instance
 loading. It can explicitly save and close before relaunching.
 )");

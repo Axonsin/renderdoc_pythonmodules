@@ -4511,8 +4511,8 @@ RDResult D3D12_CreateReplayDevice(RDCFile *rdc, const ReplayOptions &opts, IRepl
       if(D3D12Lib)
       {
         RDCWARN(
-            "Loaded d3d12.dll from 12on7 subfolder."
-            "Please use RenderDoc's plugins/d3d12/ subfolder instead");
+            "Loaded d3d12.dll from 12on7 subfolder. "
+            "Please use " RDOC_PRODUCT_NAME "'s plugins/d3d12/ subfolder instead");
       }
       else
       {
@@ -4568,7 +4568,7 @@ RDResult D3D12_CreateReplayDevice(RDCFile *rdc, const ReplayOptions &opts, IRepl
     {
       RETURN_ERROR_RESULT(ResultCode::APIIncompatibleVersion,
                           "D3D12 capture is incompatible version %llu, newest supported by this "
-                          "build of RenderDoc is %llu",
+                          "build of " RDOC_PRODUCT_NAME " is %llu",
                           ver, D3D12InitParams::CurrentVersion);
     }
 

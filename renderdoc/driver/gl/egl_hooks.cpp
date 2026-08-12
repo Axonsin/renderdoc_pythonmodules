@@ -1027,14 +1027,14 @@ static void EGLHooked(void *handle, const char *libName)
 
 bool ShouldHookEGL()
 {
-  rdcstr toggle = Process::GetEnvVariable("RENDERDIC_HOOK_EGL");
+  rdcstr toggle = Process::GetEnvVariable(RENDERDOC_EGL_HOOK_VAR);
 
   // if the var is set to 0, then don't hook EGL
   if(toggle.size() >= 1 && toggle[0] == '0')
   {
-    RDCLOG(
-        "EGL hooks disabled by RENDERDIC_HOOK_EGL environment variable - "
-        "if GLES emulator is in use, underlying API will be captured");
+    RDCLOG("EGL hooks disabled by %s environment variable - "
+           "if GLES emulator is in use, underlying API will be captured",
+           RENDERDOC_EGL_HOOK_VAR);
     return false;
   }
 

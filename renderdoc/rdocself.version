@@ -17,7 +17,7 @@
                 execve;
                 execvpe;
                 _exit;
-                VK_LAYER_RENDERDIC_*;
+                VK_LAYER_RENDERDOC_*;
                 RENDERDOC_GetAPI;
                 RDOCSELF_AllocArrayMem;
                 RDOCSELF_FreeArrayMem;

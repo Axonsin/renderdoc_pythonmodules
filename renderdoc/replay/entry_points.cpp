@@ -333,7 +333,8 @@ extern "C" RENDERDOC_API void RENDERDOC_CC RENDERDOC_CreateBugReport(const rdcst
   if(report.empty())
   {
     report = FileIO::GetTempFolderFilename() +
-             StringFormat::sntimef(Timing::GetUTCTime(), "/renderdoc_report_%H%M%S.zip");
+             StringFormat::sntimef(Timing::GetUTCTime(),
+                                   "/" RDOC_PRODUCT_NAME_LOWER "_report_%H%M%S.zip");
   }
 
   FileIO::Delete(report);
@@ -681,7 +682,7 @@ extern "C" RENDERDOC_API void RENDERDOC_CC RENDERDOC_UpdateInstalledVersionNumbe
         Publisher[0] = 0;
 
       // if this is our key, set the version number
-      if(!strcmp(DisplayName, "RenderDoc") && !strcmp(Publisher, "Baldur Karlsson"))
+      if(!strcmp(DisplayName, RDOC_PRODUCT_NAME) && !strcmp(Publisher, "Baldur Karlsson"))
       {
         DWORD Version = (RENDERDOC_VERSION_MAJOR << 24) | (RENDERDOC_VERSION_MINOR << 16);
         DWORD VersionMajor = RENDERDOC_VERSION_MAJOR;

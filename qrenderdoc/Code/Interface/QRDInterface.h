@@ -167,7 +167,7 @@ struct IMainWindow
   typedef std::function<void(QWidget *focusWidget)> ShortcutCallback;
 
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`MainWindow` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -291,7 +291,7 @@ struct IEventBrowser
       AutoCompleteCallback;
 
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`EventBrowser` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -480,7 +480,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetAPIInspector`.
 struct IAPIInspector
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`APIInspector` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -511,7 +511,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetAnnotationViewer`.
 struct IAnnotationViewer
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`AnnotationViewer` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -636,7 +636,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetPipelineViewer`.
 struct IPipelineStateViewer
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`PipelineStateViewer` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -707,7 +707,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetTextureViewer`.
 struct ITextureViewer
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`TextureViewer` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -860,7 +860,7 @@ A raw buffer viewer can be opened by calling :meth:`CaptureContext.ViewBuffer`,
 struct IBufferViewer
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`BufferViewer` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -923,7 +923,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetResourceInspector`.
 struct IResourceInspector
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`ResourceInspector` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -964,7 +964,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetCaptureDialog`.
 struct ICaptureDialog
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`CaptureDialog` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1056,7 +1056,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetDebugMessageView`.
 struct IDebugMessageView
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`DebugMessageView` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1078,7 +1078,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetDiagnosticLogView`.
 struct IDiagnosticLogView
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`DiagnosticLogView` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1100,7 +1100,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetCommentView`.
 struct ICommentView
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`CommentView` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1135,7 +1135,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetStatisticsViewer`.
 struct IStatisticsViewer
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`StatisticsViewer` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1155,7 +1155,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetTimelineBar`.
 struct ITimelineBar
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`TimelineBar` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1190,7 +1190,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetPerformanceCounterV
 struct IPerformanceCounterViewer
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`PerformanceCounterViewer` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1215,7 +1215,7 @@ This window is retrieved by calling :meth:`CaptureContext.GetPythonShell`.
 struct IPythonShell
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`PythonShell` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1294,7 +1294,7 @@ struct IShaderViewer
   typedef std::function<void(ICaptureContext *, IShaderViewer *, ResourceId)> RevertCallback;
 
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`ShaderViewer` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1366,7 +1366,7 @@ This window is retrieved by calling :meth:`CaptureContext.ViewShaderMessages`.
 struct IShaderMessageViewer
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`ShaderMessageViewer` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1410,7 +1410,7 @@ This window is retrieved by calling :meth:`CaptureContext.ViewDescriptorStore` o
 struct IDescriptorViewer
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`DescriptorViewer` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -1432,7 +1432,7 @@ This window is retrieved by calling :meth:`CaptureContext.ViewPixelHistory`.
 struct IPixelHistoryView
 {
   DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`PixelHistoryView` if PySide2 is available, or otherwise
-returns a unique opaque pointer that can be passed back to any RenderDoc functions expecting a
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
 QWidget.
 
 :return: Return the widget handle, either a PySide2 handle or an opaque handle.
@@ -2034,7 +2034,7 @@ See :meth:`ReplaceResource`.
   //////////////////////////////////////////////////////////////////////////////
   // Accessors
 
-  DOCUMENT(R"(Retrieve the replay manager for access to the internal RenderDoc replay controller.
+  DOCUMENT(R"(Retrieve the replay manager for access to the internal RenderDic replay controller.
 
 :return: The current replay manager.
 :rtype: ReplayManager

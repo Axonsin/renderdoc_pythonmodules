@@ -221,7 +221,7 @@ void GetDefaultFiles(const rdcstr &logBaseName, rdcstr &capture_filename, rdcstr
 
   strcpy(temp_folder, GetTempRootPath().c_str());
 
-  rdcstr temp_override = Process::GetEnvVariable("RENDERDIC_TEMP");
+  rdcstr temp_override = Process::GetEnvVariable("RENDERDOC_TEMP");
   if(!temp_override.empty() && temp_override[0] == '/')
   {
     strncpy(temp_folder, temp_override.c_str(), sizeof(temp_folder) - 1);
@@ -235,7 +235,7 @@ void GetDefaultFiles(const rdcstr &logBaseName, rdcstr &capture_filename, rdcstr
                         1900 + now.tm_year, now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min);
 
   // set by UI when launching programs so all logging goes to the same file
-  rdcstr logfile_override = Process::GetEnvVariable("RENDERDIC_DEBUG_LOG_FILE");
+  rdcstr logfile_override = Process::GetEnvVariable("RENDERDOC_DEBUG_LOG_FILE");
   if(!logfile_override.empty())
     logging_filename = logfile_override;
   else

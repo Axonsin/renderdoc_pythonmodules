@@ -90,7 +90,7 @@ extern "C" RENDERDOC_API int RENDERDOC_CC RENDERDOC_RunUnitTests(const rdcstr &c
 
   Catch::Session session;
 
-  session.configData().name = "RenderDoc";
+  session.configData().name = RDOC_PRODUCT_NAME;
   session.configData().shouldDebugBreak = OSUtility::DebuggerPresent();
 
   const char **argv = new const char *[args.size() + 1];

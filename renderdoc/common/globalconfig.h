@@ -138,6 +138,28 @@
 
 /////////////////////////////////////////////////
 // Global constants
+#if ENABLED(RDOC_WIN32)
+
+#define RDOC_PRODUCT_NAME "RenderDic"
+#define RDOC_PRODUCT_NAME_LOWER "renderdic"
+#define RDOC_CMD_NAME "renderdiccmd"
+
+#define RENDERDOC_VULKAN_LAYER_NAME "VK_LAYER_RENDERDIC_Capture"
+#define RENDERDOC_VULKAN_LAYER_VAR "ENABLE_VULKAN_RENDERDIC_CAPTURE"
+#define RENDERDOC_EGL_HOOK_VAR "RENDERDIC_HOOK_EGL"
+
+#else
+
+#define RDOC_PRODUCT_NAME "RenderDoc"
+#define RDOC_PRODUCT_NAME_LOWER "renderdoc"
+#define RDOC_CMD_NAME "renderdoccmd"
+
+#define RENDERDOC_VULKAN_LAYER_NAME "VK_LAYER_RENDERDOC_Capture"
+#define RENDERDOC_VULKAN_LAYER_VAR "ENABLE_VULKAN_RENDERDOC_CAPTURE"
+#define RENDERDOC_EGL_HOOK_VAR "RENDERDOC_HOOK_EGL"
+
+#endif
+
 enum
 {
   RenderDoc_FirstTargetControlPort = 38920,
@@ -150,9 +172,7 @@ enum
   RenderDoc_ForwardPortStride = 10,
 };
 
-#define RENDERDOC_VULKAN_LAYER_NAME "VK_LAYER_RENDERDIC_Capture"
-#define RENDERDOC_VULKAN_LAYER_VAR "ENABLE_VULKAN_RENDERDIC_CAPTURE"
-
+#define RENDERDOC_ANDROID_VULKAN_LAYER_NAME "VK_LAYER_RENDERDOC_Capture"
 #define RENDERDOC_ANDROID_LIBRARY "libVkLayer_GLES_RenderDoc.so"
 
 // This MUST match the package name in the build process that generates per-architecture packages

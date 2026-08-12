@@ -53,6 +53,23 @@ extern "C" const rdcstr VulkanLayerJSONBasename;
 
 #endif
 
+// Keep the public layer entry points branded per platform. Windows ships the customised RenderDic
+// layer, while Android and other POSIX builds retain the upstream RenderDoc ABI.
+#if DISABLED(RDOC_WIN32)
+#define VK_LAYER_RENDERDIC_CaptureEnumerateDeviceLayerProperties \
+  VK_LAYER_RENDERDOC_CaptureEnumerateDeviceLayerProperties
+#define VK_LAYER_RENDERDIC_CaptureEnumerateDeviceExtensionProperties \
+  VK_LAYER_RENDERDOC_CaptureEnumerateDeviceExtensionProperties
+#define VK_LAYER_RENDERDIC_CaptureEnumerateInstanceExtensionProperties \
+  VK_LAYER_RENDERDOC_CaptureEnumerateInstanceExtensionProperties
+#define VK_LAYER_RENDERDIC_CaptureGetDeviceProcAddr VK_LAYER_RENDERDOC_CaptureGetDeviceProcAddr
+#define VK_LAYER_RENDERDIC_CaptureGetInstanceProcAddr VK_LAYER_RENDERDOC_CaptureGetInstanceProcAddr
+#define VK_LAYER_RENDERDIC_Capture_layerGetPhysicalDeviceProcAddr \
+  VK_LAYER_RENDERDOC_Capture_layerGetPhysicalDeviceProcAddr
+#define VK_LAYER_RENDERDIC_CaptureNegotiateLoaderLayerInterfaceVersion \
+  VK_LAYER_RENDERDOC_CaptureNegotiateLoaderLayerInterfaceVersion
+#endif
+
 #if ENABLED(RDOC_ANDROID)
 #include <dlfcn.h>
 
@@ -77,8 +94,8 @@ void KeepLayerAlive()
     PFN_vkCreateInstance create = (PFN_vkCreateInstance)dlsym(module, "vkCreateInstance");
     VkApplicationInfo app = {
         VK_STRUCTURE_TYPE_APPLICATION_INFO, NULL,
-        "RenderDoc forced instance",        VK_MAKE_VERSION(1, 0, 0),
-        "RenderDoc forced instance",        VK_MAKE_VERSION(1, 0, 0),
+        RDOC_PRODUCT_NAME " forced instance", VK_MAKE_VERSION(1, 0, 0),
+        RDOC_PRODUCT_NAME " forced instance", VK_MAKE_VERSION(1, 0, 0),
         VK_MAKE_VERSION(1, 0, 0),
     };
     VkInstanceCreateInfo info = {
@@ -165,7 +182,7 @@ class VulkanHook : LibraryHook
         EnvironmentModification(EnvMod::Set, EnvSep::NoSep, "DISABLE_LAYER", "1"));
 
     // support self-hosted capture by checking our filename and tweaking the env var we set
-    if(VulkanLayerJSONBasename != "renderdic")
+    if(VulkanLayerJSONBasename != RDOC_PRODUCT_NAME_LOWER)
     {
       Process::RegisterEnvironmentModification(EnvironmentModification(
           EnvMod::Set, EnvSep::NoSep,
@@ -318,6 +335,12 @@ VKAPI_ATTR void VKAPI_CALL hooked_vkDestroyInstance(VkInstance instance, const V
 #pragma comment( \
     linker,      \
     "/EXPORT:VK_LAYER_RENDERDIC_CaptureGetInstanceProcAddr=_VK_LAYER_RENDERDIC_CaptureGetInstanceProcAddr@8")
+#pragma comment( \
+    linker,      \
+    "/EXPORT:VK_LAYER_RENDERDIC_CaptureNegotiateLoaderLayerInterfaceVersion=_VK_LAYER_RENDERDIC_CaptureNegotiateLoaderLayerInterfaceVersion@4")
+#pragma comment( \
+    linker,      \
+    "/EXPORT:VK_LAYER_RENDERDIC_Capture_layerGetPhysicalDeviceProcAddr=_VK_LAYER_RENDERDIC_Capture_layerGetPhysicalDeviceProcAddr@8")
 #endif
 
 extern "C" {
@@ -345,7 +368,7 @@ VK_LAYER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL VK_LAYER_RENDERDIC_CaptureEnumera
         RENDERDOC_VULKAN_LAYER_NAME,
         VK_API_VERSION_1_0,
         VK_MAKE_VERSION(RENDERDOC_VERSION_MAJOR, RENDERDOC_VERSION_MINOR, 0),
-        "Debugging capture layer for RenderDoc",
+        "Debugging capture layer for " RDOC_PRODUCT_NAME,
     };
 
     // set the one layer property

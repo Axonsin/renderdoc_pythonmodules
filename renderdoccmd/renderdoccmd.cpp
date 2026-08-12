@@ -24,6 +24,7 @@
  ******************************************************************************/
 
 #include "renderdoccmd.h"
+#include "../renderdoc/common/globalconfig.h"
 #include <app/renderdoc_app.h>
 #include <replay/version.h>
 #include <string>
@@ -136,7 +137,7 @@ struct VersionCommand : public Command
   virtual bool Parse(cmdline::parser &, GlobalEnvironment &) { return true; }
   virtual int Execute(const CaptureOptions &)
   {
-    std::cout << "renderdiccmd " << (sizeof(uintptr_t) == sizeof(uint64_t) ? "x64" : "x86")
+    std::cout << RDOC_CMD_NAME " " << (sizeof(uintptr_t) == sizeof(uint64_t) ? "x64" : "x86")
               << " v" MAJOR_MINOR_VERSION_STRING << " built from " << RENDERDOC_GetCommitHash()
               << std::endl;
 
@@ -291,7 +292,10 @@ public:
   {
     parser.add<uint32_t>("PID", 0, "The process ID of the process to inject.", true);
   }
-  virtual const char *Description() { return "Injects RenderDoc into a given running process."; }
+  virtual const char *Description()
+  {
+    return "Injects " RDOC_PRODUCT_NAME " into a given running process.";
+  }
   virtual bool IsInternalOnly() { return false; }
   virtual bool IsCaptureCommand() { return true; }
   virtual bool Parse(cmdline::parser &parser, GlobalEnvironment &)
@@ -470,7 +474,9 @@ public:
     parser.add("preview", 'v', "Display a preview window when a replay is active.");
     parser.add<uint32_t>(
         "port", 'p',
-        "The port to listen on. Default is 0, which listens on RenderDoc's default port.", false, 0);
+        "The port to listen on. Default is 0, which listens on " RDOC_PRODUCT_NAME
+        "'s default port.",
+        false, 0);
   }
   virtual const char *Description()
   {
@@ -589,8 +595,8 @@ public:
       {
         std::cerr << "Error: " << result.Message() << " - Couldn't connect to " << remote_host
                   << "." << std::endl;
-        std::cerr << "       Have you run renderdiccmd remoteserver on '" << remote_host << "'?"
-                  << std::endl;
+        std::cerr << "       Have you run " RDOC_CMD_NAME " remoteserver on '" << remote_host
+                  << "'?" << std::endl;
         return 1;
       }
 
@@ -897,7 +903,7 @@ public:
   virtual int Execute(const CaptureOptions &)
   {
     if(mode == "unit")
-      return RENDERDOC_RunUnitTests("renderdiccmd test unit", args);
+      return RENDERDOC_RunUnitTests(RDOC_CMD_NAME " test unit", args);
 #if PYTHON_AVAILABLE == 1
     else if(mode == "functional")
       return RENDERDOC_RunFunctionalTests(args);
@@ -1284,7 +1290,7 @@ public:
   {
     parser.add("explain", '\0',
                "Explain what the status of the layer registration is, and how it can be resolved");
-    parser.add("register", '\0', "Register RenderDoc's vulkan layer");
+    parser.add("register", '\0', "Register " RDOC_PRODUCT_NAME "'s vulkan layer");
     parser.add("user", '\0',
                "Install layer registration at user-local level instead of system-wide");
     parser.add("system", '\0', "Install layer registration system-wide (requires admin privileges)");
@@ -1316,9 +1322,11 @@ public:
         {
           std::cerr << "** There is an unfixable problem with your vulkan layer configuration.\n\n"
                        "This is most commonly caused by having a distribution-provided package of "
-                       "RenderDoc "
-                       "installed, which cannot be modified by another build of RenderDoc.\n\n"
-                       "Please consult the RenderDoc documentation, or package/distribution "
+                       RDOC_PRODUCT_NAME " "
+                       "installed, which cannot be modified by another build of "
+                       RDOC_PRODUCT_NAME ".\n\n"
+                       "Please consult the " RDOC_PRODUCT_NAME
+                       " documentation, or package/distribution "
                        "documentation on "
                        "linux."
                     << std::endl;
@@ -1341,10 +1349,12 @@ public:
         std::cerr << std::endl;
 
         if(m_Info.flags & VulkanLayerFlags::OtherInstallsRegistered)
-          std::cerr << " - Non-matching RenderDoc layer(s) are registered." << std::endl;
+          std::cerr << " - Non-matching " RDOC_PRODUCT_NAME " layer(s) are registered."
+                    << std::endl;
 
         if(!(m_Info.flags & VulkanLayerFlags::ThisInstallRegistered))
-          std::cerr << " - This build's RenderDoc layer is not registered." << std::endl;
+          std::cerr << " - This build's " RDOC_PRODUCT_NAME " layer is not registered."
+                    << std::endl;
 
         std::cerr << std::endl;
 
@@ -1414,7 +1424,9 @@ public:
       }
       else
       {
-        std::cerr << "The RenderDoc vulkan layer appears to be correctly registered." << std::endl;
+        std::cerr << "The " RDOC_PRODUCT_NAME
+                     " vulkan layer appears to be correctly registered."
+                  << std::endl;
       }
 
       // don't do anything if we're just explaining the situation
@@ -1493,8 +1505,9 @@ static int command_usage(std::string command)
               << std::endl
               << std::endl;
 
-  std::cerr << "Usage: renderdiccmd <command> [args ...]" << std::endl;
-  std::cerr << "Command line tool for capture & replay with RenderDoc." << std::endl << std::endl;
+  std::cerr << "Usage: " RDOC_CMD_NAME " <command> [args ...]" << std::endl;
+  std::cerr << "Command line tool for capture & replay with " RDOC_PRODUCT_NAME "." << std::endl
+            << std::endl;
 
   std::cerr << "Command can be one of:" << std::endl;
 
@@ -1519,7 +1532,8 @@ static int command_usage(std::string command)
   }
   std::cerr << std::endl;
 
-  std::cerr << "To see details of any command, see 'renderdiccmd <command> --help'" << std::endl
+  std::cerr << "To see details of any command, see '" RDOC_CMD_NAME " <command> --help'"
+            << std::endl
             << std::endl;
 
   std::cerr << "For more information, see <https://renderdoc.org/>." << std::endl;
@@ -1609,7 +1623,7 @@ int renderdoccmd(GlobalEnvironment &env, std::vector<std::string> &argv)
 
     cmdline::parser cmd;
 
-    cmd.set_program_name("renderdiccmd");
+    cmd.set_program_name(RDOC_CMD_NAME);
     cmd.set_header(command);
 
     it->second->AddOptions(cmd);

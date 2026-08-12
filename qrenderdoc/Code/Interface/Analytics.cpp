@@ -232,7 +232,7 @@ static struct AnalyticsDocumentation
 
   struct
   {
-    DOCUMENT_ANALYTIC(RenderDocVersion, "The RenderDoc build version used to submit the report.");
+    DOCUMENT_ANALYTIC(RenderDocVersion, "The RenderDic build version used to submit the report.");
     DOCUMENT_ANALYTIC(DistributionVersion, "The distribution version, if this is a linux build.");
     DOCUMENT_ANALYTIC(OSVersion, "OS version as reported by Qt.");
     DOCUMENT_ANALYTIC(Bitness, "Whether the build is 64-bit or 32-bit.");

@@ -509,10 +509,10 @@ public:
           show.vt = VT_I4;
           show.lVal = SW_SHOWNORMAL;
 
-          std::wstring qrenderdoc = wide_path + L"/qrenderdic.exe";
+          std::wstring qrenderdic = wide_path + L"/qrenderdic.exe";
 
-          BSTR path = SysAllocStringLen(qrenderdoc.c_str(), (UINT)qrenderdoc.size());
-          memcpy(path, qrenderdoc.c_str(), qrenderdoc.size());
+          BSTR path = SysAllocStringLen(qrenderdic.c_str(), (UINT)qrenderdic.size());
+          memcpy(path, qrenderdic.c_str(), qrenderdic.size());
 
           VARIANT param = {};
           param.vt = VT_BSTR;
@@ -583,7 +583,7 @@ public:
 
     // create each parent directory separately, and use \\s
 
-    dumpFolder += L"RenderDoc";
+    dumpFolder += L"RenderDic";
     CreateDirectoryW(dumpFolder.c_str(), NULL);
 
     dumpFolder += L"\\dumps";
@@ -819,7 +819,7 @@ public:
 
     if(rdoc == NULL)
     {
-      std::cerr << "globalhook couldn't find renderdoc.dll!" << std::endl;
+      std::cerr << "globalhook couldn't find renderdic.dll!" << std::endl;
       return 1;
     }
 

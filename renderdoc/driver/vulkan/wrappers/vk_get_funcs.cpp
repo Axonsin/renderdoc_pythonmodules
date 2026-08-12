@@ -26,12 +26,12 @@
 #include "../vk_debug.h"
 #include "api/replay/version.h"
 
-static char fakeRenderDocUUID[VK_UUID_SIZE] = {};
+static char fakeRenderDicUUID[VK_UUID_SIZE] = {};
 
 void MakeFakeUUID()
 {
   // Assign a fake UUID, so that we get SPIR-V instead of cached shader data, etc.
-  if(fakeRenderDocUUID[0] == 0)
+  if(fakeRenderDicUUID[0] == 0)
   {
     // The start is "rdoc", and the end is the time that this call was first made
     //
@@ -41,8 +41,8 @@ void MakeFakeUUID()
     // We pass size+1 so that there's room for a null terminator (the UUID doesn't
     // need a null terminator as it's a fixed size non-string array)
     rdcstr uuid = StringFormat::sntimef(Timing::GetUTCTime(), "rdoc%y%m%d%H%M%S");
-    RDCASSERT(uuid.size() == sizeof(fakeRenderDocUUID));
-    memcpy(fakeRenderDocUUID, uuid.c_str(), RDCMIN((size_t)VK_UUID_SIZE, uuid.size()));
+    RDCASSERT(uuid.size() == sizeof(fakeRenderDicUUID));
+    memcpy(fakeRenderDicUUID, uuid.c_str(), RDCMIN((size_t)VK_UUID_SIZE, uuid.size()));
   }
 }
 
@@ -913,15 +913,15 @@ void WrappedVulkan::vkGetPhysicalDeviceProperties2(VkPhysicalDevice physicalDevi
 
   if(shaderObject)
   {
-    memcpy(shaderObject->shaderBinaryUUID, fakeRenderDocUUID, VK_UUID_SIZE);
+    memcpy(shaderObject->shaderBinaryUUID, fakeRenderDicUUID, VK_UUID_SIZE);
   }
   if(hostImageCopy)
   {
-    memcpy(hostImageCopy->optimalTilingLayoutUUID, fakeRenderDocUUID, VK_UUID_SIZE);
+    memcpy(hostImageCopy->optimalTilingLayoutUUID, fakeRenderDicUUID, VK_UUID_SIZE);
   }
   if(vulkan14)
   {
-    memcpy(vulkan14->optimalTilingLayoutUUID, fakeRenderDocUUID, VK_UUID_SIZE);
+    memcpy(vulkan14->optimalTilingLayoutUUID, fakeRenderDicUUID, VK_UUID_SIZE);
   }
 
   VkPhysicalDeviceDescriptorBufferPropertiesEXT *descBufferProperties =
@@ -1250,10 +1250,10 @@ VkResult WrappedVulkan::vkGetPhysicalDeviceToolProperties(VkPhysicalDevice physi
 
   VkPhysicalDeviceToolProperties &props = *(pToolProperties + *pToolCount);
 
-  const rdcstr name = "RenderDoc"_lit;
+  const rdcstr name = RDOC_PRODUCT_NAME;
   const rdcstr version = StringFormat::Fmt(
       "%s (%s)", FULL_VERSION_STRING, GitVersionHash[0] == 'N' ? "Unknown revision" : GitVersionHash);
-  const rdcstr description = "Debugging capture layer for RenderDoc"_lit;
+  const rdcstr description = "Debugging capture layer for " RDOC_PRODUCT_NAME;
 
   RDCASSERTMSG("Name is too long for VkPhysicalDeviceToolProperties",
                name.length() < sizeof(props.name));

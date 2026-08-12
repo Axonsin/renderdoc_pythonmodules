@@ -337,7 +337,8 @@ AndroidVersionCheckResult CheckAndroidServerVersion(const rdcstr &deviceID, ABI 
     return AndroidVersionCheckResult::Correct;
   }
 
-  RDCWARN("RenderDoc server versionCode:versionName (%s:%s) is incompatible with host (%s:%s)",
+  RDCWARN(RDOC_PRODUCT_NAME
+          " server versionCode:versionName (%s:%s) is incompatible with host (%s:%s)",
           versionCode.c_str(), versionName.c_str(), hostVersionCode.c_str(), hostVersionName.c_str());
 
   return AndroidVersionCheckResult::WrongVersion;
@@ -472,11 +473,13 @@ RDResult InstallRenderDocServer(const rdcstr &deviceID)
   {
 #if RENDERDOC_OFFICIAL_BUILD
     RETURN_ERROR_RESULT(ResultCode::AndroidAPKFolderNotFound,
-                        "RenderDoc APK not found. Your build of RenderDoc may be incomplete.\n"
+                        RDOC_PRODUCT_NAME " APK not found. Your build of " RDOC_PRODUCT_NAME
+                                          " may be incomplete.\n"
                         "Check that your device is ARM based, other ABIs are not supported.");
 #else
     RETURN_ERROR_RESULT(ResultCode::AndroidAPKFolderNotFound,
-                        "RenderDoc APK not found. Your build of RenderDoc is incomplete.\n"
+                        RDOC_PRODUCT_NAME " APK not found. Your build of " RDOC_PRODUCT_NAME
+                                          " is incomplete.\n"
                         "If this is a development build, consult the documentation for building "
                         "the Android package.\n"
                         "If this is a release build check that your device is ARM based, other "
@@ -1154,7 +1157,7 @@ struct AndroidController : public IDeviceProtocolHandler
 
       rdcarray<Android::ABI> abis = Android::GetSupportedABIs(deviceID);
 
-      RDCLOG("Starting RenderDoc server, supported ABIs:");
+      RDCLOG("Starting " RDOC_PRODUCT_NAME " server, supported ABIs:");
       for(Android::ABI abi : abis)
         RDCLOG("  - %s", ToStr(abi).c_str());
 
@@ -1211,7 +1214,7 @@ struct AndroidController : public IDeviceProtocolHandler
         if(result != ResultCode::Succeeded && result != ResultCode::AndroidGrantPermissionsFailed &&
            result != ResultCode::AndroidAPKVerifyFailed)
         {
-          RDCERR("Failed to install RenderDoc server app");
+          RDCERR("Failed to install " RDOC_PRODUCT_NAME " server app");
           return;
         }
       }
@@ -1247,9 +1250,10 @@ struct AndroidController : public IDeviceProtocolHandler
       rdcstr folderName = Android::GetFolderName(deviceID);
 
       // push settings file into our folder
-      Android::adbExecCommand(deviceID, "push \"" + FileIO::GetAppFolderFilename("renderdoc.conf") +
-                                            "\" /sdcard/Android/" + folderName + package +
-                                            "/files/renderdoc.conf");
+      Android::adbExecCommand(
+          deviceID,
+          "push \"" + FileIO::GetAppFolderFilename(RDOC_PRODUCT_NAME_LOWER ".conf") +
+              "\" /sdcard/Android/" + folderName + package + "/files/renderdoc.conf");
 
       // launch the last ABI, as the 64-bit version where possible, or 32-bit version where not.
       // Captures are portable across bitness and in some cases a 64-bit capture can't replay on a
@@ -1424,7 +1428,8 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
       Android::adbExecCommand(m_deviceID,
                               "shell settings put global gpu_debug_layer_app " + layerPackage);
       Android::adbExecCommand(
-          m_deviceID, "shell settings put global gpu_debug_layers " RENDERDOC_VULKAN_LAYER_NAME);
+          m_deviceID,
+          "shell settings put global gpu_debug_layers " RENDERDOC_ANDROID_VULKAN_LAYER_NAME);
       Android::adbExecCommand(
           m_deviceID, "shell settings put global gpu_debug_layers_gles " RENDERDOC_ANDROID_LIBRARY);
 
@@ -1454,7 +1459,7 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
       if(!checkString.contains("enable_gpu_debug_layers=1") ||
          !checkString.contains("gpu_debug_app=" + packageName) ||
          !checkString.contains("gpu_debug_layer_app=" + layerPackage) ||
-         !checkString.contains("gpu_debug_layers=" RENDERDOC_VULKAN_LAYER_NAME) ||
+         !checkString.contains("gpu_debug_layers=" RENDERDOC_ANDROID_VULKAN_LAYER_NAME) ||
          !checkString.contains("gpu_debug_layers_gles=" RENDERDOC_ANDROID_LIBRARY))
       {
         info =
@@ -1481,7 +1486,8 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
 
       // enable the vulkan layer (will only be used by vulkan programs)
       Android::adbExecCommand(m_deviceID,
-                              "shell setprop debug.vulkan.layers " RENDERDOC_VULKAN_LAYER_NAME);
+                              "shell setprop debug.vulkan.layers "
+                              RENDERDOC_ANDROID_VULKAN_LAYER_NAME);
     }
 
     rdcstr folderName = Android::GetFolderName(m_deviceID);
@@ -1506,9 +1512,10 @@ ExecuteResult AndroidRemoteServer::ExecuteAndInject(const rdcstr &packageAndActi
                                               opts.EncodeAsString().c_str()));
 
     // try to push our settings file into the appdata folder
-    Android::adbExecCommand(m_deviceID, "push \"" + FileIO::GetAppFolderFilename("renderdoc.conf") +
-                                            "\" /sdcard/Android/" + folderName + processName +
-                                            "/files/renderdoc.conf");
+    Android::adbExecCommand(
+        m_deviceID,
+        "push \"" + FileIO::GetAppFolderFilename(RDOC_PRODUCT_NAME_LOWER ".conf") +
+            "\" /sdcard/Android/" + folderName + processName + "/files/renderdoc.conf");
 
     rdcstr installedPath = Android::GetPathForPackage(m_deviceID, packageName);
 

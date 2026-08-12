@@ -120,7 +120,8 @@ RDResult ValidateFunctionPointers()
   {                                                                                    \
     SET_ERROR_RESULT(                                                                  \
         result, ResultCode::APIHardwareUnsupported,                                    \
-        "Missing function %s, required for replay. RenderDoc requires a 3.2 context, " \
+        "Missing function %s, required for replay. " RDOC_PRODUCT_NAME               \
+        " requires a 3.2 context, "                                                  \
         "and a handful of extensions, see the Documentation.",                         \
         STRINGIZE(func));                                                              \
   }

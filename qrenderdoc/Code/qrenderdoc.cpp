@@ -168,7 +168,11 @@ void sharedLogOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 static QString tr(const char *string)
 {
+#if defined(Q_OS_WIN32)
+  return QApplication::translate("qrenderdic", string);
+#else
   return QApplication::translate("qrenderdoc", string);
+#endif
 }
 
 void hideOption(QCommandLineOption &opt)

@@ -321,7 +321,8 @@ private:
     if(riid == __uuidof(IDXGIInfoQueue))
     {
       RDCWARN(
-          "Returning a dummy IDXGIInfoQueue that does nothing. RenderDoc takes control of the "
+          "Returning a dummy IDXGIInfoQueue that does nothing. " RDOC_PRODUCT_NAME
+          " takes control of the "
           "debug layer.");
       dxgihooks.m_DummyInfoQueue.AddRef();
       if(ppDebug)
@@ -352,7 +353,8 @@ private:
     if(riid == __uuidof(IDXGIInfoQueue))
     {
       RDCWARN(
-          "Returning a dummy IDXGIInfoQueue that does nothing. RenderDoc takes control of the "
+          "Returning a dummy IDXGIInfoQueue that does nothing. " RDOC_PRODUCT_NAME
+          " takes control of the "
           "debug layer.");
       dxgihooks.m_DummyInfoQueue.AddRef();
       if(ppDebug)
