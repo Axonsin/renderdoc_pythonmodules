@@ -97,11 +97,6 @@ ShaderToolOutput ShaderProcessingTool::CompileShader(QWidget *window, rdcstr sou
 // PersistantConfig.cpp stubs
 ////////////////////////////////////////////////////////////////////////////////
 
-rdcstr BugReport::URL() const
-{
-  return "";
-}
-
 bool PersistantConfig::SetStyle()
 {
   return false;

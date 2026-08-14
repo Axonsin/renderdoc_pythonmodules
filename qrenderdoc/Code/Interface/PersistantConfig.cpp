@@ -766,36 +766,6 @@ ShaderProcessingTool::operator QVariant() const
   return map;
 }
 
-BugReport::BugReport(const QVariant &var)
-{
-  QVariantMap map = var.toMap();
-  if(map.contains(lit("reportId")))
-    reportId = map[lit("reportId")].toString();
-  if(map.contains(lit("submitDate")))
-    submitDate = map[lit("submitDate")].toDateTime();
-  if(map.contains(lit("checkDate")))
-    checkDate = map[lit("checkDate")].toDateTime();
-  if(map.contains(lit("unreadUpdates")))
-    unreadUpdates = map[lit("unreadUpdates")].toBool();
-}
-
-rdcstr BugReport::URL() const
-{
-  return lit(BUGREPORT_URL "/report/%1").arg(QString(reportId));
-}
-
-BugReport::operator QVariant() const
-{
-  QVariantMap map;
-
-  map[lit("reportId")] = reportId;
-  map[lit("submitDate")] = submitDate;
-  map[lit("checkDate")] = checkDate;
-  map[lit("unreadUpdates")] = unreadUpdates;
-
-  return map;
-}
-
 ReplayOptions::ReplayOptions(const QVariant &var)
 {
   QVariantMap map = var.toMap();

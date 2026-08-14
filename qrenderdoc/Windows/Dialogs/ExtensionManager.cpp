@@ -64,14 +64,10 @@ ExtensionManager::ExtensionManager(ICaptureContext &ctx)
 
   if(m_Extensions.isEmpty())
   {
-    QString contrib_url = lit("https://github.com/baldurk/renderdoc-contrib");
     ui->extensions->addTopLevelItem(
         new RDTreeWidgetItem({QString(), tr("No extensions found available"), QString()}));
     ui->extensions->addTopLevelItem(new RDTreeWidgetItem(
         {QString(), tr("Create packages in %1").arg(extensionFolder), QString()}));
-    ui->extensions->addTopLevelItem(new RDTreeWidgetItem(
-        {QString(), tr("Browse extensions at %1").arg(contrib_url), QString()}));
-    ui->URL->setText(lit("<a href=\"%1\">%1</a>").arg(contrib_url));
   }
   else
   {

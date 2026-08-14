@@ -192,7 +192,6 @@ SettingsDialog::SettingsDialog(ICaptureContext &ctx, QWidget *parent)
   ui->TextureViewer_ResetRange->setChecked(m_Ctx.Config().TextureViewer_ResetRange);
   ui->TextureViewer_PerTexSettings->setChecked(m_Ctx.Config().TextureViewer_PerTexSettings);
   ui->TextureViewer_PerTexYFlip->setChecked(m_Ctx.Config().TextureViewer_PerTexYFlip);
-  ui->CheckUpdate_AllowChecks->setChecked(m_Ctx.Config().CheckUpdate_AllowChecks);
   ui->Font_PreferMonospaced->setChecked(m_Ctx.Config().Font_PreferMonospaced);
 
   ui->TextureViewer_PerTexYFlip->setEnabled(ui->TextureViewer_PerTexSettings->isChecked());
@@ -529,19 +528,6 @@ void SettingsDialog::on_AllowProcessInject_toggled(bool checked)
 
   if(m_Ctx.HasCaptureDialog())
     m_Ctx.GetCaptureDialog()->UpdateGlobalHook();
-}
-
-void SettingsDialog::on_CheckUpdate_AllowChecks_toggled(bool checked)
-{
-  m_Ctx.Config().CheckUpdate_AllowChecks = ui->CheckUpdate_AllowChecks->isChecked();
-
-  if(!m_Ctx.Config().CheckUpdate_AllowChecks)
-  {
-    m_Ctx.Config().CheckUpdate_UpdateAvailable = false;
-    m_Ctx.Config().CheckUpdate_UpdateResponse = "";
-  }
-
-  m_Ctx.Config().Save();
 }
 
 void SettingsDialog::on_Font_PreferMonospaced_toggled(bool checked)

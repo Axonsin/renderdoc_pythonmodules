@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='windows-1252'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-  <Product Name='RenderDic' Id='*' UpgradeCode='D320753C-4B18-4905-A752-E68959943E7D'
+  <Product Name='RenderDic' Id='*' UpgradeCode='917CDBC5-3A68-415F-A07C-D6FEF3BDA026'
     Language='1033' Codepage='1252' Version='$(env.RENDERDOC_VERSION).0' Manufacturer='Baldur Karlsson'>
 
     <Package Id='*' Keywords='Installer' Description="Installer for RenderDic"
@@ -8,7 +8,7 @@
       InstallerVersion='301' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 
     <UI> 
-      <Error Id="25000">Please use the 64-bit installer - the 64-bit version of RenderDoc fully supports capturing 32-bit programs.</Error>
+      <Error Id="25000">Please use the 64-bit installer - the 64-bit version of RenderDic fully supports capturing 32-bit programs.</Error>
     </UI> 
 
     <Property Id="MajorMinorVersion">$(env.RENDERDOC_VERSION)</Property>
@@ -25,7 +25,7 @@
       <RemoveExistingProducts After="InstallInitialize"/>
     </InstallExecuteSequence>
 
-    <Upgrade Id="D320753C-4B18-4905-A752-E68959943E7D">
+    <Upgrade Id="917CDBC5-3A68-415F-A07C-D6FEF3BDA026">
       <UpgradeVersion Minimum="0.18.0"
         IncludeMinimum="yes"
         IncludeMaximum="yes"
@@ -45,7 +45,7 @@
       <Directory Id='ProgramFilesFolder' Name='PFiles'>
         <Directory Id='INSTALLDIR' Name='RenderDic'>
 
-          <Component Id='QRenderDoc' Guid='0DB375D5-7712-4853-AA75-536DF863C827'>
+          <Component Id='QRenderDoc' Guid='93E8C4F6-C3BF-40C8-86ED-0DBADCF88494'>
             <File Id='qrenderdocEXE' Name='qrenderdic.exe' DiskId='1' Source='dist/Release32/qrenderdic.exe' KeyPath='yes'>
               <Shortcut Id="startmenuRenderDoc" Directory="ProgramMenuDir" Name="RenderDic" WorkingDirectory='INSTALLDIR' Icon="icon.ico" IconIndex="0" Advertise="yes" />
             </File>
@@ -82,7 +82,7 @@
 
           </Component>
 
-          <Component Id='RenderDocCPP' Guid='2E6F718F-8BCC-4D41-9688-E99CF2F6B303'>
+          <Component Id='RenderDocCPP' Guid='E345B7FA-93CA-4AE4-89D0-59AD16A08C3A'>
             <File Id='RenderDocCPP' Name='renderdic.dll' DiskId='1' Source='dist/Release32/renderdic.dll' KeyPath='yes' />
             <File Id='RenderDocJSON' Name='renderdic.json' DiskId='1' Source='dist/Release32/renderdic.json' />
             <File Id='D3DCompiler47' Name='d3dcompiler_47.dll' DiskId='1' Source='dist/Release32/d3dcompiler_47.dll' />
@@ -110,15 +110,15 @@
 
           </Component>
 
-          <Component Id='LICENSE' Guid='107AD4E6-D64F-4284-A1F6-D8AAAA6CFC42'>
+          <Component Id='LICENSE' Guid='06F90314-64F7-450E-A032-25B7DA7590F7'>
             <File Id='LICENSE' Name='LICENSE.rtf' DiskId='1' Source='util/installer/LICENSE.rtf' KeyPath='yes' />
           </Component>
 
-          <Component Id='RenderDocCMD' Guid='97338A5D-8FDB-4DF5-AEC7-14B36F234F29'>
+          <Component Id='RenderDocCMD' Guid='5964C51B-5DDA-4125-9EDF-BCC68DE367B2'>
             <File Id='RenderDocCMD' Name='renderdiccmd.exe' DiskId='1' Source='dist/Release32/renderdiccmd.exe' KeyPath='yes' />
           </Component>
 
-          <Component Id='Qt' Guid='63C1C176-5B7C-4D29-9382-8E0FA75C5B80'>
+          <Component Id='Qt' Guid='8E17E30A-9275-4613-815E-821D1C34DD33'>
             <File Id='Qt5Core' Name='Qt5Core.dll' DiskId='1' Source='dist/Release32/Qt5Core.dll' KeyPath='yes' />
             <File Id='Qt5Gui' Name='Qt5Gui.dll' DiskId='1' Source='dist/Release32/Qt5Gui.dll' />
             <File Id='Qt5Network' Name='Qt5Network.dll' DiskId='1' Source='dist/Release32/Qt5Network.dll' />
@@ -128,14 +128,14 @@
             <File Id='libssl' Name='libssl-1_1.dll' DiskId='1' Source='dist/Release32/libssl-1_1.dll' />
           </Component>
 
-          <Component Id='Python' Guid='63C5667D-38DA-464B-8E2F-B2857B8EAEC8'>
+          <Component Id='Python' Guid='EE452BB3-B16B-4E9D-B9A6-B730075C3864'>
             <File Id='Python36' Name='python36.dll' DiskId='1' Source='dist/Release32/python36.dll' KeyPath='yes' />
             <File Id='PythonLibsZIP' Name='python36.zip' DiskId='1' Source='dist/Release32/python36.zip' />
             <File Id='CTypes' Name='_ctypes.pyd' DiskId='1' Source='dist/Release32/_ctypes.pyd' />
             <File Id='Shiboken2' Name='shiboken2.dll' DiskId='1' Source='dist/Release32/shiboken2.dll' />
           </Component>
 
-          <Component Id='Documentation' Guid='CD32B446-6DC1-49E4-8FE9-509E1AFB126D'>
+          <Component Id='Documentation' Guid='B261CA21-D7F7-4A43-AD3A-AA597182991B'>
             <File Id='Documentation' Name='renderdic.chm' DiskId='1' Source='dist/Release32/renderdic.chm' KeyPath='yes'>
               <Shortcut Id="startmenuDocs" Directory="ProgramMenuDir" Name="RenderDic Documentation" Icon='chm.ico' Advertise="yes" />
             </File>
@@ -143,20 +143,20 @@
 
           <Directory Id='qtplugins' Name='qtplugins'>
             <Directory Id='qtplugins_imageformats' Name='imageformats'>
-              <Component Id='qt_imgplugin' Guid='6D852A69-D99E-4085-9899-5FA799FF72EA'>
+              <Component Id='qt_imgplugin' Guid='4113FC48-861F-44AF-8DEB-C1E2DEEA2530'>
                 <File Id='qsvg' Name='qsvg.dll' DiskId='1' Source='dist/Release32/qtplugins/imageformats/qsvg.dll' KeyPath='yes' />
               </Component>
             </Directory>
 
             <Directory Id='qtplugins_platform' Name='platforms'>
-              <Component Id='qt_platplugin' Guid='24A1B9B9-A207-4C46-8CDD-BBD38588F985'>
+              <Component Id='qt_platplugin' Guid='DA853F89-FDCA-43D3-8E7D-0F0ED42A4278'>
                 <File Id='qwindows' Name='qwindows.dll' DiskId='1' Source='dist/Release32/qtplugins/platforms/qwindows.dll' KeyPath='yes' />
               </Component>
             </Directory>
           </Directory>
 
           <Directory Id='PySide2' Name='PySide2'>
-            <Component Id='PySide2Deps' Guid='C5ECF5CC-2424-48D9-8194-F8E0348882A8'>
+            <Component Id='PySide2Deps' Guid='03A1C541-4376-4A4B-BBCE-EF7A1D4555E8'>
               <File Id='pyside2dll' Name='pyside2.dll' DiskId='1' Source='dist/Release32/PySide2/pyside2.dll' KeyPath='yes' />
               <File Id='PS2QtCore' Name='QtCore.pyd' DiskId='1' Source='dist/Release32/PySide2/QtCore.pyd' />
               <File Id='PS2QtGui' Name='QtGui.pyd' DiskId='1' Source='dist/Release32/PySide2/QtGui.pyd' />
@@ -169,20 +169,20 @@
           <Directory Id='plugins' Name='plugins'>
             <Directory Id='plugins_amd' Name='amd'>
               <Directory Id='plugins_amd_rgp' Name='rgp'>
-                <Component Id='rgp_plugin' Guid='A5766AE0-EF2E-4584-B529-3760F476B613'>
+                <Component Id='rgp_plugin' Guid='B0C0EC5F-22F3-4ECB-88B9-CACAC65C4992'>
                   <File Id='amdrgpDLL' Name='DevDriverAPI.dll' DiskId='1' Source='dist/Release32/plugins/amd/rgp/DevDriverAPI.dll' KeyPath='yes' />
                 </Component>
               </Directory>
 
               <Directory Id='plugins_amd_ags' Name='ags'>
-                <Component Id='ags_plugin' Guid='1F42FA40-EC82-4E9C-9A6F-67CCF0251DB0'>
+                <Component Id='ags_plugin' Guid='9975EAEC-3750-409C-9A92-EE9F0D12E424'>
                   <File Id='amdagsDLL' Name='amd_ags_x86.dll' DiskId='1' Source='dist/Release32/plugins/amd/ags/amd_ags_x86.dll' KeyPath='yes' />
                 </Component>
               </Directory>
             </Directory>
 
             <Directory Id='plugins_android' Name='android'>
-              <Component Id='android_plugin' Guid='D469744A-7915-46B8-88B4-4B76223EE8CB'>
+              <Component Id='android_plugin' Guid='04BEEE91-24EA-461D-95D4-246C62606BC2'>
                 <File Id='APKarm32' Name='org.renderdoc.renderdoccmd.arm32.apk' DiskId='1' Source='dist/Release32/plugins/android/org.renderdoc.renderdoccmd.arm32.apk' KeyPath='yes' />
                 <File Id='APKarm64' Name='org.renderdoc.renderdoccmd.arm64.apk' DiskId='1' Source='dist/Release32/plugins/android/org.renderdoc.renderdoccmd.arm64.apk' />
                 <File Id='adb' Name='adb.exe' DiskId='1' Source='dist/Release32/plugins/android/adb.exe' />
@@ -192,13 +192,13 @@
             </Directory>
 
             <Directory Id='plugins_d3d12' Name='d3d12'>
-              <Component Id='d3d12_plugin' Guid='383E6D55-F140-44E3-91B5-E98EEAAB28A7'>
+              <Component Id='d3d12_plugin' Guid='3E6A594A-03F8-4F8D-B4EA-61AE6A2C5DFF'>
                 <File Id='dxcompiler' Name='dxcompiler.dll' DiskId='1' Source='dist/Release32/plugins/d3d12/dxcompiler.dll' KeyPath='yes' />
               </Component>
             </Directory>
 
             <Directory Id='plugins_spirv' Name='spirv'>
-              <Component Id='spirv_plugin' Guid='749539F5-0AAA-4A26-B8F4-B2ABD1F7754E'>
+              <Component Id='spirv_plugin' Guid='3459FD26-6BD7-4A78-A063-29CF9B9103BC'>
                 <File Id='spirvcross' Name='spirv-cross.exe' DiskId='1' Source='dist/Release32/plugins/spirv/spirv-cross.exe' KeyPath='yes' />
                 <File Id='spirvdis' Name='spirv-dis.exe' DiskId='1' Source='dist/Release32/plugins/spirv/spirv-dis.exe' />
                 <File Id='spirvas' Name='spirv-as.exe' DiskId='1' Source='dist/Release32/plugins/spirv/spirv-as.exe' />
@@ -212,14 +212,14 @@
 
       <Directory Id="ProgramMenuFolder" Name="Programs">
         <Directory Id="ProgramMenuDir" Name="RenderDic">
-          <Component Id="ProgramMenuDir" Guid="30CCCAB1-49D5-45B3-952C-53E3B581E691">
+          <Component Id="ProgramMenuDir" Guid="1F6ADB68-4D46-45D4-93A4-25C93E51DC26">
             <RemoveFolder Id='ProgramMenuDir' On='uninstall' />
             <RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
           </Component>
         </Directory>
       </Directory>
 
-      <Component Id="ImageOpenWith" Guid="1F56AF06-3E83-4D7E-85A2-6A309A55FF4F">
+      <Component Id="ImageOpenWith" Guid="2FFF23A9-750C-4029-BF0B-899A7DE10E21">
         <RegistryValue Root="HKLM" Id="RDCOpenWithCommand" Action="write" KeyPath='yes'
           Key="Software\Classes\Applications\qrenderdic.exe\shell\open\command"
           Value='"[#qrenderdocEXE]" "%1"'
@@ -278,20 +278,20 @@
           Key="Software\Classes\.psd\OpenWithProgids" Name='RenderDic.RDCCapture.1'  Value='' Type="string" />
       </Component>
 
-      <Component Id="ImageThumbnailProvider" Guid="51E29C24-61F0-4F40-AB17-D66A97B3D543">
+      <Component Id="ImageThumbnailProvider" Guid="2EB018B9-876A-435D-A03B-A67FE77CF019">
         <RegistryValue Root="HKLM" Id="RDCProvider" Action="write" KeyPath='yes'
           Key="Software\Classes\RenderDic.RDCCapture.1\ShellEx\{e357fccd-a995-4576-b01f-234630154e96}" 
           Value='{5D6BF029-A6BA-417A-8523-120492B1DCE3}' 
           Type="expandable" />
       </Component>
 
-      <Component Id="FileExtensionRDC" Guid="5F21081F-59A8-43EE-8E95-170335FC3EF4">
+      <Component Id="FileExtensionRDC" Guid="21C2189A-4B2F-408C-8F54-850FE5FED0DA">
         <ProgId Id='RenderDic.RDCCapture.1' Description='RenderDic Capture Log (.rdc)'>
           <Extension Id='rdc' />
         </ProgId>
       </Component>
 
-      <Component Id="FileExtensionCAP"  Guid="3A373912-99D7-4A1C-B81C-6C69BA6B8733">
+      <Component Id="FileExtensionCAP"  Guid="D0B61A32-0585-48BE-9B3A-F2FADE156F2D">
         <ProgId Id='RenderDic.RDCSettings.1' Description='RenderDic Capture Settings (.cap)'>
           <Extension Id='cap' />
         </ProgId>

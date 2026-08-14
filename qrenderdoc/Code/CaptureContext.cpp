@@ -164,33 +164,20 @@ CaptureContext::CaptureContext(PersistantConfig &cfg) : m_Config(cfg)
         if(CrashDialog::HasCaptureReady(m_Config))
         {
           text +=
-              tr("If you think this may be a RenderDic bug please click the button below to report "
-                 "it, "
-                 "but note that this will require you to upload the capture for reproduction as "
-                 "otherwise it is impossible to tell what the problem may be.");
+              tr("If you think this may be a RenderDic bug please click the button below to create "
+                 "a crash report with the logs and minidump saved locally for later inspection.");
 
           add_report = true;
         }
-        else if(CrashDialog::CaptureTooLarge(m_Config))
-        {
-          text = tr("<html>%1<br><br>"
-                    "Your capture is too lage to upload as a crash report so this can't be "
-                    "automatically reported. "
-                    "Please email me at <a "
-                    "href=\"mailto:baldurk@baldurk.org?subject=RenderDic%20Unrecoverable%20error\">"
-                    "baldurk@baldurk.org</a> with information and I can help investigate.</html>")
-                     .arg(text);
-        }
         else
         {
-          text += tr("The capture must be saved locally if you want to report this as a bug. ");
+          text += tr("The capture must be saved locally if you want to keep it for later "
+                     "inspection. ");
 
           if(Replay().CurrentRemote().IsConnected())
           {
             text +=
-                tr("Before closing the capture you can save it to disk and manually report a bug. "
-                   "Please include the capture, or else it will be impossible to tell what the "
-                   "problem may be.");
+                tr("Before closing the capture you can save it to disk to keep a local copy.");
           }
           else
           {

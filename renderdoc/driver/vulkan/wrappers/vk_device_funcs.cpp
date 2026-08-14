@@ -669,9 +669,6 @@ VkResult WrappedVulkan::vkCreateInstance(const VkInstanceCreateInfo *pCreateInfo
     {
       RDCERR(RDOC_PRODUCT_NAME " does not support instance extension '%s'.",
              modifiedCreateInfo.ppEnabledExtensionNames[i]);
-      RDCERR(
-          "For KHR/EXT extensions file an issue on github to request support: "
-          "https://github.com/baldurk/renderdoc");
 
       // see if any debug report callbacks were passed in the pNext chain
       VkDebugReportCallbackCreateInfoEXT *report =
@@ -4611,9 +4608,6 @@ VkResult WrappedVulkan::vkCreateDevice(VkPhysicalDevice physicalDevice,
     {
       RDCERR(RDOC_PRODUCT_NAME " does not support device extension '%s'.",
              createInfo.ppEnabledExtensionNames[i]);
-      RDCERR(
-          "For KHR/EXT extensions file an issue on github to request support: "
-          "https://github.com/baldurk/renderdoc");
 
       SendUserDebugMessage(
           StringFormat::Fmt(RDOC_PRODUCT_NAME " does not support requested device extension: %s.",

@@ -361,18 +361,6 @@ int main(int argc, char *argv[])
   hideOption(installLayer);
   parser.addOption(installLayer);
 
-  QCommandLineOption updateFailed(lit("updatefailed"), QString(), lit("errormsg"));
-  hideOption(updateFailed);
-  parser.addOption(updateFailed);
-
-  QCommandLineOption updateDoneAdmin(lit("updatedone_admin"));
-  hideOption(updateDoneAdmin);
-  parser.addOption(updateDoneAdmin);
-
-  QCommandLineOption updateDone(lit("updatedone"));
-  hideOption(updateDone);
-  parser.addOption(updateDone);
-
   QCommandLineOption crashReport(lit("crash"), QString(), lit("reportpath"));
   hideOption(crashReport);
   parser.addOption(crashReport);
@@ -410,32 +398,6 @@ int main(int argc, char *argv[])
   }
 
   bool temp = parser.isSet(tempfile);
-
-  bool updateApplied = false;
-
-  if(parser.isSet(updateFailed))
-  {
-    RDDialog::critical(NULL, tr("Error updating"),
-                       tr("Error applying update: %1").arg(parser.value(updateFailed)));
-  }
-
-  if(parser.isSet(updateDone))
-  {
-    qInfo() << "Finishing update as user";
-    updateApplied = true;
-
-    // the renderdoccmd updater that runs us is from the old version, so older versions might be
-    // running us as admin expecting the version number to be updated.
-    // if we're not running as admin, this will immediately exit
-    RENDERDOC_UpdateInstalledVersionNumber();
-  }
-
-  if(parser.isSet(updateDoneAdmin))
-  {
-    qInfo() << "Finishing update as admin";
-    RENDERDOC_UpdateInstalledVersionNumber();
-    return 0;
-  }
 
   QString remoteHost;
   uint remoteIdent = 0;
@@ -636,13 +598,6 @@ int main(int argc, char *argv[])
     else
     {
       PythonContext::GlobalInit();
-
-      if(updateApplied)
-      {
-        config.CheckUpdate_UpdateAvailable = false;
-        config.CheckUpdate_UpdateResponse = "";
-        config.Save();
-      }
 
       CaptureContext ctx(config);
       if(replayHostIndex >= 0)

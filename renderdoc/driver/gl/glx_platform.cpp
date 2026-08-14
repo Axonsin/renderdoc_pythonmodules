@@ -462,7 +462,6 @@ class GLXPlatform : public GLPlatform
         RDCLOG(
             "If you hit a crash after this message, try setting __GL_THREADED_OPTIMIZATIONS=0 or "
             "upgrade to 381.x or newer.");
-        RDCLOG("See https://github.com/baldurk/renderdoc/issues/609 for more information.");
       }
     }
 

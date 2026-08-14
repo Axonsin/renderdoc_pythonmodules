@@ -4572,7 +4572,7 @@ enum class PathProperty : uint32_t
 BITMASK_OPERATORS(PathProperty);
 DECLARE_REFLECTION_ENUM(PathProperty);
 
-DOCUMENT(R"(A set of flags describing the properties of a section in a renderdoc capture.
+DOCUMENT(R"(A set of flags describing the properties of a section in a RenderDoc capture.
 
 .. data:: NoFlags
 

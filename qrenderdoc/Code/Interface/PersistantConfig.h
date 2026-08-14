@@ -155,64 +155,6 @@ private:
 
 DECLARE_REFLECTION_STRUCT(ShaderProcessingTool);
 
-#if !defined(SWIG)
-#define BUGREPORT_URL "https://renderdoc.org/bugreporter"
-#endif
-
-DOCUMENT("Describes a submitted bug report.");
-struct BugReport
-{
-  DOCUMENT("");
-  BugReport() { unreadUpdates = false; }
-  VARIANT_CAST(BugReport);
-  bool operator==(const BugReport &o) const
-  {
-    return reportId == o.reportId && submitDate == o.submitDate && checkDate == o.checkDate &&
-           unreadUpdates == o.unreadUpdates;
-  }
-  bool operator<(const BugReport &o) const
-  {
-    if(reportId != o.reportId)
-      return reportId < o.reportId;
-    if(submitDate != o.submitDate)
-      return submitDate < o.submitDate;
-    if(checkDate != o.checkDate)
-      return checkDate < o.checkDate;
-    if(unreadUpdates != o.unreadUpdates)
-      return unreadUpdates < o.unreadUpdates;
-    return false;
-  }
-  DOCUMENT(R"(The private ID of the bug report.
-
-:type: str
-)");
-  rdcstr reportId;
-  DOCUMENT(R"(The original date when this bug was submitted.
-
-:type: datetime
-)");
-  rdcdatetime submitDate;
-  DOCUMENT(R"(The last date that we checked for updates.
-
-:type: datetime
-)");
-  rdcdatetime checkDate;
-  DOCUMENT(R"(Unread updates to the bug exist
-
-:type: bool
-)");
-  bool unreadUpdates = false;
-
-  DOCUMENT(R"(Gets the URL for this report.
-
-:return: The URL to the report.
-:rtype: str
-)");
-  rdcstr URL() const;
-};
-
-DECLARE_REFLECTION_STRUCT(BugReport);
-
 #define CONFIG_SETTING_VAL(access, variantType, type, name, defaultValue) \
   access:                                                                 \
   type name = defaultValue;
@@ -541,44 +483,6 @@ DECLARE_REFLECTION_STRUCT(BugReport);
                      rdcdatetime(2015, 01, 01))                                                    \
                                                                                                    \
   DOCUMENT(                                                                                        \
-      "``True`` if the UI should be allowed to make update checks remotely to see if a new "       \
-      "version is available.\n"                                                                    \
-      "\n"                                                                                         \
-      "Defaults to ``True``."                                                                      \
-      ""                                                                                           \
-      ":type: bool");                                                                              \
-  CONFIG_SETTING_VAL(public, bool, bool, CheckUpdate_AllowChecks, true)                            \
-                                                                                                   \
-  DOCUMENT(                                                                                        \
-      "``True`` if an update to a newer version is currently available.\n"                         \
-      "\n"                                                                                         \
-      "Defaults to ``False``."                                                                     \
-      ""                                                                                           \
-      ":type: bool");                                                                              \
-  CONFIG_SETTING_VAL(public, bool, bool, CheckUpdate_UpdateAvailable, false)                       \
-                                                                                                   \
-  DOCUMENT(                                                                                        \
-      "The current version at the time of update checks. Used to determine if a cached pending "   \
-      "update is no longer valid because we got updated through some other method."                \
-      ""                                                                                           \
-      ":type: str");                                                                               \
-  CONFIG_SETTING_VAL(public, QString, rdcstr, CheckUpdate_CurrentVersion, "")                      \
-                                                                                                   \
-  DOCUMENT(                                                                                        \
-      "Contains the response from the update server from the last update check, with any release " \
-      "notes for the new version."                                                                 \
-      ""                                                                                           \
-      ":type: str");                                                                               \
-  CONFIG_SETTING_VAL(public, QString, rdcstr, CheckUpdate_UpdateResponse, "")                      \
-                                                                                                   \
-  DOCUMENT(                                                                                        \
-      "A date containing the last time that update checks happened."                               \
-      ""                                                                                           \
-      ":type: datetime");                                                                          \
-  CONFIG_SETTING_VAL(public, QDateTime, rdcdatetime, CheckUpdate_LastUpdate,                       \
-                     rdcdatetime(2012, 06, 27))                                                    \
-                                                                                                   \
-  DOCUMENT(                                                                                        \
       "A date containing the last time that the user was warned about captures being loaded in "   \
       "degraded support. This prevents the user being spammed if their hardware is low spec."      \
       ""                                                                                           \
@@ -657,32 +561,6 @@ DECLARE_REFLECTION_STRUCT(BugReport);
   CONFIG_SETTING_VAL(public, bool, bool, Analytics_ManualCheck, false)                             \
                                                                                                    \
   DOCUMENT(                                                                                        \
-      "``True`` if the user has been prompted to enter their email address on a crash report. "    \
-      "This really helps find fixes for bugs, so we prompt the user once only if they didn't "     \
-      "enter an email. Once the prompt has happened, regardless of the answer this is set to "     \
-      "true and remains there forever.\n"                                                          \
-      "\n"                                                                                         \
-      "Defaults to ``False``."                                                                     \
-      ""                                                                                           \
-      ":type: bool");                                                                              \
-  CONFIG_SETTING_VAL(public, bool, bool, CrashReport_EmailNagged, false)                           \
-                                                                                                   \
-  DOCUMENT(                                                                                        \
-      "``True`` if the email address entered in the crash reporter should be remembered for next " \
-      "time. If no email is entered then nothing happens (any previous saved email is kept).\n"    \
-      "\n"                                                                                         \
-      "Defaults to ``True``."                                                                      \
-      ""                                                                                           \
-      ":type: bool");                                                                              \
-  CONFIG_SETTING_VAL(public, bool, bool, CrashReport_ShouldRememberEmail, true)                    \
-                                                                                                   \
-  DOCUMENT(                                                                                        \
-      "The saved email address for pre-filling out in crash reports."                              \
-      ""                                                                                           \
-      ":type: str");                                                                               \
-  CONFIG_SETTING_VAL(public, QString, rdcstr, CrashReport_EmailAddress, "")                        \
-                                                                                                   \
-  DOCUMENT(                                                                                        \
       "The last opened capture, to send if any crash is encountered. This is different to the "    \
       "most recent opened file, because it's set before any processing happens (recent files are " \
       "only added to the list when they successfully open), and it's cleared again when the "      \
@@ -690,13 +568,6 @@ DECLARE_REFLECTION_STRUCT(BugReport);
       ""                                                                                           \
       ":type: str");                                                                               \
   CONFIG_SETTING_VAL(public, QString, rdcstr, CrashReport_LastOpenedCapture, "")                   \
-                                                                                                   \
-  DOCUMENT(                                                                                        \
-      "A list of :class:`BugReport` detailing previously submitted bugs that we're watching for "  \
-      "updates.\n"                                                                                 \
-      "\n"                                                                                         \
-      ":type: List[BugReport]");                                                                   \
-  CONFIG_SETTING(public, QVariantList, rdcarray<BugReport>, CrashReport_ReportedBugs)              \
                                                                                                    \
   DOCUMENT(                                                                                        \
       "A list of strings with extension packages to always load on startup, without needing "      \

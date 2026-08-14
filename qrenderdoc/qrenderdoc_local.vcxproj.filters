@@ -702,12 +702,6 @@
     <ClCompile Include="Windows\Dialogs\CrashDialog.cpp">
       <Filter>Windows\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="$(IntDir)generated\moc_UpdateDialog.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Windows\Dialogs\UpdateDialog.cpp">
-      <Filter>Windows\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="Widgets\CollapseGroupBox.cpp">
       <Filter>Widgets</Filter>
     </ClCompile>
@@ -1133,9 +1127,6 @@
     <ClInclude Include="$(IntDir)generated\ui_CrashDialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(IntDir)generated\ui_UpdateDialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="Code\pyrenderdoc\interface_check.h">
       <Filter>Code\pyrenderdoc</Filter>
     </ClInclude>
@@ -1545,12 +1536,6 @@
       <Filter>Windows\Dialogs</Filter>
     </CustomBuild>
     <CustomBuild Include="Windows\Dialogs\CrashDialog.ui">
-      <Filter>Windows\Dialogs</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Windows\Dialogs\UpdateDialog.h">
-      <Filter>Windows\Dialogs</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Windows\Dialogs\UpdateDialog.ui">
       <Filter>Windows\Dialogs</Filter>
     </CustomBuild>
     <CustomBuild Include="Widgets\CollapseGroupBox.h">

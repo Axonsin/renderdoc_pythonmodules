@@ -29,8 +29,6 @@
 #include <QKeyEvent>
 #include <QMimeData>
 #include <QMouseEvent>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QPixmapCache>
 #include <QProgressBar>
 #include <QProgressDialog>
@@ -51,7 +49,6 @@
 #include "Windows/Dialogs/SettingsDialog.h"
 #include "Windows/Dialogs/SuggestRemoteDialog.h"
 #include "Windows/Dialogs/TipsDialog.h"
-#include "Windows/Dialogs/UpdateDialog.h"
 #include "ui_MainWindow.h"
 #include "version.h"
 
@@ -61,53 +58,6 @@
 #if defined(Q_OS_WIN32)
 extern "C" void *__stdcall GetModuleHandleA(const char *);
 #endif
-
-NetworkWorker::NetworkWorker() : QObject(NULL)
-{
-}
-
-NetworkWorker::~NetworkWorker()
-{
-}
-
-void NetworkWorker::get(QUrl url)
-{
-  if(manager == NULL)
-    manager = new QNetworkAccessManager(this);
-
-  // create the request
-  QNetworkReply *req = manager->get(QNetworkRequest(url));
-
-  // connect up error and finished slots on *this* thread, and in the lambda emit signals to
-  // cross-thread back onto the UI thread.
-  QObject::connect(req, OverloadedSlot<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
-                   [this, req](QNetworkReply::NetworkError) {
-                     emit requestFailed(req->url(), req->errorString());
-                   });
-
-  QObject::connect(req, &QNetworkReply::finished, [this, req]() {
-    if(req->error() != QNetworkReply::NoError)
-    {
-      emit requestFailed(req->url(), req->errorString());
-      return;
-    }
-
-    QByteArray replyData = req->readAll();
-
-    emit requestCompleted(req->url(), replyData);
-  });
-}
-
-void MainWindow::MakeNetworkRequest(QUrl url, std::function<void(QByteArray)> success,
-                                    std::function<void(QString)> failure)
-{
-  m_NetworkCompleteCallbacks[url] = success;
-  if(failure)
-    m_NetworkFailCallbacks[url] = failure;
-
-  // fire over onto the network thread
-  emit networkRequestGet(url);
-}
 
 MainWindow::MainWindow(ICaptureContext &ctx) : QMainWindow(NULL), ui(new Ui::MainWindow), m_Ctx(ctx)
 {
@@ -323,118 +273,10 @@ MainWindow::MainWindow(ICaptureContext &ctx) : QMainWindow(NULL), ui(new Ui::Mai
     ui->action_Send_Error_Report->setEnabled(false);
   }
 
-  m_NetWorker = new NetworkWorker;
-  m_NetManagerThread = new LambdaThread([this]() {
-    QEventLoop loop;
-    loop.exec();
-    delete m_NetWorker;
-  });
-  m_NetManagerThread->moveObjectToThread(m_NetWorker);
-  m_NetManagerThread->start();
-  m_NetManagerThread->thread()->setPriority(QThread::LowPriority);
-
-  // set up cross-thread signal/slot connections
-  QObject::connect(this, &MainWindow::networkRequestGet, m_NetWorker, &NetworkWorker::get,
-                   Qt::QueuedConnection);
-  QObject::connect(m_NetWorker, &NetworkWorker::requestFailed, this,
-                   &MainWindow::networkRequestFailed, Qt::QueuedConnection);
-  QObject::connect(m_NetWorker, &NetworkWorker::requestCompleted, this,
-                   &MainWindow::networkRequestCompleted, Qt::QueuedConnection);
-
-  updateAction = new QAction(this);
-  updateAction->setText(tr("Update Available!"));
-  updateAction->setIcon(Icons::update());
-
-  QObject::connect(updateAction, &QAction::triggered, this, &MainWindow::updateAvailable_triggered);
-
-#if !defined(Q_OS_WIN32)
-  // update checks only happen on windows
-  {
-    QList<QAction *> actions = ui->menu_Help->actions();
-    int idx = actions.indexOf(ui->action_Check_for_Updates);
-    idx++;
-    if(idx < actions.count() && actions[idx]->isSeparator())
-      delete actions[idx];
-
-    delete ui->action_Check_for_Updates;
-    ui->action_Check_for_Updates = NULL;
-
-    delete updateAction;
-    updateAction = NULL;
-  }
-#endif
-
-  if(updateAction)
-  {
-    ui->menuBar->addAction(updateAction);
-    updateAction->setVisible(false);
-  }
-
   PopulateRecentCaptureFiles();
   PopulateRecentCaptureSettings();
-  PopulateReportedBugs();
 
-  CheckUpdates();
-
-  rdcarray<BugReport> bugs = m_Ctx.Config().CrashReport_ReportedBugs;
-  LambdaThread *bugupdate = new LambdaThread([this, bugs]() {
-    QDateTime now = QDateTime::currentDateTimeUtc();
-
-    // loop over all the bugs
-    for(const BugReport &b : bugs)
-    {
-      // check bugs every two days
-      qint64 diff = QDateTime(b.checkDate).secsTo(now);
-      if(diff > 2 * 24 * 60 * 60)
-      {
-        // update the check date on the stored bug
-        GUIInvoke::call(this, [this, b, now]() {
-          for(BugReport &bug : m_Ctx.Config().CrashReport_ReportedBugs)
-          {
-            if(bug.reportId == b.reportId)
-            {
-              bug.checkDate = now;
-              break;
-            }
-          }
-          m_Ctx.Config().Save();
-
-          // call out to the status-check to see when the bug report was last updated
-          MakeNetworkRequest(QUrl(QString(b.URL()) + lit("/check")), [this, b](QByteArray replyData) {
-            QString response = QString::fromUtf8(replyData);
-
-            if(response.isEmpty())
-              return;
-
-            // only look at the first line of the response
-            int idx = response.indexOf(QLatin1Char('\n'));
-
-            if(idx > 0)
-              response.truncate(idx);
-
-            QDateTime update = QDateTime::fromString(response, lit("yyyy-MM-dd HH:mm:ss"));
-
-            // if there's been an update since the last check, set unread
-            if(update.isValid() && update > b.checkDate)
-            {
-              for(BugReport &bug : m_Ctx.Config().CrashReport_ReportedBugs)
-              {
-                if(bug.reportId == b.reportId)
-                {
-                  bug.unreadUpdates = true;
-                  break;
-                }
-              }
-              m_Ctx.Config().Save();
-              PopulateReportedBugs();
-            }
-          });
-        });
-      }
-    }
-  });
-  bugupdate->selfDelete(true);
-  bugupdate->start();
+  HandleMismatchedVersions();
 
   ui->toolWindowManager->setToolWindowCreateCallback([this](const QString &objectName) -> QWidget * {
     return m_Ctx.CreateBuiltinWindow(objectName);
@@ -558,10 +400,6 @@ MainWindow::MainWindow(ICaptureContext &ctx) : QMainWindow(NULL), ui(new Ui::Mai
 
 MainWindow::~MainWindow()
 {
-  // close the network manager thread
-  m_NetManagerThread->thread()->quit();
-  m_NetManagerThread->deleteLater();
-
   m_Ctx.Replay().DisconnectFromRemoteServer();
 
   // explicitly delete our children here, so that the MainWindow is still alive while they are
@@ -1244,28 +1082,14 @@ bool MainWindow::HandleMismatchedVersions()
                 << "and core"
                 << "(" << QString::fromUtf8(RENDERDOC_GetVersionString()) << ")";
 
-#if !RENDERDOC_OFFICIAL_BUILD
     RDDialog::critical(
-        this, tr("Unofficial build - mismatched versions"),
-        tr("You are running an unofficial build with mismatched core and UI versions.\n"
-           "Double check where you got your build from and do a sanity check!"));
-#else
-    QMessageBox::StandardButton res = RDDialog::critical(
         this, tr("Mismatched versions"),
         tr("RenderDic has detected mismatched versions between its internal module and UI.\n"
            "This is likely caused by a buggy update in the past which partially updated your "
            "install."
            "Likely because a program was running with renderdic while the update happened.\n"
            "You should reinstall RenderDic immediately as this configuration is almost guaranteed "
-           "to crash.\n\n"
-           "Would you like to open the downloads page to reinstall?"),
-        QMessageBox::Yes | QMessageBox::No);
-
-    if(res == QMessageBox::Yes)
-      QDesktopServices::openUrl(QUrl(lit("https://renderdoc.org/builds")));
-
-    SetUpdateAvailable();
-#endif
+           "to crash."));
     return true;
   }
 
@@ -1316,24 +1140,6 @@ void MainWindow::ClearRecentCaptureSettings()
   PopulateRecentCaptureSettings();
 }
 
-void MainWindow::networkRequestFailed(QUrl url, QString error)
-{
-  if(m_NetworkFailCallbacks.contains(url))
-  {
-    m_NetworkFailCallbacks[url](error);
-    m_NetworkFailCallbacks.remove(url);
-  }
-}
-
-void MainWindow::networkRequestCompleted(QUrl url, QByteArray replyData)
-{
-  if(m_NetworkCompleteCallbacks.contains(url))
-  {
-    m_NetworkCompleteCallbacks[url](replyData);
-    m_NetworkCompleteCallbacks.remove(url);
-  }
-}
-
 void MainWindow::PopulateRecentCaptureSettings()
 {
   ui->menu_Recent_Capture_Settings->clear();
@@ -1359,219 +1165,6 @@ void MainWindow::PopulateRecentCaptureSettings()
 
   ui->menu_Recent_Capture_Settings->addSeparator();
   ui->menu_Recent_Capture_Settings->addAction(ui->action_Clear_Capture_Settings_History);
-}
-
-void MainWindow::on_action_Clear_Reported_Bugs_triggered()
-{
-  ui->menu_Reported_Bugs->clear();
-  ui->menu_Reported_Bugs->setEnabled(false);
-
-  m_Ctx.Config().CrashReport_ReportedBugs.clear();
-  m_Ctx.Config().Save();
-}
-
-void MainWindow::PopulateReportedBugs()
-{
-  ui->menu_Reported_Bugs->clear();
-
-  ui->menu_Reported_Bugs->setEnabled(false);
-
-  bool unread = false;
-
-  int idx = 1;
-  for(int i = m_Ctx.Config().CrashReport_ReportedBugs.count() - 1; i >= 0; i--)
-  {
-    BugReport &bug = m_Ctx.Config().CrashReport_ReportedBugs[i];
-    QString fmt = tr("&%1: Bug reported at %2");
-
-    if(bug.unreadUpdates)
-      fmt = tr("&%1: (Update) Bug reported at %2");
-
-    QAction *action = ui->menu_Reported_Bugs->addAction(
-        fmt.arg(idx).arg(QDateTime(bug.submitDate).toString()), [this, i] {
-          BugReport &bug = m_Ctx.Config().CrashReport_ReportedBugs[i];
-
-          QDesktopServices::openUrl(QString(bug.URL()));
-
-          bug.unreadUpdates = false;
-          m_Ctx.Config().Save();
-
-          PopulateReportedBugs();
-        });
-    idx++;
-
-    if(bug.unreadUpdates)
-    {
-      action->setIcon(Icons::bug());
-      unread = true;
-    }
-
-    ui->menu_Reported_Bugs->setEnabled(true);
-  }
-
-  ui->menu_Reported_Bugs->addSeparator();
-  ui->menu_Reported_Bugs->addAction(ui->action_Clear_Reported_Bugs);
-
-  if(unread)
-  {
-    ui->menu_Help->setIcon(Icons::bug());
-    ui->menu_Reported_Bugs->setIcon(Icons::bug());
-  }
-  else
-  {
-    ui->menu_Help->setIcon(QIcon());
-    ui->menu_Reported_Bugs->setIcon(QIcon());
-  }
-}
-
-void MainWindow::CheckUpdates(bool forceCheck, UpdateResultMethod callback)
-{
-  if(!updateAction)
-    return;
-
-  bool mismatch = HandleMismatchedVersions();
-  if(mismatch)
-    return;
-
-  if(!forceCheck && !m_Ctx.Config().CheckUpdate_AllowChecks)
-  {
-    updateAction->setVisible(false);
-    if(callback)
-      callback(UpdateResult::Disabled);
-    return;
-  }
-
-#if RENDERDOC_OFFICIAL_BUILD
-
-  // if the current version isn't the one we expected, clear any cached update state
-  if(m_Ctx.Config().CheckUpdate_CurrentVersion != MAJOR_MINOR_VERSION_STRING)
-  {
-    m_Ctx.Config().CheckUpdate_UpdateAvailable = false;
-    m_Ctx.Config().CheckUpdate_UpdateResponse = "";
-    m_Ctx.Config().CheckUpdate_CurrentVersion = MAJOR_MINOR_VERSION_STRING;
-  }
-
-  QDateTime today = QDateTime::currentDateTime();
-
-  // check by default every 2 days
-  QDateTime compare = today.addDays(-2);
-
-  // if there's already an update available, go down to checking every week.
-  if(m_Ctx.Config().CheckUpdate_UpdateAvailable)
-    compare = today.addDays(-7);
-
-  bool checkDue = compare.secsTo(m_Ctx.Config().CheckUpdate_LastUpdate) < 0;
-
-  if(m_Ctx.Config().CheckUpdate_UpdateAvailable)
-  {
-    // Mark an update available
-    SetUpdateAvailable();
-
-    // If we don't have a proper update response, or we're overdue for a check, then do it again.
-    // The reason for this is twofold: first, if someone has been delaying their updates for a long
-    // time then there might be a newer update available that we should refresh to, so we should
-    // find out and refresh the update status. The other reason is that when we get a positive
-    // response from the server we force-display the popup which means the user will get reminded
-    // every week or so that an update is pending.
-    if(m_Ctx.Config().CheckUpdate_UpdateResponse.isEmpty() || checkDue)
-    {
-      forceCheck = true;
-    }
-
-    // If we're not forcing a recheck, we're done.
-    if(!forceCheck)
-      return;
-  }
-
-  if(!forceCheck && !checkDue)
-  {
-    if(callback)
-      callback(UpdateResult::Toosoon);
-    return;
-  }
-
-  m_Ctx.Config().CheckUpdate_LastUpdate = today;
-  m_Ctx.Config().Save();
-
-#if QT_POINTER_SIZE == 4
-  QString bitness = lit("32");
-#else
-  QString bitness = lit("64");
-#endif
-  QString versionCheck = lit(MAJOR_MINOR_VERSION_STRING);
-
-  statusText->setText(tr("Checking for updates..."));
-
-  statusProgress->setVisible(true);
-  statusProgress->setMaximum(0);
-
-  // call out to the status-check to see when the bug report was last updated
-  MakeNetworkRequest(
-      QUrl(lit("https://renderdoc.org/getupdateurl/%1/%2?htmlnotes=1").arg(bitness).arg(versionCheck)),
-
-      // on success
-      [this, callback](QByteArray replyData) {
-        statusText->setText(QString());
-        statusProgress->setVisible(false);
-
-        QString response = QString::fromUtf8(replyData);
-
-        if(response.isEmpty())
-        {
-          m_Ctx.Config().CheckUpdate_UpdateAvailable = false;
-          m_Ctx.Config().CheckUpdate_UpdateResponse = "";
-          m_Ctx.Config().CheckUpdate_CurrentVersion = lit(MAJOR_MINOR_VERSION_STRING);
-          m_Ctx.Config().Save();
-          SetNoUpdate();
-
-          if(callback)
-            callback(UpdateResult::Latest);
-
-          return;
-        }
-
-        m_Ctx.Config().CheckUpdate_UpdateAvailable = true;
-        m_Ctx.Config().CheckUpdate_UpdateResponse = response;
-        m_Ctx.Config().CheckUpdate_CurrentVersion = lit(MAJOR_MINOR_VERSION_STRING);
-        m_Ctx.Config().Save();
-        SetUpdateAvailable();
-        UpdatePopup();
-      },
-
-      // on error
-      [this](QString error) {
-        statusText->setText(QString());
-        statusProgress->setVisible(false);
-        qCritical() << "Network error checking for updates:" << error;
-      });
-#else    //! RENDERDOC_OFFICIAL_BUILD
-  {
-    if(callback)
-      callback(UpdateResult::Unofficial);
-    return;
-  }
-#endif
-}
-
-void MainWindow::SetUpdateAvailable()
-{
-  if(updateAction)
-    updateAction->setVisible(true);
-}
-
-void MainWindow::SetNoUpdate()
-{
-  if(updateAction)
-    updateAction->setVisible(false);
-}
-
-void MainWindow::UpdatePopup()
-{
-  if(!m_Ctx.Config().CheckUpdate_UpdateAvailable || !m_Ctx.Config().CheckUpdate_AllowChecks)
-    return;
-
-  UpdateDialog update((QString)m_Ctx.Config().CheckUpdate_UpdateResponse);
-  RDDialog::show(&update);
 }
 
 void MainWindow::ShowLiveCapture(LiveCapture *live)
@@ -2929,16 +2522,6 @@ void MainWindow::on_action_View_Documentation_triggered()
     QDesktopServices::openUrl(QUrl::fromUserInput(lit("https://renderdoc.org/docs")));
 }
 
-void MainWindow::on_action_Source_on_GitHub_triggered()
-{
-  QDesktopServices::openUrl(QUrl::fromUserInput(lit("https://github.com/baldurk/renderdoc")));
-}
-
-void MainWindow::on_action_Build_Release_Downloads_triggered()
-{
-  QDesktopServices::openUrl(QUrl::fromUserInput(lit("https://renderdoc.org/builds")));
-}
-
 void MainWindow::on_action_Show_Tips_triggered()
 {
   TipsDialog tipsDialog(m_Ctx, this);
@@ -2992,46 +2575,8 @@ void MainWindow::sendErrorReport(bool forceCaptureInclusion)
   RDDialog::show(&crash);
 
   m_Ctx.Config().Save();
-  PopulateReportedBugs();
 
   QFile::remove(QString(report));
-}
-
-void MainWindow::on_action_Check_for_Updates_triggered()
-{
-  CheckUpdates(true, [this](UpdateResult updateResult) {
-    switch(updateResult)
-    {
-      case UpdateResult::Disabled:
-      case UpdateResult::Toosoon:
-      {
-        // won't happen, we forced the check
-        break;
-      }
-      case UpdateResult::Unofficial:
-      {
-        QMessageBox::StandardButton res =
-            RDDialog::question(this, tr("Unofficial build"),
-                               tr("You are running an unofficial build, not a stable release.\n"
-                                  "Updates are only available for installed release builds\n\n"
-                                  "Would you like to open the builds list in a browser?"));
-
-        if(res == QMessageBox::Yes)
-          QDesktopServices::openUrl(lit("https://renderdoc.org/builds"));
-        break;
-      }
-      case UpdateResult::Latest:
-      {
-        RDDialog::information(this, tr("Latest version"), tr("You are running the latest version."));
-        break;
-      }
-      case UpdateResult::Upgrade:
-      {
-        // CheckUpdates() will have shown a dialog for this
-        break;
-      }
-    }
-  });
 }
 
 void MainWindow::showDiagnosticLogView()
@@ -3042,16 +2587,6 @@ void MainWindow::showDiagnosticLogView()
     ToolWindowManager::raiseToolWindow(logView);
   else
     ui->toolWindowManager->addToolWindow(logView, mainToolArea());
-}
-
-void MainWindow::updateAvailable_triggered()
-{
-  bool mismatch = HandleMismatchedVersions();
-  if(mismatch)
-    return;
-
-  SetUpdateAvailable();
-  UpdatePopup();
 }
 
 void MainWindow::saveLayout_triggered()

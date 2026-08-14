@@ -18,8 +18,8 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  ******************************************************************************/
 
 #pragma once
@@ -33,11 +33,6 @@ class CrashDialog;
 }
 
 class PersistantConfig;
-class QNetworkAccessManager;
-class QNetworkReply;
-class QElapsedTimer;
-
-struct Thumbnail;
 
 class CrashDialog : public QDialog
 {
@@ -47,14 +42,11 @@ public:
   ~CrashDialog();
 
   static bool HasCaptureReady(PersistantConfig &cfg);
-  static bool CaptureTooLarge(PersistantConfig &cfg);
 
 private slots:
   // automatic slots
   void on_send_clicked();
   void on_cancel_clicked();
-  void on_uploadCancel_clicked();
-  void on_uploadRetry_clicked();
   void on_buttonBox_accepted();
   void on_captureFilename_linkActivated(const QString &link);
 
@@ -65,30 +57,17 @@ private:
   enum class ReportStage
   {
     FillingDetails,
-    Uploading,
     Reported,
   };
 
   void recentre();
   void setStage(ReportStage stage);
-  void sendReport();
 
   Ui::CrashDialog *ui;
 
   ReportStage m_Stage;
   QString m_CaptureFilename;
   QString m_ReportPath;
-  QString m_ReportID;
-  QVariantMap m_ReportMetadata;
-
-  QElapsedTimer *m_UploadTimer = NULL;
-
-  bool m_Corrupted = false;
-
-  QNetworkAccessManager *m_NetManager;
-  QNetworkReply *m_Request = NULL;
-
-  Thumbnail *m_Thumbnail = NULL;
 
   PersistantConfig &m_Config;
 };

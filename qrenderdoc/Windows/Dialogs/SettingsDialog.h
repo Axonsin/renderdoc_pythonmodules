@@ -66,7 +66,6 @@ private slots:
   void on_browseSaveCaptureDirectory_clicked();
   void on_AllowGlobalHook_toggled(bool checked);
   void on_AllowProcessInject_toggled(bool checked);
-  void on_CheckUpdate_AllowChecks_toggled(bool checked);
   void on_Font_PreferMonospaced_toggled(bool checked);
   void on_AlwaysReplayLocally_toggled(bool checked);
   void on_analyticsAutoSubmit_toggled(bool checked);

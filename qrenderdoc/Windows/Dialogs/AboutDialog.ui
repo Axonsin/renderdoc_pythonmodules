@@ -237,9 +237,7 @@
         </font>
        </property>
        <property name="text">
-        <string>&lt;a href='mailto:baldurk@baldurk.org'&gt;baldurk@baldurk.org&lt;/a&gt;
-&amp;bull;
-&lt;a href='https://renderdoc.org/'&gt;https://renderdoc.org&lt;/a&gt;</string>
+        <string>&lt;a href='https://renderdoc.org/'&gt;https://renderdoc.org&lt;/a&gt;</string>
        </property>
        <property name="textFormat">
         <enum>Qt::RichText</enum>

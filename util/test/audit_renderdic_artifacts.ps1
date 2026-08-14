@@ -312,10 +312,6 @@ $extensionProtocolSignatures = @(
   'Metadata.RenderDocVersion'
 )
 
-$captureUploadProtocolSignatures = @(
-  'application/x-renderdoc-capture'
-)
-
 function Add-AtomPrefix([string]$Prefix, [string[]]$Values)
 {
   @($Values | ForEach-Object { "$Prefix$_" })
@@ -334,15 +330,13 @@ $pythonRuntimeAtoms = @($pythonAtoms | Where-Object {
     $_ -cne 'PYTHON_ATOM:renderdoc.pdb' -and $_ -cne 'PYTHON_ATOM:qrenderdoc.pdb'
   })
 $extensionAtoms = Add-AtomPrefix 'EXTENSION_PROTOCOL:' $extensionProtocolSignatures
-$captureUploadAtoms = Add-AtomPrefix 'CAPTURE_UPLOAD_PROTOCOL:' $captureUploadProtocolSignatures
 
 $allowedByArtifact = @{
   'renderdic.dll' = $commonCoreAtoms + $androidAtoms + $rgpAtoms + $pythonRuntimeAtoms + @(
     'CPP_IDENTIFIER:RenderDoc',
     'SOURCE_PATH:core'
   )
-  'qrenderdic.exe' = $commonCoreAtoms + $pythonRuntimeAtoms + $extensionAtoms +
-    $captureUploadAtoms + @(
+  'qrenderdic.exe' = $commonCoreAtoms + $pythonRuntimeAtoms + $extensionAtoms + @(
     'PYTHON_NAMESPACE:renderdoc',
     'PYTHON_NAMESPACE:qrenderdoc',
     'SOURCE_PATH:build',
@@ -397,8 +391,7 @@ $positiveByArtifact = @{
   'qrenderdic.exe' = @(
     @{ Label = 'UI original filename'; Source = '^VersionInfo:OriginalFilename$'; Value = 'qrenderdic.exe' },
     @{ Label = 'UI product name'; Source = '^VersionInfo:ProductName$'; Value = 'RenderDic' },
-    @{ Label = 'UI application identity'; Source = '^(ASCII|UTF-16LE-(even|odd))$'; Value = 'QRenderDic initialising.' },
-    @{ Label = 'capture upload MIME protocol'; Source = '^(ASCII|UTF-16LE-(even|odd))$'; Value = 'application/x-renderdoc-capture' }
+    @{ Label = 'UI application identity'; Source = '^(ASCII|UTF-16LE-(even|odd))$'; Value = 'QRenderDic initialising.' }
   )
   'renderdiccmd.exe' = @(
     @{ Label = 'CLI original filename'; Source = '^VersionInfo:OriginalFilename$'; Value = 'renderdiccmd.exe' },
@@ -703,16 +696,6 @@ function Get-AuditAtoms([string]$Text, [string]$Artifact)
     if([regex]::IsMatch($working, $pattern))
     {
       "EXTENSION_PROTOCOL:$signature"
-      $working = [regex]::Replace($working, $pattern, ' ')
-    }
-  }
-
-  foreach($signature in ($captureUploadProtocolSignatures | Sort-Object Length -Descending))
-  {
-    $pattern = '(?<![A-Za-z0-9_])' + [regex]::Escape($signature) + '(?![A-Za-z0-9_])'
-    if([regex]::IsMatch($working, $pattern))
-    {
-      "CAPTURE_UPLOAD_PROTOCOL:$signature"
       $working = [regex]::Replace($working, $pattern, ' ')
     }
   }

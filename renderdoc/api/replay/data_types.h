@@ -171,7 +171,7 @@ struct PathEntry
 
 DECLARE_REFLECTION_STRUCT(PathEntry);
 
-DOCUMENT("Properties of a section in a renderdoc capture file.");
+DOCUMENT("Properties of a section in a RenderDoc capture file.");
 struct SectionProperties
 {
   DOCUMENT("");

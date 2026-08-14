@@ -48,26 +48,6 @@ class QShortcut;
 class QToolButton;
 class CaptureDialog;
 class LiveCapture;
-class QNetworkAccessManager;
-
-class NetworkWorker : public QObject
-{
-private:
-  Q_OBJECT
-public:
-  explicit NetworkWorker();
-  ~NetworkWorker();
-
-signals:
-  void requestFailed(QUrl url, QString error);
-  void requestCompleted(QUrl url, QByteArray replyData);
-
-public slots:
-  void get(QUrl url);
-
-private:
-  QNetworkAccessManager *manager = NULL;
-};
 
 class MainWindow : public QMainWindow, public IMainWindow, public ICaptureViewer
 {
@@ -145,7 +125,6 @@ public:
   void showExtensionManager() { on_action_Manage_Extensions_triggered(); }
   void PopulateRecentCaptureFiles();
   void PopulateRecentCaptureSettings();
-  void PopulateReportedBugs();
 private slots:
   // automatic slots
   void on_action_Exit_triggered();
@@ -180,19 +159,14 @@ private slots:
   void on_action_Manage_Remote_Servers_triggered();
   void on_action_Settings_triggered();
   void on_action_View_Documentation_triggered();
-  void on_action_Source_on_GitHub_triggered();
-  void on_action_Build_Release_Downloads_triggered();
   void on_action_Show_Tips_triggered();
   void on_action_Counter_Viewer_triggered();
   void on_action_Resource_Inspector_triggered();
   void on_action_Send_Error_Report_triggered();
-  void on_action_Check_for_Updates_triggered();
-  void on_action_Clear_Reported_Bugs_triggered();
 
   // manual slots
   void saveLayout_triggered();
   void loadLayout_triggered();
-  void updateAvailable_triggered();
   void messageCheck();
   void remoteProbe();
   void statusDoubleClicked(QMouseEvent *event);
@@ -202,12 +176,6 @@ private slots:
 
   void ClearRecentCaptureFiles();
   void ClearRecentCaptureSettings();
-
-  void networkRequestFailed(QUrl url, QString error);
-  void networkRequestCompleted(QUrl url, QByteArray data);
-
-signals:
-  void networkRequestGet(QUrl url);
 
 private:
   void closeEvent(QCloseEvent *event) override;
@@ -222,20 +190,6 @@ private:
   void exportCapture(const CaptureFileFormat &fmt);
 
   QString dragFilename(const QMimeData *mimeData);
-
-  void MakeNetworkRequest(QUrl url, std::function<void(QByteArray)> success,
-                          std::function<void(QString)> failure = {});
-
-  enum class UpdateResult
-  {
-    Disabled,
-    Unofficial,
-    Toosoon,
-    Latest,
-    Upgrade,
-  };
-
-  typedef std::function<void(UpdateResult)> UpdateResultMethod;
 
   Ui::MainWindow *ui;
   ICaptureContext &m_Ctx;
@@ -252,8 +206,6 @@ private:
   RDMenu *contextChooserMenu;
   QToolButton *contextChooser;
 
-  QAction *updateAction = NULL;
-
   QTimer m_MessageTick;
   QSemaphore m_RemoteProbeSemaphore;
   QSemaphore m_RemoteInitialProbeReady;
@@ -264,21 +216,12 @@ private:
   rdcarray<RemoteHost> m_ProbeRemoteHosts;
   QMutex m_ProbeRemoteHostsLock;
 
-  NetworkWorker *m_NetWorker;
-  LambdaThread *m_NetManagerThread;
-  QMap<QUrl, std::function<void(QString)>> m_NetworkFailCallbacks;
-  QMap<QUrl, std::function<void(QByteArray)>> m_NetworkCompleteCallbacks;
-
   bool m_messageAlternate = false;
 
   bool m_OwnTempCapture = false;
 
   QString m_LastSaveCapturePath;
 
-  void CheckUpdates(bool forceCheck = false, UpdateResultMethod callback = UpdateResultMethod());
-  void SetUpdateAvailable();
-  void SetNoUpdate();
-  void UpdatePopup();
   bool HandleMismatchedVersions();
   bool IsVersionMismatched();
 

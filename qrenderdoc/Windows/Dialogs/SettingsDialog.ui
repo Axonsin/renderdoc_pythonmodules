@@ -428,26 +428,6 @@ program should be launched through RenderDic via the Launch Process panel.</stri
            </widget>
           </item>
           <item row="17" column="0">
-           <widget class="QLabel" name="label_8">
-            <property name="toolTip">
-             <string>Allows RenderDic to phone home to https://renderdoc.org to anonymously check for new versions.</string>
-            </property>
-            <property name="text">
-             <string>Allow periodic anonymous update checks</string>
-            </property>
-           </widget>
-          </item>
-          <item row="17" column="1">
-           <widget class="QCheckBox" name="CheckUpdate_AllowChecks">
-            <property name="toolTip">
-             <string>Allows RenderDic to phone home to https://renderdoc.org to anonymously check for new versions.</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="18" column="0">
            <widget class="QLabel" name="label_10">
             <property name="toolTip">
              <string>If a capture is marked as being created on a significantly different system (different OS or platform)
@@ -460,7 +440,7 @@ This option overrides that and will always replay locally if the local context i
             </property>
            </widget>
           </item>
-          <item row="18" column="1">
+          <item row="17" column="1">
            <widget class="QCheckBox" name="AlwaysReplayLocally">
             <property name="toolTip">
              <string>If a capture is marked as being created on a significantly different system (different OS or platform)
@@ -473,7 +453,7 @@ This option overrides that and will always replay locally if the local context i
             </property>
            </widget>
           </item>
-          <item row="19" column="1">
+          <item row="18" column="1">
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
