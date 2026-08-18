@@ -299,10 +299,12 @@ private:
       RDCDEBUG("Intercepting %s", entryPoint);
 
       // inherit logfile and capture options. The child was created suspended above and hasn't
-      // run, so thread hijack injection is allowed for it.
+      // run, so thread hijack injection is allowed for it - but only when the application
+      // itself didn't ask for a suspended child, since the hijack path lets it run during
+      // injection and would otherwise break the CREATE_SUSPENDED contract.
       rdcpair<RDResult, uint32_t> res = Process::InjectIntoProcess(
           lpProcessInformation->dwProcessId, {}, RenderDoc::Inst().GetCaptureFileTemplate(),
-          RenderDoc::Inst().GetCaptureOptions(), false, true);
+          RenderDoc::Inst().GetCaptureOptions(), false, resume);
 
       if(res.first == ResultCode::Succeeded)
         RenderDoc::Inst().AddChildProcess((uint32_t)lpProcessInformation->dwProcessId, res.second);

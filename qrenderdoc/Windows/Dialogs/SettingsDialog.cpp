@@ -353,9 +353,7 @@ SettingsDialog::SettingsDialog(ICaptureContext &ctx, QWidget *parent)
 #if !defined(Q_OS_WIN32)
   ui->injectProcLabel->setVisible(false);
   ui->AllowProcessInject->setVisible(false);
-  ui->injectStrategyLabel->setVisible(false);
-  ui->Injection_Method->setVisible(false);
-  ui->Injection_Method_Desc->setVisible(false);
+  ui->injectionGroupBox->setVisible(false);
 #endif
 
   m_Init = false;

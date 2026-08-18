@@ -485,12 +485,26 @@ static HANDLE OpenMainThread(DWORD pid)
 // result, sets *flag to 1, then parks in a tight jump-to-self loop. All addresses are patched
 // in as immediates. Returns the stub length; the park loop is always the last 2 bytes.
 static size_t BuildCallStub(uintptr_t func, uintptr_t arg, uintptr_t result, uintptr_t flag,
-                            bool stdcallArg, byte *stub, size_t maxLen)
+                            byte *stub, size_t maxLen)
 {
   byte *c = stub;
 
 #if ENABLED(RDOC_X64)
-  // x64 calling convention: first argument in RCX.
+  // the thread is suspended at an arbitrary point, so its RSP has no guaranteed alignment and
+  // the stack above it belongs to the interrupted frame. Realign RSP down to 16 bytes and
+  // reserve the 32 bytes of shadow/home space the callee expects, both safely below the
+  // interrupted RSP - the original context is restored externally via SetThreadContext, so the
+  // stub never needs to undo this.
+  // and rsp, ~0xF
+  *c++ = 0x48;
+  *c++ = 0x83;
+  *c++ = 0xE4;
+  *c++ = 0xF0;
+  // sub rsp, 0x20
+  *c++ = 0x48;
+  *c++ = 0x83;
+  *c++ = 0xEC;
+  *c++ = 0x20;
   // mov rax, func
   *c++ = 0x48;
   *c++ = 0xB8;
@@ -520,8 +534,8 @@ static size_t BuildCallStub(uintptr_t func, uintptr_t arg, uintptr_t result, uin
   *(uint32_t *)c = 1;
   c += sizeof(uint32_t);
 #else
-  // x86: the argument is passed on the stack. LoadLibraryW is __stdcall so the callee cleans up
-  // the stack, the INTERNAL_* exports are __cdecl so we clean it up ourselves.
+  // x86: the argument is passed on the stack, and the INTERNAL_* exports are __cdecl so we
+  // clean up the stack ourselves. No alignment or shadow space is needed.
   uint32_t func32 = (uint32_t)func;
   uint32_t arg32 = (uint32_t)arg;
   uint32_t result32 = (uint32_t)result;
@@ -538,13 +552,10 @@ static size_t BuildCallStub(uintptr_t func, uintptr_t arg, uintptr_t result, uin
   // call eax
   *c++ = 0xFF;
   *c++ = 0xD0;
-  // add esp, 4 - cdecl only, the callee has already cleaned up for stdcall
-  if(!stdcallArg)
-  {
-    *c++ = 0x83;
-    *c++ = 0xC4;
-    *c++ = 0x04;
-  }
+  // add esp, 4 - cdecl callee cleanup
+  *c++ = 0x83;
+  *c++ = 0xC4;
+  *c++ = 0x04;
   // mov [result], eax
   *c++ = 0xA3;
   memcpy(c, &result32, sizeof(result32));
@@ -561,6 +572,8 @@ static size_t BuildCallStub(uintptr_t func, uintptr_t arg, uintptr_t result, uin
   // jmp $ - park until the injector restores the original context after the call completes
   *c++ = 0xEB;
   *c++ = 0xFE;
+
+  RDCASSERT(size_t(c - stub) <= maxLen);
 
   return size_t(c - stub);
 }
@@ -599,15 +612,15 @@ static bool PollRemoteFlag(HANDLE hProcess, byte *flag, uint32_t timeoutMS)
 
 // redirect the (suspended) thread so it calls func(argData) in the target process via
 // SetThreadContext, wait for the call to complete, then restore the original context. No thread
-// is ever created in the target. The argument data is copied in, and after the call the same
-// buffer is copied back out into resultData (if non-NULL), matching InjectFunctionCall's
-// semantics of reading back the parameter buffer.
-static bool HijackRemoteCall(HANDLE hProcess, HANDLE hThread, uintptr_t func, const void *argData,
-                             size_t argLen, void *resultData, size_t resultLen, bool stdcallArg,
-                             uint32_t timeoutMS, rdcstr &err)
+// is ever created in the target. The argument data is copied in, and after the call BOTH the
+// argument buffer (the callee may write through the parameter pointer, e.g.
+// INTERNAL_GetTargetControlIdent) and the separate return-value slot are copied back out.
+static bool HijackRemoteCall(HANDLE hProcess, HANDLE hThread, uintptr_t func, void *argData,
+                             size_t argLen, void *resultData, size_t resultLen, uint32_t timeoutMS,
+                             rdcstr &err)
 {
   // layout of the remote allocation: [stub][argument][result][completion flag]
-  const size_t StubSize = 64;
+  const size_t StubSize = 96;
   const size_t ResultSize = RDCMAX(resultLen, sizeof(uint64_t));
 
   size_t offStub = 0;
@@ -638,8 +651,8 @@ static bool HijackRemoteCall(HANDLE hProcess, HANDLE hThread, uintptr_t func, co
   ok = ok && WriteProcessMemory(hProcess, flag, &zero, sizeof(zero), NULL);
 
   byte code[StubSize] = {};
-  size_t codeLen = BuildCallStub(func, (uintptr_t)arg, (uintptr_t)result, (uintptr_t)flag,
-                                 stdcallArg, code, sizeof(code));
+  size_t codeLen =
+      BuildCallStub(func, (uintptr_t)arg, (uintptr_t)result, (uintptr_t)flag, code, sizeof(code));
 
   ok = ok && WriteProcessMemory(hProcess, stub, code, codeLen, NULL);
 
@@ -670,10 +683,9 @@ static bool HijackRemoteCall(HANDLE hProcess, HANDLE hThread, uintptr_t func, co
   hijacked.Eip = (DWORD)(uintptr_t)stub;
 #endif
 
-  // keep the original stack pointer: the initial stack has plenty of room below it for our stub
-  // and the called function, and ntdll validates that the initial thread's stack pointer lies
-  // within the process's real initial stack when it starts up - pointing it at private memory
-  // makes the process die with STATUS_INVALID_PARAMETER before our stub ever runs.
+  // keep the original stack pointer: ntdll validates that the initial thread's stack pointer
+  // lies within the process's real initial stack, and the stub realigns RSP and reserves shadow
+  // space below it anyway, so the interrupted frame above RSP is never touched
 
   if(!SetThreadContext(hThread, &hijacked))
   {
@@ -693,6 +705,11 @@ static bool HijackRemoteCall(HANDLE hProcess, HANDLE hThread, uintptr_t func, co
   bool completed = PollRemoteFlag(hProcess, flag, timeoutMS);
 
   SuspendThread(hThread);
+
+  // read the argument buffer back first - callees like INTERNAL_GetTargetControlIdent write
+  // their results through the parameter pointer - then the separate return-value slot
+  if(argData && argLen > 0)
+    ReadProcessMemory(hProcess, arg, argData, argLen, NULL);
 
   if(resultData && resultLen > 0)
     ReadProcessMemory(hProcess, result, resultData, resultLen, NULL);
@@ -748,7 +765,11 @@ static bool APCBootstrapLoadLibrary(HANDLE hProcess, HANDLE hThread, const wchar
     return false;
   }
 
-  ResumeThread(hThread);
+  if(ResumeThread(hThread) == (DWORD)-1)
+  {
+    VirtualFreeEx(hProcess, remote, 0, MEM_RELEASE);
+    return false;
+  }
 
   *pathRemote = remote;
 
@@ -771,9 +792,9 @@ static bool HijackFunctionCall(HANDLE hProcess, HANDLE hThread, uintptr_t render
 
   rdcstr err;
 
-  // the parameter buffer doubles as the result buffer, like InjectFunctionCall
-  bool ret = HijackRemoteCall(hProcess, hThread, func_remote, data, dataLen, data, dataLen, false,
-                              10000, err);
+  // the callee writes out-parameters through the parameter buffer, which is read back
+  bool ret = HijackRemoteCall(hProcess, hThread, func_remote, data, dataLen, data, dataLen, 10000,
+                              err);
 
   if(!ret)
     RDCWARN("Hijacked call to %s failed: %s", funcName, err.c_str());
@@ -1377,6 +1398,10 @@ rdcpair<RDResult, uint32_t> Process::InjectIntoProcess(uint32_t pid,
     // has fully returned, then suspend it while the program is still in early startup.
     for(uint32_t waited = 0; loc == 0 && waited < 30000; waited += 10)
     {
+      // bail out early if the target died mid-load
+      if(WaitForSingleObject(hProcess, 0) == WAIT_OBJECT_0)
+        break;
+
       Sleep(10);
       loc = FindRemoteDLL(pid, STRINGIZE(RDOC_BASE_NAME) ".dll");
     }
@@ -1408,6 +1433,10 @@ rdcpair<RDResult, uint32_t> Process::InjectIntoProcess(uint32_t pid,
 
       for(uint32_t waited = 0; !inExe && waited < 30000; waited++)
       {
+        // bail out early if the target died mid-wait
+        if(WaitForSingleObject(hProcess, 0) == WAIT_OBJECT_0)
+          break;
+
         CONTEXT ctx;
         RDCEraseEl(ctx);
         ctx.ContextFlags = CONTEXT_CONTROL;
@@ -1426,8 +1455,21 @@ rdcpair<RDResult, uint32_t> Process::InjectIntoProcess(uint32_t pid,
           Sleep(1);
       }
 
-      SuspendThread(hMainThread);
-      threadSuspended = true;
+      if(inExe)
+      {
+        SuspendThread(hMainThread);
+        threadSuspended = true;
+      }
+      else
+      {
+        // never saw the thread reach the executable - hijacking it at an unknown point is
+        // unsafe (it could still be inside DllMain holding locks), so fall back
+        hijack = false;
+        RDCWARN("Injection method is thread hijack, but the target never finished initialising "
+                "the library - falling back to default injection");
+        InjectDLL(hProcess, renderdocPath);
+        loc = FindRemoteDLL(pid, STRINGIZE(RDOC_BASE_NAME) ".dll");
+      }
     }
   }
 
@@ -1501,7 +1543,7 @@ rdcpair<RDResult, uint32_t> Process::InjectIntoProcess(uint32_t pid,
   if(threadSuspended)
     ResumeThread(hMainThread);
 
-  if(pathRemote)
+  if(pathRemote && loc != 0)
     VirtualFreeEx(hProcess, pathRemote, 0, MEM_RELEASE);
 
   if(hMainThread)
