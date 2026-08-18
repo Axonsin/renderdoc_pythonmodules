@@ -114,6 +114,9 @@ private slots:
   void on_Android_SDKPath_textEdited(const QString &sdk);
   void on_Android_JDKPath_textEdited(const QString &jdk);
 
+  // advanced
+  void on_Injection_Method_currentIndexChanged(int index);
+
   // manual slots
   void formatter_valueChanged(int value);
   void on_Formatter_OffsetSizeDisplayMode_currentIndexChanged(int index);

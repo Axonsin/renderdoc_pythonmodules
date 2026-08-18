@@ -406,10 +406,11 @@ extern "C" RENDERDOC_API bool RENDERDOC_CC RENDERDOC_CanGlobalHook()
 
 extern "C" RENDERDOC_API ExecuteResult RENDERDOC_CC
 RENDERDOC_InjectIntoProcess(uint32_t pid, const rdcarray<EnvironmentModification> &env,
-                            const rdcstr &capturefile, const CaptureOptions &opts, bool waitForExit)
+                            const rdcstr &capturefile, const CaptureOptions &opts, bool waitForExit,
+                            bool targetSuspended)
 {
-  rdcpair<RDResult, uint32_t> status =
-      Process::InjectIntoProcess(pid, env, capturefile, opts, waitForExit != 0);
+  rdcpair<RDResult, uint32_t> status = Process::InjectIntoProcess(
+      pid, env, capturefile, opts, waitForExit != 0, targetSuspended != 0);
 
   ExecuteResult ret;
   ret.result = status.first;

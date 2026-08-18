@@ -657,6 +657,62 @@ After interop is enabled you will need to reload any capture.</string>
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="advancedTab">
+      <attribute name="title">
+       <string>Advanced</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="advancedLayout">
+       <item>
+        <widget class="QGroupBox" name="injectionGroupBox">
+         <property name="title">
+          <string>Process Injection</string>
+         </property>
+         <layout class="QGridLayout" name="injectionGridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="injectStrategyLabel">
+            <property name="toolTip">
+             <string>Selects how the hook library is loaded into target programs.&lt;br&gt;&lt;br&gt;- Default (CreateRemoteThread): a remote thread is created in the target to load the hook library. Most compatible.&lt;br&gt;&lt;br&gt;- Thread hijack (SetThreadContext): the suspended main thread of a launched program is temporarily redirected to load the hook library. No new thread is created in the target.</string>
+            </property>
+            <property name="text">
+             <string>Injection strategy</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="Injection_Method">
+            <property name="toolTip">
+             <string>Selects how the hook library is loaded into target programs.&lt;br&gt;&lt;br&gt;- Default (CreateRemoteThread): a remote thread is created in the target to load the hook library. Most compatible.&lt;br&gt;&lt;br&gt;- Thread hijack (SetThreadContext): the suspended main thread of a launched program is temporarily redirected to load the hook library. No new thread is created in the target.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QLabel" name="Injection_Method_Desc">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="advancedVerticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>387</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="replayTab">
       <attribute name="title">
        <string>Replay</string>

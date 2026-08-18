@@ -311,7 +311,8 @@ public:
 
     rdcarray<EnvironmentModification> env;
 
-    ExecuteResult res = RENDERDOC_InjectIntoProcess(PID, env, conv(captureFile), opts, wait_for_exit);
+    ExecuteResult res =
+        RENDERDOC_InjectIntoProcess(PID, env, conv(captureFile), opts, wait_for_exit, false);
 
     if(res.result.code != ResultCode::Succeeded)
     {
@@ -1025,7 +1026,8 @@ public:
   {
     RENDERDOC_SetDebugLogFile(conv(debuglog));
 
-    ExecuteResult result = RENDERDOC_InjectIntoProcess(pid, env, conv(capfile), cmdopts, false);
+    ExecuteResult result =
+        RENDERDOC_InjectIntoProcess(pid, env, conv(capfile), cmdopts, false, true);
 
     if(result.result.OK())
       return result.ident;

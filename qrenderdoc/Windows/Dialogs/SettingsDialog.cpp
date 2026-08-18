@@ -38,6 +38,21 @@
 #include "ConfigEditor.h"
 #include "ui_SettingsDialog.h"
 
+static QString InjectionMethodDescription(int index)
+{
+  if(index == 1)
+    return SettingsDialog::tr(
+        "RenderDic hijacks the suspended main thread of a launched program with "
+        "Get/SetThreadContext to load the hook library and run the setup calls - no new thread "
+        "is created in the target. Only applies to programs launched from RenderDic; injecting "
+        "into an already-running process falls back to the default method automatically.");
+
+  return SettingsDialog::tr(
+      "The classic method: RenderDic creates a remote thread in the target process to load the "
+      "hook library and run the setup calls. Works everywhere, including injecting into "
+      "already-running processes.");
+}
+
 SettingsDialog::SettingsDialog(ICaptureContext &ctx, QWidget *parent)
     : QDialog(parent), ui(new Ui::SettingsDialog), m_Ctx(ctx)
 {
@@ -300,6 +315,17 @@ SettingsDialog::SettingsDialog(ICaptureContext &ctx, QWidget *parent)
   ui->AllowGlobalHook->setChecked(m_Ctx.Config().AllowGlobalHook);
   ui->AllowProcessInject->setChecked(m_Ctx.Config().AllowProcessInject);
 
+  ui->Injection_Method->addItem(lit("Default (CreateRemoteThread)"));
+  ui->Injection_Method->addItem(lit("Thread hijack (SetThreadContext)"));
+
+  int injectionMethod = 0;
+  if(const SDObject *setting = RENDERDOC_GetConfigSetting("Injection.Method"))
+    injectionMethod = (int)setting->AsUInt32();
+  if(injectionMethod < 0 || injectionMethod >= ui->Injection_Method->count())
+    injectionMethod = 0;
+  ui->Injection_Method->setCurrentIndex(injectionMethod);
+  ui->Injection_Method_Desc->setText(InjectionMethodDescription(injectionMethod));
+
   ui->EventBrowser_TimeUnit->setCurrentIndex((int)m_Ctx.Config().EventBrowser_TimeUnit);
   ui->EventBrowser_AddFake->setChecked(m_Ctx.Config().EventBrowser_AddFake);
   ui->EventBrowser_ApplyColors->setChecked(m_Ctx.Config().EventBrowser_ApplyColors);
@@ -327,6 +353,9 @@ SettingsDialog::SettingsDialog(ICaptureContext &ctx, QWidget *parent)
 #if !defined(Q_OS_WIN32)
   ui->injectProcLabel->setVisible(false);
   ui->AllowProcessInject->setVisible(false);
+  ui->injectStrategyLabel->setVisible(false);
+  ui->Injection_Method->setVisible(false);
+  ui->Injection_Method_Desc->setVisible(false);
 #endif
 
   m_Init = false;
@@ -1347,6 +1376,24 @@ void SettingsDialog::on_Android_MaxConnectTimeout_valueChanged(double timeout)
 {
   RENDERDOC_SetConfigSetting("Android.MaxConnectTimeout")->data.basic.u =
       (uint32_t)ui->Android_MaxConnectTimeout->value();
+
+  RENDERDOC_SaveConfigSettings();
+}
+
+// advanced
+void SettingsDialog::on_Injection_Method_currentIndexChanged(int index)
+{
+  ui->Injection_Method_Desc->setText(InjectionMethodDescription(index));
+
+  if(m_Init)
+    return;
+
+  if(index < 0)
+    return;
+
+  SDObject *setting = RENDERDOC_SetConfigSetting("Injection.Method");
+  if(setting)
+    setting->data.basic.u = (uint32_t)index;
 
   RENDERDOC_SaveConfigSettings();
 }

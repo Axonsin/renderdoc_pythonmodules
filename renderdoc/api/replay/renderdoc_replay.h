@@ -2122,6 +2122,8 @@ DOCUMENT(R"(Where supported by operating system and permissions, inject into a r
 :param str capturefile: The capture file path template, or blank to use a default location.
 :param CaptureOptions opts: The capture options to use when injecting into the program.
 :param bool waitForExit: If ``True`` this function will block until the process exits.
+:param bool targetSuspended: If ``True`` the caller created the process suspended and it has not
+  run yet. This is required for the thread hijack injection method to be considered safe.
 :return: The :class:`ExecuteResult` indicating both the status of the operation (success or failure)
   and any reason for failure, or else the ident where the new application is listening for target
   control if everything succeeded.
@@ -2129,7 +2131,8 @@ DOCUMENT(R"(Where supported by operating system and permissions, inject into a r
 )");
 extern "C" RENDERDOC_API ExecuteResult RENDERDOC_CC
 RENDERDOC_InjectIntoProcess(uint32_t pid, const rdcarray<EnvironmentModification> &env,
-                            const rdcstr &capturefile, const CaptureOptions &opts, bool waitForExit);
+                            const rdcstr &capturefile, const CaptureOptions &opts, bool waitForExit,
+                            bool targetSuspended);
 
 DOCUMENT(R"(When debugging RenderDoc it can be useful to capture itself by doing a side-build with a
 temporary name. This function checks to see if a given self-hosted DLL is available.
