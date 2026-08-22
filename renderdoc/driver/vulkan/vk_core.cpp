@@ -40,6 +40,8 @@
 
 RDOC_EXTERN_CONFIG(bool, Replay_Debug_PrintChunkTimings);
 
+RDOC_EXTERN_CONFIG(bool, Capture_MultiTarget);
+
 RDOC_EXTERN_CONFIG(bool, Vulkan_Debug_VerboseCommandRecording);
 
 RDOC_DEBUG_CONFIG(bool, Vulkan_Debug_SingleSubmitFlushing, false,
@@ -3452,11 +3454,14 @@ void WrappedVulkan::AdvanceFrame()
 
 void WrappedVulkan::Present(DeviceOwnedWindow devWnd)
 {
+  // in multi-target mode every Vulkan instance ends its own capture on present, not just the
+  // active window, and one trigger fans out a capture across all of them
+  bool multiCapture = Capture_MultiTarget();
   bool activeWindow = devWnd.windowHandle == NULL || RenderDoc::Inst().IsActiveWindow(devWnd);
 
   RenderDoc::Inst().AddActiveDriver(RDCDriver::Vulkan, true);
 
-  if(!activeWindow)
+  if(!multiCapture && !activeWindow)
   {
     // first present to *any* window, even inactive, terminates frame 0
     if(m_FirstFrameCapture && IsActiveCapturing(m_State))
@@ -3473,7 +3478,15 @@ void WrappedVulkan::Present(DeviceOwnedWindow devWnd)
 
   if(RenderDoc::Inst().ShouldTriggerCapture(m_FrameCounter) && IsBackgroundCapturing(m_State))
   {
-    RenderDoc::Inst().StartFrameCapture(devWnd);
+    if(multiCapture)
+    {
+      RDCLOG("Starting capture across all registered Vulkan devices");
+      RenderDoc::Inst().StartVulkanCapture(devWnd);
+    }
+    else
+    {
+      RenderDoc::Inst().StartFrameCapture(devWnd);
+    }
 
     m_AppControlledCapture = false;
     m_CapturedFrames.back().frameNumber = m_FrameCounter;
@@ -5080,6 +5093,7 @@ VkResourceRecord *WrappedVulkan::RegisterSurface(WindowingSystem system, void *h
   RDCLOG("RegisterSurface() window %p", handle);
 
   RenderDoc::Inst().AddFrameCapturer(DeviceOwnedWindow(LayerDisp(m_Instance), handle), this);
+  RenderDoc::Inst().SetVulkanFrameCapturer(DeviceOwnedWindow(LayerDisp(m_Instance), handle), this);
 
   return (VkResourceRecord *)new PackedWindowHandle(system, handle);
 }

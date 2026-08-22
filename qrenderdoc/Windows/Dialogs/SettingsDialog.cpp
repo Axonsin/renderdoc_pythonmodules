@@ -53,6 +53,20 @@ static QString InjectionMethodDescription(int index)
       "already-running processes.");
 }
 
+static QString CaptureMultiTargetDescription(int index)
+{
+  if(index == 1)
+    return SettingsDialog::tr(
+        "Every Vulkan instance in the target program records its own .rdc when a capture is "
+        "triggered, instead of only the active window. GL capture triggers are redirected to "
+        "the Vulkan devices, which captures programs such as GLES-on-Vulkan emulators past the "
+        "compositor layer. Applies to newly launched programs.");
+
+  return SettingsDialog::tr(
+      "Only the active window of the target program is captured on each trigger, producing a "
+      "single .rdc. This is the classic behaviour.");
+}
+
 SettingsDialog::SettingsDialog(ICaptureContext &ctx, QWidget *parent)
     : QDialog(parent), ui(new Ui::SettingsDialog), m_Ctx(ctx)
 {
@@ -326,6 +340,15 @@ SettingsDialog::SettingsDialog(ICaptureContext &ctx, QWidget *parent)
   ui->Injection_Method->setCurrentIndex(injectionMethod);
   ui->Injection_Method_Desc->setText(InjectionMethodDescription(injectionMethod));
 
+  ui->Capture_MultiTarget->addItem(lit("Default (active window)"));
+  ui->Capture_MultiTarget->addItem(lit("All Vulkan devices (multiple .rdc)"));
+
+  int captureMultiTarget = 0;
+  if(const SDObject *setting = RENDERDOC_GetConfigSetting("Capture.MultiTarget"))
+    captureMultiTarget = setting->AsUInt32() ? 1 : 0;
+  ui->Capture_MultiTarget->setCurrentIndex(captureMultiTarget);
+  ui->Capture_MultiTarget_Desc->setText(CaptureMultiTargetDescription(captureMultiTarget));
+
   ui->EventBrowser_TimeUnit->setCurrentIndex((int)m_Ctx.Config().EventBrowser_TimeUnit);
   ui->EventBrowser_AddFake->setChecked(m_Ctx.Config().EventBrowser_AddFake);
   ui->EventBrowser_ApplyColors->setChecked(m_Ctx.Config().EventBrowser_ApplyColors);
@@ -354,6 +377,7 @@ SettingsDialog::SettingsDialog(ICaptureContext &ctx, QWidget *parent)
   ui->injectProcLabel->setVisible(false);
   ui->AllowProcessInject->setVisible(false);
   ui->injectionGroupBox->setVisible(false);
+  ui->captureGroupBox->setVisible(false);
 #endif
 
   m_Init = false;
@@ -1392,6 +1416,24 @@ void SettingsDialog::on_Injection_Method_currentIndexChanged(int index)
   SDObject *setting = RENDERDOC_SetConfigSetting("Injection.Method");
   if(setting)
     setting->data.basic.u = (uint32_t)index;
+
+  RENDERDOC_SaveConfigSettings();
+}
+
+// advanced
+void SettingsDialog::on_Capture_MultiTarget_currentIndexChanged(int index)
+{
+  ui->Capture_MultiTarget_Desc->setText(CaptureMultiTargetDescription(index));
+
+  if(m_Init)
+    return;
+
+  if(index < 0)
+    return;
+
+  SDObject *setting = RENDERDOC_SetConfigSetting("Capture.MultiTarget");
+  if(setting)
+    setting->data.basic.b = (index == 1);
 
   RENDERDOC_SaveConfigSettings();
 }

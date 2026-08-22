@@ -699,6 +699,42 @@ After interop is enabled you will need to reload any capture.</string>
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="captureGroupBox">
+         <property name="title">
+          <string>Capture</string>
+         </property>
+         <layout class="QGridLayout" name="captureGridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="captureStrategyLabel">
+            <property name="toolTip">
+             <string>Selects which frame capturers record a capture file when a capture is triggered.&lt;br&gt;&lt;br&gt;- Default: only the active window of the target program is captured, producing one .rdc.&lt;br&gt;&lt;br&gt;- All Vulkan devices: every Vulkan instance in the target program records its own .rdc on each trigger. GL capture triggers are redirected to the Vulkan devices, for GLES-on-Vulkan emulators. Applies to newly launched programs.</string>
+            </property>
+            <property name="text">
+             <string>Capture strategy</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="Capture_MultiTarget">
+            <property name="toolTip">
+             <string>Selects which frame capturers record a capture file when a capture is triggered.&lt;br&gt;&lt;br&gt;- Default: only the active window of the target program is captured, producing one .rdc.&lt;br&gt;&lt;br&gt;- All Vulkan devices: every Vulkan instance in the target program records its own .rdc on each trigger. GL capture triggers are redirected to the Vulkan devices, for GLES-on-Vulkan emulators. Applies to newly launched programs.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QLabel" name="Capture_MultiTarget_Desc">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer name="advancedVerticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>

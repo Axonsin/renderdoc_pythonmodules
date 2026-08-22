@@ -116,6 +116,7 @@ private slots:
 
   // advanced
   void on_Injection_Method_currentIndexChanged(int index);
+  void on_Capture_MultiTarget_currentIndexChanged(int index);
 
   // manual slots
   void formatter_valueChanged(int value);

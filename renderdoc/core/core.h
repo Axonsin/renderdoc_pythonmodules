@@ -28,6 +28,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <map>
+#include <set>
+#include <vector>
 #include "api/app/renderdoc_app.h"
 #include "api/replay/apidefs.h"
 #include "api/replay/capture_options.h"
@@ -603,6 +605,17 @@ public:
   bool EndFrameCapture(DeviceOwnedWindow devWnd);
   bool DiscardFrameCapture(DeviceOwnedWindow devWnd);
 
+  // multi-target capture: parallel registry of Vulkan frame capturers. When Capture_MultiTarget
+  // is enabled a single trigger starts a capture on every registered Vulkan instance in the
+  // process, each writing its own .rdc. The active set tracks captures started by
+  // StartVulkanCapture that haven't ended yet, so a deferred EndVulkanCapture only finishes the
+  // ones still running
+  void SetVulkanFrameCapturer(DeviceOwnedWindow devWnd, IFrameCapturer *cap);
+  void RemoveVulkanFrameCapturer(DeviceOwnedWindow devWnd);
+  size_t NumVulkanFrameCapturers();
+  bool StartVulkanCapture(DeviceOwnedWindow devWnd);
+  bool EndVulkanCapture(DeviceOwnedWindow devWnd);
+
   bool MatchClosestWindow(DeviceOwnedWindow &devWnd);
 
   bool IsActiveWindow(DeviceOwnedWindow devWnd);
@@ -753,6 +766,9 @@ private:
   std::map<DeviceOwnedWindow, FrameCap> m_WindowFrameCapturers;
   DeviceOwnedWindow m_ActiveWindow;
   std::map<void *, IFrameCapturer *> m_DeviceFrameCapturers;
+
+  std::map<DeviceOwnedWindow, IFrameCapturer *> m_VulkanFrameCapturers;
+  std::set<DeviceOwnedWindow> m_ActiveVulkanFrameCapturers;
 
   bool m_VendorExts[arraydim<VendorExtensions>()] = {};
 

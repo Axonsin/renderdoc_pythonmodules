@@ -35,6 +35,8 @@
 
 RDOC_EXTERN_CONFIG(bool, Replay_Debug_PrintChunkTimings);
 
+RDOC_EXTERN_CONFIG(bool, Capture_MultiTarget);
+
 std::map<uint64_t, GLWindowingData> WrappedOpenGL::m_ActiveContexts;
 
 void WrappedOpenGL::BuildGLExtensions()
@@ -2244,12 +2246,29 @@ void WrappedOpenGL::SwapBuffers(WindowingSystem winSystem, void *windowHandle)
   if(IsActiveCapturing(m_State) && !m_AppControlledCapture)
     RenderDoc::Inst().EndFrameCapture(devWnd);
 
+  // in multi-target mode with Vulkan devices present (e.g. GLES-on-Vulkan emulators), the real
+  // GPU work lives on the Vulkan side of the translation: the GL frame boundary ends the
+  // previous trigger's deferred Vulkan captures, and a new trigger is redirected to start
+  // captures on all of them instead of the GL window
+  bool multiRedirect = Capture_MultiTarget() && RenderDoc::Inst().NumVulkanFrameCapturers() > 0;
+
+  if(multiRedirect && RenderDoc::Inst().EndVulkanCapture(devWnd))
+    RDCLOG("Ending deferred Vulkan off-screen capture");
+
   if(RenderDoc::Inst().ShouldTriggerCapture(m_FrameCounter) && IsBackgroundCapturing(m_State))
   {
-    RenderDoc::Inst().StartFrameCapture(devWnd);
+    if(multiRedirect)
+    {
+      RDCLOG("Redirecting GL capture trigger to Vulkan off-screen capture");
+      RenderDoc::Inst().StartVulkanCapture(devWnd);
+    }
+    else
+    {
+      RenderDoc::Inst().StartFrameCapture(devWnd);
 
-    m_AppControlledCapture = false;
-    m_CapturedFrames.back().frameNumber = m_FrameCounter;
+      m_AppControlledCapture = false;
+      m_CapturedFrames.back().frameNumber = m_FrameCounter;
+    }
   }
 }
 

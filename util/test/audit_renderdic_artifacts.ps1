@@ -383,7 +383,12 @@ $positiveByArtifact = @{
     @{ Label = 'OpenGL replay window class'; Source = '^(ASCII|UTF-16LE-(even|odd))$'; Value = 'renderdicGLclass' },
     @{ Label = 'OpenGL replay window title'; Source = '^(ASCII|UTF-16LE-(even|odd))$'; Value = 'RenderDic replay window' },
     @{ Label = 'Windows private config'; Source = '^(ASCII|UTF-16LE-(even|odd))$'; Value = 'renderdic.conf' },
-    @{ Label = 'Windows capture directory'; Source = '^(ASCII|UTF-16LE-(even|odd))$'; Value = 'RenderDic\%ls_%04d.%02d.%02d_%02d.%02d.rdc' },
+    # Contains, not Exact: when this wide literal happens to be laid out right after an ASCII
+    # string, the ASCII terminator's last character + NUL decode as one printable UTF-16LE char
+    # and glue onto the start of the run, so the extracted value can carry a stray prefix
+    # depending on link layout (observed: 'eRenderDic\%ls_...rdc' after 'renderdiccmd.exe').
+    @{ Label = 'Windows capture directory'; Source = '^(ASCII|UTF-16LE-(even|odd))$';
+      Match = 'Contains'; Value = 'RenderDic\%ls_%04d.%02d.%02d_%02d.%02d.rdc' },
     @{ Label = 'Windows symbol cache'; Source = '^(ASCII|UTF-16LE-(even|odd))$'; Value = '\renderdic\symbols;SRV*' },
     @{ Label = 'DLL original filename'; Source = '^VersionInfo:OriginalFilename$'; Value = 'renderdic.dll' },
     @{ Label = 'DLL product name'; Source = '^VersionInfo:ProductName$'; Value = 'RenderDic' }

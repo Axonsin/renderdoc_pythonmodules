@@ -55,6 +55,13 @@ RDOC_DEBUG_CONFIG(bool, Capture_Debug_SnapshotDiagnosticLog, false,
 RDOC_CONFIG(bool, Capture_IncludeExtendedThumbnail, false,
             "Save the thumbnail unresized and losslessly encoded during capture.");
 
+RDOC_CONFIG(bool, Capture_MultiTarget, false,
+            "Capture a separate .rdc from every Vulkan frame capturer in the target process on "
+            "each trigger, instead of only the active window. Intended for programs such as GLES "
+            "emulators that translate GL across multiple Vulkan instances - GL capture triggers "
+            "are redirected to the Vulkan devices and end on the next GL frame boundary. Only "
+            "applies to newly launched capture targets.");
+
 RDOC_CONFIG(bool, Replay_Debug_PrintChunkTimings, false, "Print stats of chunk processing times");
 
 RDOC_CONFIG(bool, Replay_Debug_SingleThreadedCompilation, false,
@@ -1149,6 +1156,11 @@ void RenderDoc::SetCaptureTitle(const rdcstr &title)
 
 bool RenderDoc::EndFrameCapture(DeviceOwnedWindow devWnd)
 {
+  {
+    SCOPED_LOCK(m_CapturerListLock);
+    m_ActiveVulkanFrameCapturers.erase(devWnd);
+  }
+
   IFrameCapturer *frameCap = MatchFrameCapturer(devWnd);
   if(frameCap)
   {
@@ -1161,6 +1173,11 @@ bool RenderDoc::EndFrameCapture(DeviceOwnedWindow devWnd)
 
 bool RenderDoc::DiscardFrameCapture(DeviceOwnedWindow devWnd)
 {
+  {
+    SCOPED_LOCK(m_CapturerListLock);
+    m_ActiveVulkanFrameCapturers.erase(devWnd);
+  }
+
   IFrameCapturer *frameCap = MatchFrameCapturer(devWnd);
   if(frameCap)
   {
@@ -2410,6 +2427,100 @@ void RenderDoc::RemoveFrameCapturer(DeviceOwnedWindow devWnd)
   {
     RDCERR("Removing FrameCapturer for unknown window!");
   }
+}
+
+void RenderDoc::SetVulkanFrameCapturer(DeviceOwnedWindow devWnd, IFrameCapturer *cap)
+{
+  if(IsReplayApp())
+    return;
+
+  SCOPED_LOCK(m_CapturerListLock);
+
+  if(cap == NULL)
+  {
+    m_VulkanFrameCapturers.erase(devWnd);
+    return;
+  }
+
+  m_VulkanFrameCapturers[devWnd] = cap;
+
+  RDCLOG("Registering Vulkan frame capturer %#p (%zu total)", devWnd.windowHandle,
+         m_VulkanFrameCapturers.size());
+}
+
+void RenderDoc::RemoveVulkanFrameCapturer(DeviceOwnedWindow devWnd)
+{
+  if(IsReplayApp())
+    return;
+
+  SCOPED_LOCK(m_CapturerListLock);
+
+  auto it = m_VulkanFrameCapturers.find(devWnd);
+  if(it == m_VulkanFrameCapturers.end())
+    return;
+
+  m_VulkanFrameCapturers.erase(it);
+  m_ActiveVulkanFrameCapturers.erase(devWnd);
+
+  RDCLOG("Clearing Vulkan frame capturer %#p (%zu remaining)", devWnd.windowHandle,
+         m_VulkanFrameCapturers.size());
+}
+
+size_t RenderDoc::NumVulkanFrameCapturers()
+{
+  SCOPED_LOCK(m_CapturerListLock);
+  return m_VulkanFrameCapturers.size();
+}
+
+bool RenderDoc::StartVulkanCapture(DeviceOwnedWindow devWnd)
+{
+  // snapshot the registry so we don't hold the lock while calling into the drivers - they take
+  // their own capture transition locks and may call back into core
+  std::vector<DeviceOwnedWindow> windows;
+
+  {
+    SCOPED_LOCK(m_CapturerListLock);
+
+    for(auto it : m_VulkanFrameCapturers)
+    {
+      if(m_ActiveVulkanFrameCapturers.find(it.first) != m_ActiveVulkanFrameCapturers.end())
+        continue;
+      m_ActiveVulkanFrameCapturers.insert(it.first);
+      windows.push_back(it.first);
+    }
+  }
+
+  if(windows.empty())
+    return false;
+
+  RDCLOG("Starting capture on %zu Vulkan frame capturer(s)", windows.size());
+
+  for(DeviceOwnedWindow window : windows)
+    StartFrameCapture(window);
+
+  return true;
+}
+
+bool RenderDoc::EndVulkanCapture(DeviceOwnedWindow)
+{
+  std::vector<DeviceOwnedWindow> windows;
+
+  {
+    SCOPED_LOCK(m_CapturerListLock);
+    windows.assign(m_ActiveVulkanFrameCapturers.begin(), m_ActiveVulkanFrameCapturers.end());
+  }
+
+  if(windows.empty())
+    return false;
+
+  RDCLOG("Ending capture on %zu Vulkan frame capturer(s)", windows.size());
+
+  bool ret = false;
+
+  for(DeviceOwnedWindow window : windows)
+    ret |= EndFrameCapture(window);
+
+  return ret;
 }
 
 bool RenderDoc::HasActiveFrameCapturer(RDCDriver driver)
