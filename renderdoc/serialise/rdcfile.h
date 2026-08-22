@@ -82,6 +82,7 @@ public:
   uint64_t GetTimestampBase() const { return m_TimeBase; }
   double GetTimestampFrequency() const { return m_TimeFrequency; }
   const RDCThumb &GetThumbnail() const { return m_Thumb; }
+  const rdcstr &Filename() const { return m_Filename; }
   int SectionIndex(SectionType type) const;
   int SectionIndex(const rdcstr &name) const;
   int NumSections() const { return int(m_Sections.size()); }

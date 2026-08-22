@@ -695,7 +695,6 @@ private:
   rdcstr m_Target;
   rdcstr m_CaptureFileTemplate;
   rdcstr m_CaptureTitle;
-  rdcstr m_CurrentLogFile;
   CaptureOptions m_Options;
   uint32_t m_Overlay;
 

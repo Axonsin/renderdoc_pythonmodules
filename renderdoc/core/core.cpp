@@ -1674,17 +1674,17 @@ RDCFile *RenderDoc::CreateRDC(RDCDriver driver, uint32_t frameNum, const FramePi
   if(frameNum == ~0U)
     suffix = "_capture";
 
-  m_CurrentLogFile = StringFormat::Fmt("%s%s.rdc", m_CaptureFileTemplate.c_str(), suffix.c_str());
+  rdcstr logfile = StringFormat::Fmt("%s%s.rdc", m_CaptureFileTemplate.c_str(), suffix.c_str());
 
   // make sure we don't stomp another capture if we make multiple captures in the same frame.
   {
     SCOPED_LOCK(m_CaptureLock);
     int altnum = 2;
-    while(std::find_if(m_Captures.begin(), m_Captures.end(), [this](const CaptureData &o) {
-            return o.path == m_CurrentLogFile;
+    while(std::find_if(m_Captures.begin(), m_Captures.end(), [&](const CaptureData &o) {
+            return o.path == logfile;
           }) != m_Captures.end())
     {
-      m_CurrentLogFile =
+      logfile =
           StringFormat::Fmt("%s%s_%d.rdc", m_CaptureFileTemplate.c_str(), suffix.c_str(), altnum);
       altnum++;
     }
@@ -1707,9 +1707,9 @@ RDCFile *RenderDoc::CreateRDC(RDCDriver driver, uint32_t frameNum, const FramePi
   ret->SetData(driver, ToStr(driver).c_str(), OSUtility::GetMachineIdent(), &outThumb, m_TimeBase,
                m_TimeFrequency);
 
-  FileIO::CreateParentDirectory(m_CurrentLogFile);
+  FileIO::CreateParentDirectory(logfile);
 
-  ret->Create(m_CurrentLogFile.c_str());
+  ret->Create(logfile.c_str());
 
   if(ret->Error() != ResultCode::Succeeded)
     SAFE_DELETE(ret);
@@ -2216,10 +2216,10 @@ void RenderDoc::FinishCaptureWriting(RDCFile *rdc, uint32_t frameNumber)
       delete w;
     }
 
-    RDCLOG("Written to disk: %s", m_CurrentLogFile.c_str());
+    RDCLOG("Written to disk: %s", rdc->Filename().c_str());
 
     CaptureData cap;
-    cap.path = m_CurrentLogFile;
+    cap.path = rdc->Filename();
     cap.title = m_CaptureTitle;
     cap.timestamp = Timing::GetUnixTimestamp();
     cap.driver = rdc->GetDriver();
