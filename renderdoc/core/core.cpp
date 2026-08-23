@@ -1156,11 +1156,6 @@ void RenderDoc::SetCaptureTitle(const rdcstr &title)
 
 bool RenderDoc::EndFrameCapture(DeviceOwnedWindow devWnd)
 {
-  {
-    SCOPED_LOCK(m_CapturerListLock);
-    m_ActiveVulkanFrameCapturers.erase(devWnd);
-  }
-
   IFrameCapturer *frameCap = MatchFrameCapturer(devWnd);
   if(frameCap)
   {
@@ -1173,11 +1168,6 @@ bool RenderDoc::EndFrameCapture(DeviceOwnedWindow devWnd)
 
 bool RenderDoc::DiscardFrameCapture(DeviceOwnedWindow devWnd)
 {
-  {
-    SCOPED_LOCK(m_CapturerListLock);
-    m_ActiveVulkanFrameCapturers.erase(devWnd);
-  }
-
   IFrameCapturer *frameCap = MatchFrameCapturer(devWnd);
   if(frameCap)
   {
@@ -2429,41 +2419,33 @@ void RenderDoc::RemoveFrameCapturer(DeviceOwnedWindow devWnd)
   }
 }
 
-void RenderDoc::SetVulkanFrameCapturer(DeviceOwnedWindow devWnd, IFrameCapturer *cap)
+void RenderDoc::AddVulkanFrameCapturer(IFrameCapturer *cap)
 {
   if(IsReplayApp())
     return;
 
   SCOPED_LOCK(m_CapturerListLock);
 
-  if(cap == NULL)
-  {
-    m_VulkanFrameCapturers.erase(devWnd);
-    return;
-  }
+  m_VulkanFrameCapturers.insert(cap);
 
-  m_VulkanFrameCapturers[devWnd] = cap;
-
-  RDCLOG("Registering Vulkan frame capturer %#p (%zu total)", devWnd.windowHandle,
-         m_VulkanFrameCapturers.size());
+  RDCLOG("Registering Vulkan frame capturer %#p (%zu total)", cap, m_VulkanFrameCapturers.size());
 }
 
-void RenderDoc::RemoveVulkanFrameCapturer(DeviceOwnedWindow devWnd)
+void RenderDoc::RemoveVulkanFrameCapturer(IFrameCapturer *cap)
 {
   if(IsReplayApp())
     return;
 
   SCOPED_LOCK(m_CapturerListLock);
 
-  auto it = m_VulkanFrameCapturers.find(devWnd);
+  auto it = m_VulkanFrameCapturers.find(cap);
   if(it == m_VulkanFrameCapturers.end())
     return;
 
   m_VulkanFrameCapturers.erase(it);
-  m_ActiveVulkanFrameCapturers.erase(devWnd);
+  m_ActiveVulkanFrameCapturers.erase(cap);
 
-  RDCLOG("Clearing Vulkan frame capturer %#p (%zu remaining)", devWnd.windowHandle,
-         m_VulkanFrameCapturers.size());
+  RDCLOG("Clearing Vulkan frame capturer %#p (%zu remaining)", cap, m_VulkanFrameCapturers.size());
 }
 
 size_t RenderDoc::NumVulkanFrameCapturers()
@@ -2474,51 +2456,65 @@ size_t RenderDoc::NumVulkanFrameCapturers()
 
 bool RenderDoc::StartVulkanCapture(DeviceOwnedWindow devWnd)
 {
+  m_CaptureTitle.clear();
+
   // snapshot the registry so we don't hold the lock while calling into the drivers - they take
   // their own capture transition locks and may call back into core
-  std::vector<DeviceOwnedWindow> windows;
+  std::vector<IFrameCapturer *> capturers;
 
   {
     SCOPED_LOCK(m_CapturerListLock);
 
-    for(auto it : m_VulkanFrameCapturers)
-    {
-      if(m_ActiveVulkanFrameCapturers.find(it.first) != m_ActiveVulkanFrameCapturers.end())
-        continue;
-      m_ActiveVulkanFrameCapturers.insert(it.first);
-      windows.push_back(it.first);
-    }
+    capturers.assign(m_VulkanFrameCapturers.begin(), m_VulkanFrameCapturers.end());
+    m_ActiveVulkanFrameCapturers.clear();
   }
 
-  if(windows.empty())
+  if(capturers.empty())
     return false;
 
-  RDCLOG("Starting capture on %zu Vulkan frame capturer(s)", windows.size());
+  // the drivers' own guards no-op a start while already capturing, so call straight into them
+  // instead of going through MatchFrameCapturer which is keyed by window
+  for(IFrameCapturer *cap : capturers)
+    cap->StartFrameCapture(devWnd);
 
-  for(DeviceOwnedWindow window : windows)
-    StartFrameCapture(window);
+  {
+    SCOPED_LOCK(m_CapturerListLock);
+    m_ActiveVulkanFrameCapturers.insert(capturers.begin(), capturers.end());
+  }
+
+  RDCLOG("Starting capture on %zu Vulkan frame capturer(s)", capturers.size());
+
+  m_CapturesActive += (int)capturers.size();
 
   return true;
 }
 
 bool RenderDoc::EndVulkanCapture(DeviceOwnedWindow)
 {
-  std::vector<DeviceOwnedWindow> windows;
+  std::vector<IFrameCapturer *> capturers;
 
   {
     SCOPED_LOCK(m_CapturerListLock);
-    windows.assign(m_ActiveVulkanFrameCapturers.begin(), m_ActiveVulkanFrameCapturers.end());
+
+    capturers.assign(m_ActiveVulkanFrameCapturers.begin(), m_ActiveVulkanFrameCapturers.end());
+    m_ActiveVulkanFrameCapturers.clear();
   }
 
-  if(windows.empty())
+  if(capturers.empty())
     return false;
 
-  RDCLOG("Ending capture on %zu Vulkan frame capturer(s)", windows.size());
+  RDCLOG("Ending capture on %zu Vulkan frame capturer(s)", capturers.size());
 
   bool ret = false;
 
-  for(DeviceOwnedWindow window : windows)
-    ret |= EndFrameCapture(window);
+  // a NULL window makes the drivers fall back to their last presented swapchain (or none at
+  // all), which is the only thing that works for off-screen instances
+  for(IFrameCapturer *cap : capturers)
+    ret |= cap->EndFrameCapture(DeviceOwnedWindow());
+
+  m_CapturesActive -= (int)capturers.size();
+  if(m_CapturesActive < 0)
+    m_CapturesActive = 0;
 
   return ret;
 }

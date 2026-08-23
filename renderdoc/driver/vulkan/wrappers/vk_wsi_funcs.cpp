@@ -1499,8 +1499,6 @@ void WrappedVulkan::vkDestroySurfaceKHR(VkInstance instance, VkSurfaceKHR surfac
     Keyboard::RemoveInputWindow(wnd->system, wnd->handle);
 
     RenderDoc::Inst().RemoveFrameCapturer(DeviceOwnedWindow(LayerDisp(m_Instance), wnd->handle));
-    RenderDoc::Inst().RemoveVulkanFrameCapturer(
-        DeviceOwnedWindow(LayerDisp(m_Instance), wnd->handle));
 
     delete wnd;
   }

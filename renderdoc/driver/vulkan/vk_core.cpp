@@ -224,6 +224,10 @@ WrappedVulkan::WrappedVulkan()
     m_FrameCaptureRecord->DataInSerialiser = false;
     m_FrameCaptureRecord->Length = 0;
     m_FrameCaptureRecord->InternalResource = true;
+
+    // multi-target captures fan out over every Vulkan instance in the process, registered for
+    // the driver's whole lifetime so surface-less off-screen instances are covered too
+    RenderDoc::Inst().AddVulkanFrameCapturer(this);
   }
   else
   {
@@ -235,6 +239,8 @@ WrappedVulkan::WrappedVulkan()
 
 WrappedVulkan::~WrappedVulkan()
 {
+  RenderDoc::Inst().RemoveVulkanFrameCapturer(this);
+
   // records must be deleted before resource manager shutdown
   if(m_FrameCaptureRecord)
   {
@@ -3454,14 +3460,15 @@ void WrappedVulkan::AdvanceFrame()
 
 void WrappedVulkan::Present(DeviceOwnedWindow devWnd)
 {
-  // in multi-target mode every Vulkan instance ends its own capture on present, not just the
-  // active window, and one trigger fans out a capture across all of them
+  // in multi-target mode one trigger fans a capture out across every registered Vulkan
+  // instance, and a present to the active window ends the whole batch at once so every .rdc
+  // covers the same span
   bool multiCapture = Capture_MultiTarget();
   bool activeWindow = devWnd.windowHandle == NULL || RenderDoc::Inst().IsActiveWindow(devWnd);
 
   RenderDoc::Inst().AddActiveDriver(RDCDriver::Vulkan, true);
 
-  if(!multiCapture && !activeWindow)
+  if(!activeWindow)
   {
     // first present to *any* window, even inactive, terminates frame 0
     if(m_FirstFrameCapture && IsActiveCapturing(m_State))
@@ -3474,22 +3481,43 @@ void WrappedVulkan::Present(DeviceOwnedWindow devWnd)
   }
 
   if(IsActiveCapturing(m_State) && !m_AppControlledCapture)
-    RenderDoc::Inst().EndFrameCapture(devWnd);
-
-  if(RenderDoc::Inst().ShouldTriggerCapture(m_FrameCounter) && IsBackgroundCapturing(m_State))
   {
     if(multiCapture)
     {
-      RDCLOG("Starting capture across all registered Vulkan devices");
-      RenderDoc::Inst().StartVulkanCapture(devWnd);
+      RenderDoc::Inst().EndVulkanCapture(devWnd);
+
+      // the active set only tracks captures started by the fan-out - a capture started some
+      // other way (frame 0 via FirstFrame, or the application API) is ended directly here
+      if(IsActiveCapturing(m_State))
+        RenderDoc::Inst().EndFrameCapture(devWnd);
     }
     else
     {
-      RenderDoc::Inst().StartFrameCapture(devWnd);
+      RenderDoc::Inst().EndFrameCapture(devWnd);
+    }
+  }
+
+  if(RenderDoc::Inst().ShouldTriggerCapture(m_FrameCounter) && IsBackgroundCapturing(m_State))
+  {
+    bool fanout = false;
+
+    if(multiCapture)
+    {
+      RDCLOG("Starting capture across all registered Vulkan devices");
+      fanout = RenderDoc::Inst().StartVulkanCapture(devWnd);
     }
 
-    m_AppControlledCapture = false;
-    m_CapturedFrames.back().frameNumber = m_FrameCounter;
+    if(!fanout)
+    {
+      RenderDoc::Inst().StartFrameCapture(devWnd);
+
+      m_AppControlledCapture = false;
+      m_CapturedFrames.back().frameNumber = m_FrameCounter;
+    }
+    else
+    {
+      m_AppControlledCapture = false;
+    }
   }
 }
 
@@ -5093,7 +5121,6 @@ VkResourceRecord *WrappedVulkan::RegisterSurface(WindowingSystem system, void *h
   RDCLOG("RegisterSurface() window %p", handle);
 
   RenderDoc::Inst().AddFrameCapturer(DeviceOwnedWindow(LayerDisp(m_Instance), handle), this);
-  RenderDoc::Inst().SetVulkanFrameCapturer(DeviceOwnedWindow(LayerDisp(m_Instance), handle), this);
 
   return (VkResourceRecord *)new PackedWindowHandle(system, handle);
 }

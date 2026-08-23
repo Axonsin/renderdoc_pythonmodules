@@ -247,6 +247,10 @@ private:
   CaptureFailReason m_FailedReason;
   uint32_t m_Failures;
 
+  // multi-target capture: GL frames remaining before a redirected Vulkan capture batch is
+  // ended, counting down at each SwapBuffers after the trigger that started it
+  uint32_t m_VulkanCaptureCountdown = 0;
+
   CaptureFailReason m_FailureReason;
   bool m_SuccessfulCapture;
 

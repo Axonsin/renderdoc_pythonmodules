@@ -2247,20 +2247,25 @@ void WrappedOpenGL::SwapBuffers(WindowingSystem winSystem, void *windowHandle)
     RenderDoc::Inst().EndFrameCapture(devWnd);
 
   // in multi-target mode with Vulkan devices present (e.g. GLES-on-Vulkan emulators), the real
-  // GPU work lives on the Vulkan side of the translation: the GL frame boundary ends the
-  // previous trigger's deferred Vulkan captures, and a new trigger is redirected to start
-  // captures on all of them instead of the GL window
+  // GPU work lives on the Vulkan side of the translation: a trigger is redirected to start
+  // captures on all of them instead of the GL window, and the deferred batch ends two GL
+  // frames later - the translation layer typically submits a frame late, so a GL frame's GPU
+  // work lands during the next one
   bool multiRedirect = Capture_MultiTarget() && RenderDoc::Inst().NumVulkanFrameCapturers() > 0;
 
-  if(multiRedirect && RenderDoc::Inst().EndVulkanCapture(devWnd))
+  if(m_VulkanCaptureCountdown > 0 && --m_VulkanCaptureCountdown == 0)
+  {
     RDCLOG("Ending deferred Vulkan off-screen capture");
+    RenderDoc::Inst().EndVulkanCapture(devWnd);
+  }
 
   if(RenderDoc::Inst().ShouldTriggerCapture(m_FrameCounter) && IsBackgroundCapturing(m_State))
   {
-    if(multiRedirect)
+    if(multiRedirect && m_VulkanCaptureCountdown == 0 &&
+       RenderDoc::Inst().StartVulkanCapture(devWnd))
     {
       RDCLOG("Redirecting GL capture trigger to Vulkan off-screen capture");
-      RenderDoc::Inst().StartVulkanCapture(devWnd);
+      m_VulkanCaptureCountdown = 2;
     }
     else
     {
