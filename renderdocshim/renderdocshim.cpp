@@ -38,6 +38,7 @@ struct CaptureOptions;
 typedef void(__cdecl *pINTERNAL_SetCaptureOptions)(const CaptureOptions *opts);
 typedef void(__cdecl *pINTERNAL_SetLogFile)(const char *logfile);
 typedef void(__cdecl *pINTERNAL_SetDebugLogFile)(const char *logfile);
+typedef void(__cdecl *pINTERNAL_GetTargetControlIdent)(uint32_t *ident);
 
 #if defined(RELEASE)
 #define LOGPRINT(txt) \
@@ -57,7 +58,7 @@ void CheckHook()
 {
   ShimData *data = NULL;
 
-  HANDLE datahandle = OpenFileMappingA(FILE_MAP_READ, FALSE, GLOBAL_HOOK_DATA_NAME);
+  HANDLE datahandle = OpenFileMappingA(FILE_MAP_READ | FILE_MAP_WRITE, FALSE, GLOBAL_HOOK_DATA_NAME);
 
   if(datahandle == NULL)
   {
@@ -65,7 +66,8 @@ void CheckHook()
     return;
   }
 
-  data = (ShimData *)MapViewOfFile(datahandle, FILE_MAP_READ, 0, 0, sizeof(ShimData));
+  data = (ShimData *)MapViewOfFile(datahandle, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0,
+                                   sizeof(ShimData));
 
   if(data == NULL)
   {
@@ -120,15 +122,46 @@ void CheckHook()
             (pINTERNAL_SetLogFile)GetProcAddress(mod, "INTERNAL_SetLogFile");
         pINTERNAL_SetDebugLogFile setdebuglog =
             (pINTERNAL_SetDebugLogFile)GetProcAddress(mod, "INTERNAL_SetDebugLogFile");
+        pINTERNAL_GetTargetControlIdent getident =
+            (pINTERNAL_GetTargetControlIdent)GetProcAddress(mod, "INTERNAL_GetTargetControlIdent");
 
-        if(setopts)
+        if(!setopts || !getident)
+        {
+          // renderdic.dll is present but its INTERNAL_* export surface is
+          // missing - incompatible build. Report a setup failure.
+          data->status = 3;
+        }
+        else
+        {
           setopts((const CaptureOptions *)data->opts);
 
-        if(setlogfile && data->capfile[0])
-          setlogfile(data->capfile);
+          if(setlogfile && data->capfile[0])
+            setlogfile(data->capfile);
 
-        if(setdebuglog && data->debuglog[0])
-          setdebuglog(data->debuglog);
+          if(setdebuglog && data->debuglog[0])
+            setdebuglog(data->debuglog);
+
+          // Report completion to the kernel-injection coordinator. This is the
+          // only signal the UI can use for protected targets: no process handle
+          // is available to poll module state.
+          uint32_t ident = 0;
+          getident(&ident);
+
+          if(ident == 0)
+          {
+            data->status = 3;
+          }
+          else
+          {
+            data->ident = ident;
+            data->status = 1;
+          }
+        }
+      }
+      else
+      {
+        // renderdic.dll failed to load in this process.
+        data->status = 3;
       }
     }
     else
@@ -138,6 +171,10 @@ void CheckHook()
       LOGPRINT(L"', based on '");
       LOGPRINT(data->pathmatchstring);
       LOGPRINT(L"'\n");
+
+      // Tell the kernel-injection coordinator the target doesn't match so it
+      // can fail fast instead of waiting out the timeout.
+      data->status = 2;
     }
 
     VirtualFree(exepath, 0, MEM_RELEASE);

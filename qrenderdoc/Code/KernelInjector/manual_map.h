@@ -25,29 +25,33 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
+#include <QString>
 
-struct ShimData
+#if defined(Q_OS_WIN)
+
+namespace KernelInjector
 {
-  wchar_t pathmatchstring[2048];
-  wchar_t rdocpath[2048];
-  char debuglog[2048];
-  char capfile[2048];
+class KernelMem;
 
-  unsigned char opts[512];
-
-  // Kernel injection handshake. The shim writes status=1 after the capture
-  // setup calls have completed and stores the target control ident so the UI
-  // can attach a live capture. status=2 means the shim loaded but the target
-  // executable did not match pathmatchstring. The global hook flow leaves
-  // both fields zero.
-  uint32_t status;
-  uint32_t ident;
+// kdmapper-style manual mapping of the second (injection) driver. The driver
+// image is allocated as independent kernel pages, copied with relocations and
+// imports fixed up, made executable per-section, and its entry point is
+// invoked through the NtAddAtom trampoline. The mapped driver never appears
+// in PsLoadedModuleList or any driver-tracking structure.
+//
+// The mapped driver receives a NULL DriverObject (the driver builds its own
+// fake object) and creates its control device itself; MapDriver then opens
+// that device so the coordinator can issue injection requests.
+class ManualMapper
+{
+public:
+  // Maps driverBytes into kernel memory and calls its entry point. On success
+  // opens the device the driver created and stores the handle in *outDevice.
+  // The driver is intentionally left mapped for the lifetime of the session.
+  static bool MapDriver(KernelMem *mem, const unsigned char *driverBytes, size_t size,
+                        void **outDevice, QString *errorDetail);
 };
+}    // namespace KernelInjector
 
-#ifdef WIN64
-#define GLOBAL_HOOK_DATA_NAME "RenderDicGlobalHookData64"
-#define SHIM_DLL_NAME "renderdicshim64.dll"
-#else
-#define GLOBAL_HOOK_DATA_NAME "RenderDicGlobalHookData32"
-#define SHIM_DLL_NAME "renderdicshim32.dll"
-#endif
+#endif    // Q_OS_WIN

@@ -116,6 +116,8 @@ private slots:
 
   // advanced
   void on_Injection_Method_currentIndexChanged(int index);
+  void on_KernelInjectionEnable_toggled(bool checked);
+  void on_KernelInjection_Backend_currentIndexChanged(int index);
   void on_Capture_MultiTarget_currentIndexChanged(int index);
 
   // manual slots

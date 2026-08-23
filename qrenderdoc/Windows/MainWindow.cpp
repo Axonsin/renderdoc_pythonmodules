@@ -23,6 +23,8 @@
  ******************************************************************************/
 
 #include "MainWindow.h"
+#include <atomic>
+#include <QCoreApplication>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -32,7 +34,9 @@
 #include <QPixmapCache>
 #include <QProgressBar>
 #include <QProgressDialog>
+#include <QSet>
 #include <QShortcut>
+#include <QTimer>
 #include <QToolButton>
 #include <QToolTip>
 #include "Code/QRDUtils.h"
@@ -49,8 +53,13 @@
 #include "Windows/Dialogs/SettingsDialog.h"
 #include "Windows/Dialogs/SuggestRemoteDialog.h"
 #include "Windows/Dialogs/TipsDialog.h"
+#include "Code/qprocessinfo.h"
 #include "ui_MainWindow.h"
 #include "version.h"
+
+#if defined(Q_OS_WIN32)
+#include "Code/KernelInjector/kernel_injector.h"
+#endif
 
 #define JSON_ID "rdocLayoutData"
 #define JSON_VER 1
@@ -69,10 +78,16 @@ MainWindow::MainWindow(ICaptureContext &ctx) : QMainWindow(NULL), ui(new Ui::Mai
   // remove inject menu item when it's not enabled in the settings
   if(!ctx.Config().AllowProcessInject)
     ui->menu_File->removeAction(ui->action_Inject_into_Process);
+
+  // kernel capture requires explicit opt-in; the setting only takes effect
+  // after a restart because the feature is wired up at startup
+  if(!ctx.Config().KernelInjectionEnable)
+    ui->menu_File->removeAction(ui->action_Inject_Kernel);
 #else
   // process injection is not supported on non-Windows, so remove the menu item rather than disable
   // it without a clear way to communicate that it is never supported
   ui->menu_File->removeAction(ui->action_Inject_into_Process);
+  ui->menu_File->removeAction(ui->action_Inject_Kernel);
 #endif
 
   QToolTip::setPalette(palette());
@@ -650,6 +665,177 @@ void MainWindow::OnInjectTrigger(uint32_t PID, const rdcarray<EnvironmentModific
                        [th]() { return !th->isRunning(); });
   }
   th->deleteLater();
+}
+
+void MainWindow::OnKernelCaptureTrigger(const QString &exe, const QString &workingDir,
+                                        const QString &cmdLine,
+                                        const rdcarray<EnvironmentModification> &env,
+                                        CaptureOptions opts,
+                                        std::function<void(LiveCapture *)> callback)
+{
+#if defined(Q_OS_WIN32)
+  Q_UNUSED(workingDir);
+  Q_UNUSED(cmdLine);
+  Q_UNUSED(env);
+
+  // Only one kernel capture at a time: the whole driver chain is session
+  // state, and the modal poll loop below is not re-entrant. The flag stays
+  // set until the worker pipeline finishes.
+  static std::atomic<bool> s_busy{false};
+
+  bool expected = false;
+  if(!s_busy.compare_exchange_strong(expected, true))
+  {
+    RDDialog::warning(this, tr("Kernel capture in progress"),
+                      tr("A kernel capture is already in progress."));
+    return;
+  }
+
+  if(!PromptCloseCapture())
+  {
+    s_busy = false;
+    return;
+  }
+
+  QFileInfo exeInfo(exe);
+
+  // Same validation as the launch path: absolute paths and PATH-resolvable
+  // bare names are both accepted.
+  if(!exeInfo.exists() && QStandardPaths::findExecutable(exe).isEmpty())
+  {
+    RDDialog::critical(this, tr("Invalid executable"),
+                       tr("Invalid executable: %1\nCan't locate this path or a matching "
+                          "executable in PATH")
+                           .arg(exe));
+    return;
+  }
+
+  // Step 1: wait for the user to start the application manually. RenderDic
+  // never launches it - the target is expected to be started by its launcher
+  // and is detected by executable name. Processes that were already running
+  // when this dialog appeared are excluded so a stale instance is not picked.
+  QSet<uint32_t> preExisting;
+  for(const QProcessInfo &info : QProcessInfo::enumerate())
+  {
+    if(QString::compare(info.name(), exeInfo.fileName(), Qt::CaseInsensitive) == 0)
+      preExisting.insert(info.pid());
+  }
+
+  uint32_t pid = 0;
+
+  {
+    QProgressDialog progress(
+        tr("Please start %1 manually...\n\nThe capture library will be injected as soon as the "
+           "process is detected.")
+            .arg(exeInfo.fileName()),
+        tr("Cancel"), 0, 0, this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setMinimumDuration(0);
+
+    QTimer pollTimer;
+    QObject::connect(&pollTimer, &QTimer::timeout, [&]() {
+      if(pid != 0)
+        return;
+
+      for(const QProcessInfo &info : QProcessInfo::enumerate())
+      {
+        if(QString::compare(info.name(), exeInfo.fileName(), Qt::CaseInsensitive) == 0 &&
+           !preExisting.contains(info.pid()))
+        {
+          pid = info.pid();
+          progress.close();
+          return;
+        }
+      }
+    });
+
+    pollTimer.start(500);
+
+    while(pid == 0 && !progress.wasCanceled())
+      QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+
+    pollTimer.stop();
+  }
+
+  if(pid == 0)
+  {
+    s_busy = false;
+    return;    // user cancelled
+  }
+
+  // Step 2: kernel injection only supports 64-bit targets in this version.
+  {
+    HANDLE hProcess =
+        OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+    BOOL isWow64 = FALSE;
+    if(hProcess != nullptr)
+    {
+      IsWow64Process(hProcess, &isWow64);
+      CloseHandle(hProcess);
+    }
+
+    if(isWow64)
+    {
+      s_busy = false;
+      RDDialog::critical(this, tr("Unsupported target"),
+                         tr("Kernel capture does not support 32-bit (wow64) targets yet."));
+      return;
+    }
+  }
+
+  // Step 3: run the kernel pipeline on a worker thread.
+  LambdaThread *th = new LambdaThread([this, pid, exeInfo, opts, callback]() {
+    QString capturefile = m_Ctx.TempCaptureFilename(exeInfo.fileName());
+
+    KernelInjector::KernelInjectorCore::CaptureRequest req;
+    req.backend = (KernelInjector::BackendId)(int)m_Ctx.Config().KernelInjectionBackend;
+    req.pid = pid;
+    req.exeName = exeInfo.fileName();
+    req.shimPath = QCoreApplication::applicationDirPath() + lit("/renderdicshim64.dll");
+    req.renderdocPath = QCoreApplication::applicationDirPath() + lit("/renderdic.dll");
+    req.captureFile = capturefile;
+    req.opts = opts;
+
+    uint32_t ident = 0;
+    QString error;
+    const bool ok = KernelInjector::KernelInjectorCore::Capture(req, &ident, &error);
+
+    GUIInvoke::call(this, [this, ok, error, ident, callback]() {
+      s_busy = false;
+
+      if(!ok)
+      {
+        RDDialog::critical(this, tr("Kernel capture failed"),
+                           tr("The kernel injection failed:\n\n%1").arg(error));
+        return;
+      }
+
+      LiveCapture *live = new LiveCapture(m_Ctx, QString(), QString(), ident, this, this);
+      ShowLiveCapture(live);
+      callback(live);
+    });
+  });
+  th->setName(lit("KernelCapture"));
+  th->start();
+  // wait a few ms before popping up a progress bar
+  th->wait(500);
+  if(th->isRunning())
+  {
+    ShowProgressDialog(this, tr("Injecting capture library into %1, please wait...")
+                                 .arg(exeInfo.fileName()),
+                       [th]() { return !th->isRunning(); });
+  }
+  th->deleteLater();
+#else
+  RDDialog::critical(this, tr("Unsupported platform"),
+                     tr("Kernel capture is only supported on Windows."));
+  Q_UNUSED(exe);
+  Q_UNUSED(workingDir);
+  Q_UNUSED(cmdLine);
+  Q_UNUSED(env);
+  Q_UNUSED(opts);
+  Q_UNUSED(callback);
+#endif
 }
 
 void MainWindow::LoadCapture(const QString &filename, const ReplayOptions &opts, bool temporary,
@@ -2196,6 +2382,18 @@ void MainWindow::on_action_Inject_into_Process_triggered()
     ui->toolWindowManager->addToolWindow(capDialog->Widget(), mainToolArea());
 }
 
+void MainWindow::on_action_Inject_Kernel_triggered()
+{
+  ICaptureDialog *capDialog = m_Ctx.GetCaptureDialog();
+
+  capDialog->SetKernelMode(true);
+
+  if(ui->toolWindowManager->toolWindows().contains(capDialog->Widget()))
+    ToolWindowManager::raiseToolWindow(capDialog->Widget());
+  else
+    ui->toolWindowManager->addToolWindow(capDialog->Widget(), mainToolArea());
+}
+
 void MainWindow::on_action_Errors_and_Warnings_triggered()
 {
   QWidget *debugMessages = m_Ctx.GetDebugMessageView()->Widget();
@@ -2663,6 +2861,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
     live->cleanItems();
     delete live;
   }
+
+#if defined(Q_OS_WIN32)
+  // Unload the BYOVD driver chain (the manual-mapped driver stays resident,
+  // it cannot be safely unmapped).
+  KernelInjector::KernelInjectorCore::Shutdown();
+#endif
 
   SaveLayout(0);
 }

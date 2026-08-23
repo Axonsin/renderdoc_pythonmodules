@@ -25,29 +25,31 @@
 #pragma once
 
 #include <cstdint>
+#include <QString>
 
-struct ShimData
+#if defined(Q_OS_WIN)
+
+namespace KernelInjector
 {
-  wchar_t pathmatchstring[2048];
-  wchar_t rdocpath[2048];
-  char debuglog[2048];
-  char capfile[2048];
+class KernelMem;
 
-  unsigned char opts[512];
+// kdmapper-style trace cleanup: removes the just-loaded vulnerable driver from
+// the kernel structures that would reveal it (PiDDBCacheTable, CI hash
+// buckets, MmUnloadedDrivers, WdFilter's runtime driver list). Ported from
+// TheCruZ/kdmapper intel_driver.cpp, which RenderPro also copied.
+namespace TraceCleanup
+{
+// All four cleanups. Each one fails soft: returns false but the caller can
+// decide whether a partial cleanup is acceptable. driverName is the random
+// service name, tempPath the %TEMP% file path (CI buckets are keyed by path).
+bool ClearPiDDBCacheTable(KernelMem *mem, const QString &driverName, uint32_t timeDateStamp);
+bool ClearKernelHashBucketList(KernelMem *mem, const QString &driverName, const QString &tempPath);
+bool ClearMmUnloadedDrivers(KernelMem *mem, void *deviceHandle);
+bool ClearWdFilterDriverList(KernelMem *mem, const QString &driverName);
 
-  // Kernel injection handshake. The shim writes status=1 after the capture
-  // setup calls have completed and stores the target control ident so the UI
-  // can attach a live capture. status=2 means the shim loaded but the target
-  // executable did not match pathmatchstring. The global hook flow leaves
-  // both fields zero.
-  uint32_t status;
-  uint32_t ident;
-};
+bool CleanupAll(KernelMem *mem, void *deviceHandle, const QString &driverName,
+                const QString &tempPath, uint32_t timeDateStamp);
+}    // namespace TraceCleanup
+}    // namespace KernelInjector
 
-#ifdef WIN64
-#define GLOBAL_HOOK_DATA_NAME "RenderDicGlobalHookData64"
-#define SHIM_DLL_NAME "renderdicshim64.dll"
-#else
-#define GLOBAL_HOOK_DATA_NAME "RenderDicGlobalHookData32"
-#define SHIM_DLL_NAME "renderdicshim32.dll"
-#endif
+#endif    // Q_OS_WIN

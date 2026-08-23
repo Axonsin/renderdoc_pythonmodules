@@ -2316,6 +2316,11 @@ ICaptureDialog *CaptureContext::GetCaptureDialog()
              CaptureOptions opts, std::function<void(LiveCapture *)> callback) {
         return m_MainWindow->OnInjectTrigger(PID, env, name, opts, callback);
       },
+      [this](const QString &exe, const QString &workingDir, const QString &cmdLine,
+             const rdcarray<EnvironmentModification> &env, CaptureOptions opts,
+             std::function<void(LiveCapture *)> callback) {
+        return m_MainWindow->OnKernelCaptureTrigger(exe, workingDir, cmdLine, env, opts, callback);
+      },
       m_MainWindow, m_MainWindow);
   m_CaptureDialog->setObjectName(lit("capDialog"));
   m_CaptureDialog->setWindowIcon(*m_Icon);

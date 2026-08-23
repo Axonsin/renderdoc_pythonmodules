@@ -340,6 +340,13 @@ SettingsDialog::SettingsDialog(ICaptureContext &ctx, QWidget *parent)
   ui->Injection_Method->setCurrentIndex(injectionMethod);
   ui->Injection_Method_Desc->setText(InjectionMethodDescription(injectionMethod));
 
+  ui->KernelInjectionEnable->setChecked(m_Ctx.Config().KernelInjectionEnable);
+
+  int kernelBackend = (int)m_Ctx.Config().KernelInjectionBackend;
+  if(kernelBackend < 0 || kernelBackend >= ui->KernelInjection_Backend->count())
+    kernelBackend = 0;
+  ui->KernelInjection_Backend->setCurrentIndex(kernelBackend);
+
   ui->Capture_MultiTarget->addItem(lit("Default (active window)"));
   ui->Capture_MultiTarget->addItem(lit("All Vulkan devices (multiple .rdc)"));
 
@@ -1418,6 +1425,32 @@ void SettingsDialog::on_Injection_Method_currentIndexChanged(int index)
     setting->data.basic.u = (uint32_t)index;
 
   RENDERDOC_SaveConfigSettings();
+}
+
+// advanced
+void SettingsDialog::on_KernelInjectionEnable_toggled(bool checked)
+{
+  if(m_Init)
+    return;
+
+  m_Ctx.Config().KernelInjectionEnable = checked;
+  m_Ctx.Config().Save();
+
+  // The feature is wired up at startup (menu visibility, driver chain), so a
+  // restart is required for the change to take effect.
+}
+
+// advanced
+void SettingsDialog::on_KernelInjection_Backend_currentIndexChanged(int index)
+{
+  if(m_Init)
+    return;
+
+  if(index < 0)
+    return;
+
+  m_Ctx.Config().KernelInjectionBackend = index;
+  m_Ctx.Config().Save();
 }
 
 // advanced

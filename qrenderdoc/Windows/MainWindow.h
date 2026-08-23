@@ -94,6 +94,9 @@ public:
   void OnInjectTrigger(uint32_t PID, const rdcarray<EnvironmentModification> &env,
                        const QString &name, CaptureOptions opts,
                        std::function<void(LiveCapture *)> callback);
+  void OnKernelCaptureTrigger(const QString &exe, const QString &workingDir, const QString &cmdLine,
+                              const rdcarray<EnvironmentModification> &env, CaptureOptions opts,
+                              std::function<void(LiveCapture *)> callback);
 
   void ShowLiveCapture(LiveCapture *live);
   void LiveCaptureClosed(LiveCapture *live);
@@ -147,6 +150,7 @@ private slots:
   void on_action_Timeline_triggered();
   void on_action_Python_Shell_triggered();
   void on_action_Inject_into_Process_triggered();
+  void on_action_Inject_Kernel_triggered();
   void on_action_Resolve_Symbols_triggered();
   void on_action_Recompress_Capture_triggered();
   void on_action_EmbedExternalFiles_triggered();

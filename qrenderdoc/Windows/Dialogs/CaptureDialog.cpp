@@ -142,10 +142,17 @@ void CaptureDialog::PopulateMostRecent()
 }
 
 CaptureDialog::CaptureDialog(ICaptureContext &ctx, OnCaptureMethod captureCallback,
-                             OnInjectMethod injectCallback, MainWindow *main, QWidget *parent)
+                             OnInjectMethod injectCallback, OnKernelCaptureMethod kernelCaptureCallback,
+                             MainWindow *main, QWidget *parent)
     : QFrame(parent), ui(new Ui::CaptureDialog), m_Ctx(ctx), m_Main(main)
 {
   ui->setupUi(this);
+
+  m_Inject = false;
+  m_KernelMode = false;
+  m_CaptureCallback = captureCallback;
+  m_InjectCallback = injectCallback;
+  m_KernelCaptureCallback = kernelCaptureCallback;
 
   ui->exePath->setFont(Formatter::PreferredFont());
   ui->workDirPath->setFont(Formatter::PreferredFont());
@@ -241,6 +248,9 @@ CaptureDialog::~CaptureDialog()
 void CaptureDialog::SetInjectMode(bool inject)
 {
   m_Inject = inject;
+  // Inject and launch are both exclusive with kernel capture mode; entering
+  // either of them from a menu action must leave the kernel branch.
+  m_KernelMode = false;
 
   if(inject)
   {
@@ -268,6 +278,34 @@ void CaptureDialog::SetInjectMode(bool inject)
 
     ui->launch->setText(lit("Launch"));
     this->setWindowTitle(lit("Launch Application"));
+  }
+}
+
+void CaptureDialog::SetKernelMode(bool kernel)
+{
+  m_KernelMode = kernel;
+  m_Inject = false;
+
+  if(kernel)
+  {
+    // Same layout as launch mode (executable picker + options), but the
+    // target is never launched by RenderDic - the user starts it manually.
+    ui->injectGroup->setVisible(false);
+    ui->exeGroup->setVisible(true);
+    ui->topVerticalSpacer->spacerItem()->changeSize(0, 0, QSizePolicy::Minimum,
+                                                    QSizePolicy::Expanding);
+    ui->verticalLayout->invalidate();
+
+    ui->globalGroup->setVisible(false);
+
+    ui->launch->setText(lit("Wait for Launch & Inject"));
+    this->setWindowTitle(lit("Capture with Kernel Injection"));
+  }
+  else
+  {
+    ui->launch->setText(lit("Launch"));
+    this->setWindowTitle(lit("Launch Application"));
+    ui->globalGroup->setVisible(m_Ctx.Config().AllowGlobalHook);
   }
 }
 
@@ -1122,7 +1160,7 @@ CaptureSettings CaptureDialog::LoadSettingsFromDisk(const rdcstr &filename)
 
 void CaptureDialog::UpdateGlobalHook()
 {
-  ui->globalGroup->setVisible(!IsInjectMode() && m_Ctx.Config().AllowGlobalHook &&
+  ui->globalGroup->setVisible(!IsInjectMode() && !m_KernelMode && m_Ctx.Config().AllowGlobalHook &&
                               RENDERDOC_CanGlobalHook());
 
   if(ui->exePath->text().length() >= 4)
@@ -1170,6 +1208,62 @@ void CaptureDialog::SetEnvironmentModifications(const rdcarray<EnvironmentModifi
 
 void CaptureDialog::TriggerCapture()
 {
+  if(m_KernelMode)
+  {
+    QString exe = ui->exePath->text().trimmed();
+
+    if(exe.isEmpty())
+    {
+      RDDialog::critical(this, tr("No executable selected"),
+                         tr("No program selected, click browse next to 'Executable Path' "
+                            "above to select the program to capture."));
+      return;
+    }
+
+    // for non-remote captures, check the executable locally
+    if(!m_Ctx.Replay().CurrentRemote().IsValid())
+    {
+      if(!QFileInfo::exists(exe) && QStandardPaths::findExecutable(exe).isEmpty())
+      {
+        RDDialog::critical(
+            this, tr("Invalid executable"),
+            tr("Invalid executable: %1\nCan't locate this path or a matching executable in PATH")
+                .arg(exe));
+        return;
+      }
+    }
+
+    QString workingDir = ui->workDirPath->text();
+
+    // for non-remote captures, check the directory locally
+    if(!m_Ctx.Replay().CurrentRemote().IsValid())
+    {
+      if(!QDir(ui->workDirPath->text()).exists())
+      {
+        RDDialog::critical(
+            this, tr("Invalid working directory"),
+            tr("Invalid working directory: %1\nThis path does not exist").arg(workingDir));
+        return;
+      }
+    }
+
+    QString cmdLine = GetCommandLine();
+
+    SaveSettings(mostRecentFilename());
+
+    PopulateMostRecent();
+
+    // The target is started manually by the user; the kernel pipeline waits
+    // for it to appear and injects the capture library from the kernel.
+    m_KernelCaptureCallback(exe, workingDir, cmdLine, Settings().environment, Settings().options,
+                            [this](LiveCapture *live) {
+                              if(ui->queueFrameCap->isChecked())
+                                live->QueueCapture((int)ui->queuedFrame->value(),
+                                                   (int)ui->numFrames->value());
+                            });
+    return;
+  }
+
   if(IsInjectMode())
   {
     QModelIndexList sel = ui->processList->selectionModel()->selectedRows();

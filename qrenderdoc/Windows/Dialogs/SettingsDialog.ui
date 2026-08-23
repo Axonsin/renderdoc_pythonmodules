@@ -695,6 +695,61 @@ After interop is enabled you will need to reload any capture.</string>
             </property>
            </widget>
           </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="kernelInjectionLabel">
+            <property name="toolTip">
+             <string>Enables kernel-mode capture (BYOVD). Requires an administrator, a machine with
+Windows Memory Integrity (HVCI) disabled, and a restart of this application.
+
+When enabled, the File menu gains a 'Capture with Kernel Injection' action: pick the target
+executable, start it manually, and the capture library is injected from the kernel so user-mode
+process protection cannot block it.</string>
+            </property>
+            <property name="text">
+             <string>Kernel-mode injection (BYOVD) (restart required)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QCheckBox" name="KernelInjectionEnable">
+            <property name="toolTip">
+             <string>Enables kernel-mode capture (BYOVD). See the description on the left.</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="kernelBackendLabel">
+            <property name="toolTip">
+             <string>Selects which vulnerable driver provides the kernel memory read/write
+primitive. Both backends are verified with a self-test before they are used;
+if the self-test fails the capture is aborted with an error.</string>
+            </property>
+            <property name="text">
+             <string>Kernel R/W backend</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="KernelInjection_Backend">
+            <property name="toolTip">
+             <string>portwell: verified simple request protocol. TBT (TeAccess): alternate driver
+with a more complex request layout. Try the other backend if the self-test fails.</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>portwell</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>TBT (TeAccess)</string>
+             </property>
+            </item>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

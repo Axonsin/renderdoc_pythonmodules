@@ -435,3 +435,20 @@ HEADERS += $$_PRO_FILE_PWD_/3rdparty/scintilla/lexlib/*.h \
     $$_PRO_FILE_PWD_/3rdparty/scintilla/qt/ScintillaEdit/*.h \
     $$_PRO_FILE_PWD_/3rdparty/scintilla/qt/ScintillaEditBase/*.h
 
+
+# Kernel-mode capture (BYOVD) - Windows only
+win32 {
+    SOURCES += Code/KernelInjector/kernel_mem.cpp \
+        Code/KernelInjector/kernel_scan.cpp \
+        Code/KernelInjector/driver_loader.cpp \
+        Code/KernelInjector/trace_cleanup.cpp \
+        Code/KernelInjector/manual_map.cpp \
+        Code/KernelInjector/kernel_injector.cpp
+    HEADERS += Code/KernelInjector/kernel_mem.h \
+        Code/KernelInjector/kernel_scan.h \
+        Code/KernelInjector/driver_loader.h \
+        Code/KernelInjector/trace_cleanup.h \
+        Code/KernelInjector/manual_map.h \
+        Code/KernelInjector/kernel_injector.h \
+        Code/KernelInjector/driver_resources.h
+}

@@ -984,6 +984,14 @@ QWidget.
 )");
   virtual void SetInjectMode(bool inject) = 0;
 
+  DOCUMENT(R"(Switches the window to or from kernel capture mode: the target
+executable is selected but never launched by RenderDic - the user starts it
+manually and the capture library is injected from the kernel.
+
+:param bool kernel: ``True`` if the window should configure for kernel capture.
+)");
+  virtual void SetKernelMode(bool kernel) = 0;
+
   DOCUMENT(R"(Sets the executable filename to capture.
 
 :param str filename: The filename to execute.

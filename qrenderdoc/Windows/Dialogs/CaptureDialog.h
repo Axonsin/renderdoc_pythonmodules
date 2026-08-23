@@ -50,15 +50,21 @@ public:
   typedef std::function<void(uint32_t PID, const rdcarray<EnvironmentModification> &env, const QString &name,
                              CaptureOptions opts, std::function<void(LiveCapture *)> callback)>
       OnInjectMethod;
+  typedef std::function<void(const QString &exe, const QString &workingDir, const QString &cmdLine,
+                             const rdcarray<EnvironmentModification> &env, CaptureOptions opts,
+                             std::function<void(LiveCapture *)> callback)>
+      OnKernelCaptureMethod;
 
   explicit CaptureDialog(ICaptureContext &ctx, OnCaptureMethod captureCallback,
-                         OnInjectMethod injectCallback, MainWindow *main, QWidget *parent = 0);
+                         OnInjectMethod injectCallback, OnKernelCaptureMethod kernelCaptureCallback,
+                         MainWindow *main, QWidget *parent = 0);
   ~CaptureDialog();
 
   // ICaptureDialog
   QWidget *Widget() override { return this; }
   bool IsInjectMode() override { return m_Inject; }
   void SetInjectMode(bool inject) override;
+  void SetKernelMode(bool kernel) override;
 
   void SetExecutableFilename(const rdcstr &filename) override
   {
@@ -121,9 +127,11 @@ private:
 
   OnCaptureMethod m_CaptureCallback;
   OnInjectMethod m_InjectCallback;
+  OnKernelCaptureMethod m_KernelCaptureCallback;
 
   rdcarray<EnvironmentModification> m_EnvModifications;
   bool m_Inject;
+  bool m_KernelMode;
   void fillProcessList();
   void initWarning(RDLabel *label);
 

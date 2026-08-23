@@ -535,6 +535,27 @@ DECLARE_REFLECTION_STRUCT(ShaderProcessingTool);
   CONFIG_SETTING_VAL(public, bool, bool, AllowProcessInject, false)                                \
                                                                                                    \
   DOCUMENT(                                                                                        \
+      "``True`` if kernel-mode capture (BYOVD) is enabled. When enabled and the application has "  \
+      "been restarted, the File menu gains a 'Capture with Kernel Injection' action that waits "    \
+      "for the user to start the target manually and injects the capture library from the "        \
+      "kernel, bypassing user-mode process protection.\n"                                          \
+      "\n"                                                                                         \
+      "Defaults to ``False``."                                                                     \
+      ""                                                                                           \
+      ":type: bool");                                                                              \
+  CONFIG_SETTING_VAL(public, bool, bool, KernelInjectionEnable, false)                             \
+                                                                                                   \
+  DOCUMENT(                                                                                        \
+      "Selects which vulnerable driver provides the kernel memory access primitive for "           \
+      "kernel-mode capture. 0 = portwell, 1 = TBT (TeAccess). Both are physical memory "           \
+      "read/write drivers; the R/W contract is verified at runtime before use.\n"                  \
+      "\n"                                                                                         \
+      "Defaults to ``0``."                                                                         \
+      ""                                                                                           \
+      ":type: int");                                                                               \
+  CONFIG_SETTING_VAL(public, int, int32_t, KernelInjectionBackend, 0)                              \
+                                                                                                   \
+  DOCUMENT(                                                                                        \
       "A list of :class:`ShaderProcessingTool` detailing shader processing programs. The list "    \
       "comes in priority order, with earlier processors preferred over later ones.\n"              \
       "\n"                                                                                         \
