@@ -208,17 +208,19 @@ protected:
 
   // Caches the physical addresses of the last walked page table levels so
   // sequential VA walks (e.g. reading a whole section) cost one physical read
-  // per level change instead of four. The upper two levels (PDPT/PD) key on
-  // their region size because they cache the *next table's* address; the PTE
-  // level caches the final 4KB page and must key on 4KB granularity.
+  // per level change instead of four. Each level is keyed by its table
+  // *index* (va >> N). A key built by masking the index bits out of the VA
+  // instead would make two VAs that differ only in those bits (e.g. exactly
+  // 1GB or 2MB apart) collide and silently reuse another region's table
+  // address - translating to a wrong physical page.
   struct WalkCache
   {
-    uint64_t pdptRegion = 0;
-    uint64_t pdptPhys = 0;
-    uint64_t pdRegion = 0;
+    uint64_t pdKey = 0;    // va >> 30 : 1GB region -> page directory phys
     uint64_t pdPhys = 0;
-    uint64_t ptRegion = 0;
+    uint64_t ptKey = 0;    // va >> 21 : 2MB region -> page table phys
     uint64_t ptPhys = 0;
+    uint64_t pageKey = 0;  // va >> 12 : 4KB page -> physical page
+    uint64_t pagePhys = 0;
   } m_walkCache;
 };
 

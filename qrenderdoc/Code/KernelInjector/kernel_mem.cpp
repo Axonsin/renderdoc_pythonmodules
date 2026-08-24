@@ -153,8 +153,9 @@ bool KernelMem::VirtualToPhysical(uint64_t va, uint64_t *phys)
   const uint64_t pdIdx = (va >> 21) & 0x1FF;
   const uint64_t ptIdx = (va >> 12) & 0x1FF;
 
-  const uint64_t pdptRegion = va & ~(0x1FFULL << 30);
-  const uint64_t pdRegion = va & ~(0x1FFULL << 21);
+  const uint64_t pdKey = va >> 30;
+  const uint64_t ptKey = va >> 21;
+  const uint64_t pageKey = va >> 12;
 
   uint64_t pml4e = 0;
   if(!ReadPhys(m_pml4Phys + pml4Idx * 8, &pml4e, sizeof(pml4e)))
@@ -163,7 +164,7 @@ bool KernelMem::VirtualToPhysical(uint64_t va, uint64_t *phys)
     return false;
 
   uint64_t pdptPhys = pml4e & kPhysMask;
-  if(m_walkCache.pdptRegion != pdptRegion)
+  if(m_walkCache.pdKey != pdKey)
   {
     uint64_t pdpte = 0;
     if(!ReadPhys(pdptPhys + pdptIdx * 8, &pdpte, sizeof(pdpte)))
@@ -177,12 +178,12 @@ bool KernelMem::VirtualToPhysical(uint64_t va, uint64_t *phys)
       return true;
     }
 
-    m_walkCache.pdptPhys = pdpte & kPhysMask;
-    m_walkCache.pdptRegion = pdptRegion;
+    m_walkCache.pdPhys = pdpte & kPhysMask;
+    m_walkCache.pdKey = pdKey;
   }
 
-  uint64_t pdPhys = m_walkCache.pdptPhys;
-  if(m_walkCache.pdRegion != pdRegion)
+  uint64_t pdPhys = m_walkCache.pdPhys;
+  if(m_walkCache.ptKey != ptKey)
   {
     uint64_t pde = 0;
     if(!ReadPhys(pdPhys + pdIdx * 8, &pde, sizeof(pde)))
@@ -196,16 +197,12 @@ bool KernelMem::VirtualToPhysical(uint64_t va, uint64_t *phys)
       return true;
     }
 
-    m_walkCache.pdPhys = pde & kPhysMask;
-    m_walkCache.pdRegion = pdRegion;
+    m_walkCache.ptPhys = pde & kPhysMask;
+    m_walkCache.ptKey = ptKey;
   }
 
-  uint64_t ptPhys = m_walkCache.pdPhys;
-  // The PTE level caches the final 4KB page, so the cache key must be 4KB
-  // granularity - keying it by the 2MB region would serve stale translations
-  // for every page after the first in the region.
-  const uint64_t ptRegion = va & ~0xFFFULL;
-  if(m_walkCache.ptRegion != ptRegion)
+  uint64_t ptPhys = m_walkCache.ptPhys;
+  if(m_walkCache.pageKey != pageKey)
   {
     uint64_t pte = 0;
     if(!ReadPhys(ptPhys + ptIdx * 8, &pte, sizeof(pte)))
@@ -213,11 +210,11 @@ bool KernelMem::VirtualToPhysical(uint64_t va, uint64_t *phys)
     if((pte & kPtePresent) == 0)
       return false;
 
-    m_walkCache.ptPhys = pte & kPhysMask;
-    m_walkCache.ptRegion = ptRegion;
+    m_walkCache.pagePhys = pte & kPhysMask;
+    m_walkCache.pageKey = pageKey;
   }
 
-  *phys = m_walkCache.ptPhys + (va & 0xFFF);
+  *phys = m_walkCache.pagePhys + (va & 0xFFF);
   return true;
 }
 
