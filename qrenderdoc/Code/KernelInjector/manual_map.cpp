@@ -365,10 +365,24 @@ bool ManualMapper::MapDriver(KernelMem *mem, const unsigned char *driverBytes, s
   qInfo() << "KernelInjector: injector driver allocated at 0x"
           << QString::number(kernelImageBase, 16);
 
+  // Once DriverEntry has been invoked the driver may have created its device
+  // object and symlink, both pointing into this image - freeing the pages
+  // would leave dangling kernel objects (any later open/IOCTL into the device
+  // is a BSOD). After the entry point is attempted the pages stay mapped,
+  // matching the "never unload it" policy of the success path.
+  bool entryAttempted = false;
+
   auto failCleanup = [&](const QString &reason) {
     *errorDetail = reason;
-    if(freePages != 0)
+    if(!entryAttempted && freePages != 0)
+    {
       mem->CallKernelFunction<void>(nullptr, freePages, kernelImageBase, imageSize);
+    }
+    else if(entryAttempted)
+    {
+      *errorDetail += QStringLiteral(" (kernel pages intentionally left mapped - reboot the "
+                                     "machine before retrying)");
+    }
     VirtualFree(localImage, 0, MEM_RELEASE);
   };
 
@@ -463,6 +477,10 @@ bool ManualMapper::MapDriver(KernelMem *mem, const unsigned char *driverBytes, s
   const uint64_t entryPoint = kernelImageBase + nt->OptionalHeader.AddressOfEntryPoint;
 
   qInfo() << "KernelInjector: calling DriverEntry at 0x" << QString::number(entryPoint, 16);
+
+  // Conservative: mark the entry as attempted before calling - even a failed
+  // NtAddAtom trampoline restore may mean the entry point already ran.
+  entryAttempted = true;
 
   NTSTATUS entryStatus = STATUS_UNSUCCESSFUL;
   if(!mem->CallKernelFunction(&entryStatus, entryPoint, 0, 0))
