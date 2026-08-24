@@ -64,10 +64,6 @@
 #define JSON_ID "rdocLayoutData"
 #define JSON_VER 1
 
-#if defined(Q_OS_WIN32)
-extern "C" void *__stdcall GetModuleHandleA(const char *);
-#endif
-
 MainWindow::MainWindow(ICaptureContext &ctx) : QMainWindow(NULL), ui(new Ui::MainWindow), m_Ctx(ctx)
 {
   ui->setupUi(this);
