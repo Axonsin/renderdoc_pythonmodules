@@ -78,25 +78,38 @@ struct RtlAvlTable
 };
 static_assert(offsetof(RtlAvlTable, DeleteCount) == 0x40, "RtlAvlTable.DeleteCount offset");
 
+// Field-for-field match of kdmapper's nt.hpp (PiDDBCacheEntry /
+// HashBucketEntry). The embedded UNICODE_STRING keeps the standard x64
+// layout: Length/MaximumLength first, then 4 bytes of padding, then Buffer.
+// A previous revision swapped Buffer/Length and moved TimeDateStamp to
+// +0x1C, which made the PiDDB lookup key garbage and the CI hash walk read
+// the wrong fields - both cleanups silently (or crashingly) dead.
 struct PiDdbCacheEntry
 {
-  uint64_t ListFlink;               // +0x00 LIST_ENTRY.List
-  uint64_t ListBlink;               // +0x08
-  uint64_t DriverNameBuffer;        // +0x10 UNICODE_STRING.Buffer
-  uint16_t DriverNameLength;        // +0x18
-  uint16_t DriverNameMaximumLength; // +0x1A
-  uint32_t TimeDateStamp;           // +0x1C
-  uint32_t LoadStatus;              // +0x20
+  uint64_t ListFlink;                // +0x00 LIST_ENTRY.Flink
+  uint64_t ListBlink;                // +0x08 LIST_ENTRY.Blink
+  uint16_t DriverNameLength;         // +0x10 UNICODE_STRING.Length
+  uint16_t DriverNameMaximumLength;  // +0x12 UNICODE_STRING.MaximumLength
+  uint32_t reserved;                 // +0x14 (UNICODE_STRING padding)
+  uint64_t DriverNameBuffer;         // +0x18 UNICODE_STRING.Buffer
+  uint32_t TimeDateStamp;            // +0x20
+  uint32_t LoadStatus;               // +0x24
 };
+static_assert(offsetof(PiDdbCacheEntry, DriverNameLength) == 0x10, "PiDDB DriverName.Length offset");
+static_assert(offsetof(PiDdbCacheEntry, DriverNameBuffer) == 0x18, "PiDDB DriverName.Buffer offset");
+static_assert(offsetof(PiDdbCacheEntry, TimeDateStamp) == 0x20, "PiDDB TimeDateStamp offset");
 
 struct HashBucketEntry
 {
-  uint64_t Next;                    // +0x00
-  uint64_t DriverNameBuffer;        // +0x08
-  uint16_t DriverNameLength;        // +0x10
-  uint16_t DriverNameMaximumLength; // +0x12
-  // CertHash[5] follows; not needed.
+  uint64_t Next;                     // +0x00 (single Next pointer)
+  uint16_t DriverNameLength;         // +0x08 UNICODE_STRING.Length
+  uint16_t DriverNameMaximumLength;  // +0x0A UNICODE_STRING.MaximumLength
+  uint32_t reserved;                 // +0x0C (UNICODE_STRING padding)
+  uint64_t DriverNameBuffer;         // +0x10 UNICODE_STRING.Buffer
+  // CertHash[5] follows at +0x18; not needed.
 };
+static_assert(offsetof(HashBucketEntry, DriverNameLength) == 0x08, "CI bucket DriverName.Length offset");
+static_assert(offsetof(HashBucketEntry, DriverNameBuffer) == 0x10, "CI bucket DriverName.Buffer offset");
 
 // ---------------------------------------------------------------------------
 // Shared helpers used by the cleanups
