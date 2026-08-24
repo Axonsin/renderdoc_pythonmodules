@@ -184,15 +184,14 @@ bool EnsureChainUp(BackendId backend, QString *error)
   }
 
   // 0. The mapped injection driver can't be unmapped, so its device object
-  // survives a previous session until the next reboot. Detecting it here
-  // gives a clear instruction instead of a cryptic failure (or worse, a
-  // dangling-device dispatch) later.
+  // survives a previous session until the next reboot. Check the \DosDevices
+  // symlink instead of opening the device: opening would dispatch IRPs into
+  // a driver that may be stale (or dangling after a failed map), while the
+  // symlink lookup only touches the object manager namespace.
   {
-    HANDLE probe = CreateFileW(L"\\\\.\\RenderDicInj", GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-                               OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if(probe != INVALID_HANDLE_VALUE)
+    wchar_t dosTarget[512];
+    if(QueryDosDeviceW(L"RenderDicInj", dosTarget, (DWORD)ARRAYSIZE(dosTarget)) != 0)
     {
-      CloseHandle(probe);
       *error = QStringLiteral(
           "The kernel injection device \\\\.\\RenderDicInj already exists - a previous "
           "session left the injection driver mapped in memory. Restart the machine and try again.");

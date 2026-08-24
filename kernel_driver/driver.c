@@ -59,8 +59,14 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     return status;
   }
 
-  DriverObject->MajorFunction[IRP_MJ_CREATE] = DispatchCreateClose;
-  DriverObject->MajorFunction[IRP_MJ_CLOSE] = DispatchCreateClose;
+  // A manually mapped driver object never goes through driver creation, so
+  // the I/O manager has not pre-filled the dispatch table with
+  // IopInvalidDeviceRequest - every unset slot is NULL and dispatching any
+  // IRP there crashes the kernel. IRP_MJ_CLEANUP in particular arrives for
+  // every handle close, so the whole table must be filled.
+  for(ULONG i = 0; i <= IRP_MJ_MAXIMUM_FUNCTION; i++)
+    DriverObject->MajorFunction[i] = DispatchCreateClose;
+
   DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = DispatchIoctl;
 
   return STATUS_SUCCESS;
