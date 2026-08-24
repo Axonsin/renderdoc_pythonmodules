@@ -441,8 +441,6 @@ bool PortwellBackend::SelfTest()
   // Read a region of ntoskrnl spanning more than one page and validate both
   // the DOS and PE signatures. This exercises the VA->PA walker (including
   // its per-level cache) and the read primitive against values we know.
-  // portwell has no safe write self-test (no allocation primitive and no
-  // acceptable write target), so the write path rests on protocol review.
   if(!FindNtoskrnlBase())
     return false;
 
@@ -456,6 +454,31 @@ bool PortwellBackend::SelfTest()
 
   if(memcmp(header + dos->e_lfanew, "PE\0\0", 4) != 0)
     return false;
+
+  // Write path: round-trip the first kernel-half PML4 entry (index 256). It
+  // is present since boot and never remapped at runtime, so writing the value
+  // just read back is idempotent with no lasting side effect - unlike TBT
+  // there is no allocation primitive for a scratch page. A wrong write
+  // protocol guess fails here instead of on the first real kernel write (the
+  // NtAddAtom trampoline patch).
+  if(m_pml4Phys != 0)
+  {
+    const uint64_t entryPhys = m_pml4Phys + 256 * 8;
+    uint64_t entry = 0, readback = 0;
+    if(ReadPhys(entryPhys, &entry, sizeof(entry)) && (entry & kPtePresent))
+    {
+      if(!WritePhys(entryPhys, &entry, sizeof(entry)) ||
+         !ReadPhys(entryPhys, &readback, sizeof(readback)) || readback != entry)
+      {
+        qWarning() << "KernelInjector: portwell write round-trip failed in self-test";
+        return false;
+      }
+    }
+    else
+    {
+      qWarning() << "KernelInjector: portwell write self-test skipped (PML4[256] not readable)";
+    }
+  }
 
   qInfo() << "KernelInjector: portwell backend self-test passed";
   return true;
