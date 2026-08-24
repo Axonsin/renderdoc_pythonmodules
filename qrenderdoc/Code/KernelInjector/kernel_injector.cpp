@@ -35,6 +35,7 @@
 
 #include <windows.h>
 #include <QDebug>
+#include <QRandomGenerator>
 #include <QThread>
 #include <QElapsedTimer>
 #include <QMutex>
@@ -63,6 +64,11 @@ std::unique_ptr<KernelMem> g_backend;
 void *g_injectorDevice = nullptr;
 BackendId g_activeBackend = BackendId::Portwell;
 bool g_chainUp = false;
+
+// One-time secret for the injection device's caller authentication (see
+// kernel_driver/driver.h). Generated when the chain comes up; every inject
+// request carries it.
+uint64_t g_deviceSecret = 0;
 
 const int kStatusTimeoutMs = 30000;
 const int kStatusPollMs = 100;
@@ -143,13 +149,16 @@ bool SendInjectRequest(uint32_t pid, const QString &shimPath)
   if(g_injectorDevice == nullptr)
     return false;
 
+  // Must match RDI_INJECT_REQUEST in kernel_driver/driver.h.
   struct InjectRequest
   {
     uint32_t processId;
     wchar_t dllPath[1024];
+    uint64_t secret;
   } req = {};
 
   req.processId = pid;
+  req.secret = g_deviceSecret;
 
   std::wstring path = shimPath.toStdWString();
   if(path.size() >= 1024)
@@ -244,6 +253,7 @@ bool EnsureChainUp(BackendId backend, QString *error)
   g_backend = std::move(mem);
   g_injectorDevice = injectorDevice;
   g_activeBackend = backend;
+  g_deviceSecret = QRandomGenerator::system()->generate64();
   g_chainUp = true;
   return true;
 }
@@ -369,6 +379,7 @@ void KernelInjectorCore::Shutdown()
     g_loadedDriver = {};
   }
 
+  g_deviceSecret = 0;
   g_chainUp = false;
 }
 }    // namespace KernelInjector

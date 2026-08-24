@@ -30,6 +30,11 @@
 // image is not guaranteed zeroed, so this is cleared at entry.
 static DRIVER_OBJECT g_FakeDriverObject;
 
+// Device authentication state (see driver.h). Cleared in DriverEntry for the
+// same reason as g_FakeDriverObject.
+static HANDLE g_OwnerPid = NULL;
+static ULONG64 g_Secret = 0;
+
 NTSTATUS DispatchCreateClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS DispatchIoctl(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 
@@ -42,6 +47,20 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     RtlZeroMemory(&g_FakeDriverObject, sizeof(g_FakeDriverObject));
     DriverObject = &g_FakeDriverObject;
   }
+
+  g_OwnerPid = NULL;
+  g_Secret = 0;
+
+  // A manually mapped driver object never goes through driver creation, so
+  // the I/O manager has not pre-filled the dispatch table with
+  // IopInvalidDeviceRequest - every unset slot is NULL and dispatching any
+  // IRP there crashes the kernel. IRP_MJ_CLEANUP in particular arrives for
+  // every handle close, so the whole table must be filled, and it must be
+  // filled before the device exists (no window with NULL slots).
+  for(ULONG i = 0; i <= IRP_MJ_MAXIMUM_FUNCTION; i++)
+    DriverObject->MajorFunction[i] = DispatchCreateClose;
+
+  DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = DispatchIoctl;
 
   UNICODE_STRING deviceName = RTL_CONSTANT_STRING(RDI_DEVICE_NAME);
   UNICODE_STRING symlinkName = RTL_CONSTANT_STRING(RDI_SYMLINK_NAME);
@@ -59,16 +78,6 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     return status;
   }
 
-  // A manually mapped driver object never goes through driver creation, so
-  // the I/O manager has not pre-filled the dispatch table with
-  // IopInvalidDeviceRequest - every unset slot is NULL and dispatching any
-  // IRP there crashes the kernel. IRP_MJ_CLEANUP in particular arrives for
-  // every handle close, so the whole table must be filled.
-  for(ULONG i = 0; i <= IRP_MJ_MAXIMUM_FUNCTION; i++)
-    DriverObject->MajorFunction[i] = DispatchCreateClose;
-
-  DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = DispatchIoctl;
-
   return STATUS_SUCCESS;
 }
 
@@ -80,6 +89,32 @@ NTSTATUS DispatchCreateClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
   Irp->IoStatus.Information = 0;
   IoCompleteRequest(Irp, IO_NO_INCREMENT);
   return STATUS_SUCCESS;
+}
+
+// The control device has no DACL and the IOCTL grants FILE_ANY_ACCESS, so
+// without this check any local process could use the mapped driver to inject
+// arbitrary DLLs into arbitrary processes. The first request carrying a
+// non-zero Secret arms the device with the caller's PID and that secret;
+// every later request must come from the same PID and present the same
+// secret. Residual race: an attacker winning the window between device
+// creation and the coordinator's first request arms it with their own secret
+// - the coordinator then fails loudly (ACCESS_DENIED, and the residue probe
+// on next start demands a reboot), so nothing is gained silently.
+static BOOLEAN RdiAuthorize(RDI_INJECT_REQUEST *req)
+{
+  HANDLE caller = PsGetCurrentProcessId();
+
+  if(g_OwnerPid == NULL)
+  {
+    if(req->Secret == 0)
+      return FALSE;
+
+    g_OwnerPid = caller;
+    g_Secret = req->Secret;
+    return TRUE;
+  }
+
+  return g_OwnerPid == caller && g_Secret == req->Secret;
 }
 
 NTSTATUS DispatchIoctl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
@@ -96,10 +131,17 @@ NTSTATUS DispatchIoctl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     {
       RDI_INJECT_REQUEST *req = (RDI_INJECT_REQUEST *)Irp->AssociatedIrp.SystemBuffer;
 
-      // Guarantee termination inside the request buffer.
-      req->DllPath[ARRAYSIZE(req->DllPath) - 1] = 0;
+      if(RdiAuthorize(req))
+      {
+        // Guarantee termination inside the request buffer.
+        req->DllPath[ARRAYSIZE(req->DllPath) - 1] = 0;
 
-      status = RdiInjectDll((HANDLE)(ULONG_PTR)req->ProcessId, req->DllPath);
+        status = RdiInjectDll((HANDLE)(ULONG_PTR)req->ProcessId, req->DllPath);
+      }
+      else
+      {
+        status = STATUS_ACCESS_DENIED;
+      }
     }
     else
     {

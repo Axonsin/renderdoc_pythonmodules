@@ -38,11 +38,16 @@
 // one. It then creates a control device so the coordinator can request
 // injections:
 //
-//   IOCTL_RDI_INJECT: {ULONG ProcessId, WCHAR DllPath[1024]}
+//   IOCTL_RDI_INJECT: {ULONG ProcessId, WCHAR DllPath[1024], ULONG64 Secret}
 //   -> while attached to the target process, writes the DLL path into its
 //      address space and creates a real user thread in the target whose start
 //      routine is the target's kernel32!LoadLibraryW. The injected DLL (the
 //      renderdoc shim) then performs the capture setup on its own.
+//
+// The device is created without a DACL and the IOCTL allows FILE_ANY_ACCESS,
+// so requests are authenticated instead: the first request carrying a
+// non-zero Secret arms the driver with the caller PID + secret, and all
+// later requests must match both (see RdiAuthorize in driver.c).
 //
 // 64-bit targets only. The remote path allocation is deliberately leaked: the
 // injected thread references it until the DLL load completes and it cannot be
@@ -58,6 +63,7 @@ typedef struct _RDI_INJECT_REQUEST
 {
   ULONG ProcessId;
   WCHAR DllPath[1024];
+  ULONG64 Secret;
 } RDI_INJECT_REQUEST;
 
 // inject.c
