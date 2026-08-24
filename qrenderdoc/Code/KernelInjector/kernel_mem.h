@@ -135,6 +135,21 @@ public:
   // kdmapper's CallKernelFunction: temporarily patches the kernel NtAddAtom
   // stub to jump to kernel_function_address, calls it from user mode via
   // ntdll!NtAddAtom, then restores the stub. Up to 4 arguments.
+
+  // Return-type dispatch without C++17 if constexpr (this project builds as
+  // C++14). For T=void the out parameter is a void* and the generic template
+  // is SFINAE-removed (can't assign to *out), so the void* overload runs; for
+  // other T the generic template is an exact match and wins.
+  template <typename Fn, typename Out, typename... A>
+  static auto InvokeAndStore(Fn fn, Out *out, A... args) -> decltype(*out = fn(args...), void())
+  {
+    *out = fn(args...);
+  }
+  template <typename Fn, typename... A> static void InvokeAndStore(Fn fn, void *, A... args)
+  {
+    fn(args...);
+  }
+
   template <typename T, typename... A> bool CallKernelFunction(T *out_result, uint64_t kernel_function_address, const A... arguments)
   {
     static_assert(sizeof...(A) <= 4, "CallKernelFunction supports at most 4 arguments");
@@ -176,13 +191,9 @@ public:
     if(!WriteVirtual(kernelNtAddAtom, trampoline, sizeof(trampoline)))
       return false;
 
-    using FunctionFn = T(__stdcall *)(A...);
-    const FunctionFn Function = reinterpret_cast<FunctionFn>(userNtAddAtom);
+    const auto Function = reinterpret_cast<T(__stdcall *)(A...)>(userNtAddAtom);
 
-    if constexpr(!call_void)
-      *out_result = Function(arguments...);
-    else
-      Function(arguments...);
+    InvokeAndStore(Function, out_result, arguments...);
 
     // Restore the stub. If this fails the machine is left with a live
     // trampoline - surface the failure so the caller can refuse to continue.

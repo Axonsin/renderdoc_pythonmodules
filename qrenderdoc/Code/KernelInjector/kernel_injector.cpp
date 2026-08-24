@@ -36,12 +36,12 @@
 #include <windows.h>
 #include <sddl.h>
 #include <QDebug>
-#include <QRandomGenerator>
 #include <QThread>
 #include <QElapsedTimer>
 #include <QMutex>
 #include <QMutexLocker>
 
+#include <random>
 #include <memory>
 #include <atomic>
 
@@ -283,7 +283,10 @@ bool EnsureChainUp(BackendId backend, QString *error)
   g_backend = std::move(mem);
   g_injectorDevice = injectorDevice;
   g_activeBackend = backend;
-  g_deviceSecret = QRandomGenerator::system()->generate64();
+  // 64-bit session secret for the injection device (std rather than
+  // QRandomGenerator: the bundled Qt predates it).
+  std::mt19937_64 rng(std::random_device{}());
+  g_deviceSecret = rng();
   g_chainUp = true;
   return true;
 }

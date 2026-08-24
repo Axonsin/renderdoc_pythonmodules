@@ -428,7 +428,7 @@ bool ManualMapper::MapDriver(KernelMem *mem, const unsigned char *driverBytes, s
 
       if(addr == 0)
       {
-        failCleanup(QStringLiteral("Failed to resolve import %1").arg(fn.name));
+        failCleanup(QStringLiteral("Failed to resolve import %1").arg(QString::fromLatin1(fn.name)));
         return false;
       }
 

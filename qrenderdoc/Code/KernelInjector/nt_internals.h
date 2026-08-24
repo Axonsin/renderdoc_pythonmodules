@@ -26,13 +26,16 @@
 
 #include <windows.h>
 #include <winternl.h>
-#include <ntstatus.h>
 
 #include <cstdint>
 
 // Minimal NT internals used by the kernel injector. winternl.h only exposes a
 // subset of these on any given SDK, so the pieces we need are defined here
 // with names that cannot collide with the SDK headers.
+//
+// ntstatus.h is deliberately NOT included: it redefines the STATUS_* macros
+// winnt.h already provides (C4005, fatal under warnings-as-errors). The few
+// constants this code needs are either in winnt.h or defined below.
 
 #ifndef NT_SUCCESS
 #define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
@@ -40,6 +43,10 @@
 
 #ifndef STATUS_INFO_LENGTH_MISMATCH
 #define STATUS_INFO_LENGTH_MISMATCH ((NTSTATUS)0xC0000004L)
+#endif
+
+#ifndef STATUS_UNSUCCESSFUL
+#define STATUS_UNSUCCESSFUL ((NTSTATUS)0xC0000001L)
 #endif
 
 namespace KernelInjector

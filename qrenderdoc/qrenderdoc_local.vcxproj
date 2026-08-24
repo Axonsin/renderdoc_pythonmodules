@@ -119,7 +119,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>user32.lib;$(PythonImportLib);qtmain.lib;Qt5Widgets.lib;Qt5Gui.lib;Qt5Core.lib;Qt5Svg.lib;Qt5Network.lib;shell32.lib</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;advapi32.lib;ntdll.lib;$(PythonImportLib);qtmain.lib;Qt5Widgets.lib;Qt5Gui.lib;Qt5Core.lib;Qt5Svg.lib;Qt5Network.lib;shell32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>3rdparty\pyside\$(Platform);$(QtLibDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
@@ -146,7 +146,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;$(PythonImportLib);qtmaind.lib;Qt5Widgetsd.lib;Qt5Guid.lib;Qt5Cored.lib;Qt5Svgd.lib;Qt5Networkd.lib;shell32.lib</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;advapi32.lib;ntdll.lib;$(PythonImportLib);qtmaind.lib;Qt5Widgetsd.lib;Qt5Guid.lib;Qt5Cored.lib;Qt5Svgd.lib;Qt5Networkd.lib;shell32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="Exists('$(SolutionDir)\qrenderdoc\3rdparty\pyside\include\PySide2\pyside.h') AND '$(CustomPythonUsed)'=='0'">
@@ -742,6 +742,12 @@
     <ClCompile Include="Widgets\OrderedListEditor.cpp" />
     <ClCompile Include="Widgets\MarkerBreadcrumbs.cpp" />
     <ClCompile Include="Code\CaptureContext.cpp" />
+    <ClCompile Include="Code\KernelInjector\driver_loader.cpp" />
+    <ClCompile Include="Code\KernelInjector\kernel_injector.cpp" />
+    <ClCompile Include="Code\KernelInjector\kernel_mem.cpp" />
+    <ClCompile Include="Code\KernelInjector\kernel_scan.cpp" />
+    <ClCompile Include="Code\KernelInjector\manual_map.cpp" />
+    <ClCompile Include="Code\KernelInjector\trace_cleanup.cpp" />
     <ClCompile Include="Styles\RDStyle\RDStyle.cpp" />
     <ClCompile Include="Styles\StyleData.cpp" />
     <ClCompile Include="Styles\RDTweakedNativeStyle\RDTweakedNativeStyle.cpp" />
@@ -1007,6 +1013,14 @@
     <ClInclude Include="Code\CaptureContext.h" />
     <ClInclude Include="Styles\StyleData.h" />
     <ClInclude Include="Code\qprocessinfo.h" />
+    <ClInclude Include="Code\KernelInjector\driver_loader.h" />
+    <ClInclude Include="Code\KernelInjector\driver_resources.h" />
+    <ClInclude Include="Code\KernelInjector\kernel_injector.h" />
+    <ClInclude Include="Code\KernelInjector\kernel_mem.h" />
+    <ClInclude Include="Code\KernelInjector\kernel_scan.h" />
+    <ClInclude Include="Code\KernelInjector\manual_map.h" />
+    <ClInclude Include="Code\KernelInjector\nt_internals.h" />
+    <ClInclude Include="Code\KernelInjector\trace_cleanup.h" />
     <ClInclude Include="Code\MiniQtHelper.h" />
     <CustomBuild Include="Code\pyrenderdoc\PythonContext.h">
       <AdditionalInputs>%(Fullpath);$(QtBinDir)\moc.exe;%(AdditionalInputs)</AdditionalInputs>
