@@ -305,7 +305,7 @@ void CaptureDialog::SetKernelMode(bool kernel)
   {
     ui->launch->setText(lit("Launch"));
     this->setWindowTitle(lit("Launch Application"));
-    ui->globalGroup->setVisible(m_Ctx.Config().AllowGlobalHook);
+    ui->globalGroup->setVisible(m_Ctx.Config().AllowGlobalHook && RENDERDOC_CanGlobalHook());
   }
 }
 

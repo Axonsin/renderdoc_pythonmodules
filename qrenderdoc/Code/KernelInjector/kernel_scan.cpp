@@ -109,6 +109,9 @@ uint64_t FindPatternAtKernel(KernelMem *mem, uint64_t address, size_t len, const
   if(!mem->ReadVirtual(address, data.data(), len))
     return 0;
 
+  // The mask length drives the comparison: pattern bytes beyond strlen(mask)
+  // are silently ignored (inherited kdmapper behaviour - note that the second
+  // MmSetPageProtection pattern has fewer mask chars than pattern bytes).
   const size_t maskLen = strlen(mask);
   for(size_t i = 0; i + maskLen <= len; i++)
   {

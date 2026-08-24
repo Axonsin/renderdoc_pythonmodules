@@ -703,6 +703,7 @@ void MainWindow::OnKernelCaptureTrigger(const QString &exe, const QString &worki
   // bare names are both accepted.
   if(!exeInfo.exists() && QStandardPaths::findExecutable(exe).isEmpty())
   {
+    s_busy = false;
     RDDialog::critical(this, tr("Invalid executable"),
                        tr("Invalid executable: %1\nCan't locate this path or a matching "
                           "executable in PATH")

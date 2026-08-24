@@ -252,8 +252,10 @@ public:
   bool SelfTest() override;
   QString BackendName() const override { return QStringLiteral("tbt"); }
 
-  // Contiguous physical allocation, only used by the manual mapper when the
-  // TBT backend is selected (portwell has no allocation primitive).
+  // Contiguous physical allocation. Only used by the TBT backend's SelfTest
+  // (write round-trip scratch page) - the manual mapper allocates via
+  // MmAllocateIndependentPagesEx for both backends, and portwell has no
+  // allocation primitive at all.
   bool AllocContiguous(uint32_t size, uint64_t highestAddr, uint64_t *outPhys, uint64_t *outVa);
   bool FreeContiguous(uint64_t va);
 

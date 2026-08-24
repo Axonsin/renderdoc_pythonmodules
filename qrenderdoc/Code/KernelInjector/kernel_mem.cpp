@@ -129,7 +129,8 @@ bool KernelMem::EnsurePageTable()
     }
   }
 
-  qWarning() << "KernelInjector: no valid PML4 found in the first GB of physical memory";
+  qWarning() << "KernelInjector: no valid PML4 found in the first GB of physical memory"
+             << "(5-level paging / LA57 kernels are not supported by the 4-level walker)";
   return false;
 }
 
