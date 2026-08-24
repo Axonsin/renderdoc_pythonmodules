@@ -34,6 +34,7 @@
 #if defined(Q_OS_WIN)
 
 #include <windows.h>
+#include <sddl.h>
 #include <QDebug>
 #include <QRandomGenerator>
 #include <QThread>
@@ -114,8 +115,29 @@ bool IsHVCIEnabled()
 bool CreateShimDataMapping(const KernelInjectorCore::CaptureRequest &req, HANDLE *outMapping,
                            ShimData **outView)
 {
-  HANDLE mapping = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0,
-                                      sizeof(ShimData), GLOBAL_HOOK_DATA_NAME);
+  // The target may run under a different (possibly lower-privileged) account
+  // than this elevated coordinator, and the default DACL of a section created
+  // with an admin token would deny it FILE_MAP_WRITE - the shim's OpenFile-
+  // Mapping would fail and the capture would time out. Grant admins, SYSTEM
+  // and Everyone map read/write explicitly. This does allow any local process
+  // to spoof the status fields, but the handshake is coordinator-owned and
+  // bogus values only lead to the timeout/diagnosed-failure paths. (The
+  // global hook flow in renderdoccmd creates the same named mapping with
+  // default security; that side is intentionally unchanged.)
+  PSECURITY_DESCRIPTOR sd = NULL;
+  ConvertStringSecurityDescriptorToSecurityDescriptorW(
+      L"D:P(A;;GWGR;;;BA)(A;;GWGR;;;SY)(A;;GWGR;;;WD)", SDDL_REVISION_1, &sd, NULL);
+
+  SECURITY_ATTRIBUTES sa = {};
+  sa.nLength = sizeof(sa);
+  sa.lpSecurityDescriptor = sd;
+
+  HANDLE mapping = CreateFileMappingA(INVALID_HANDLE_VALUE, sd != NULL ? &sa : nullptr,
+                                      PAGE_READWRITE, 0, sizeof(ShimData), GLOBAL_HOOK_DATA_NAME);
+
+  if(sd != NULL)
+    LocalFree(sd);
+
   if(mapping == nullptr)
     return false;
 
