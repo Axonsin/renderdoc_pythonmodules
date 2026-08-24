@@ -42,6 +42,7 @@
 #include <QMutexLocker>
 
 #include <memory>
+#include <atomic>
 
 namespace KernelInjector
 {
@@ -69,6 +70,13 @@ bool g_chainUp = false;
 // kernel_driver/driver.h). Generated when the chain comes up; every inject
 // request carries it.
 uint64_t g_deviceSecret = 0;
+
+// Set by Shutdown() before it blocks on g_chainMutex so an in-flight Capture
+// can abandon its status poll instead of making closeEvent stall on the UI
+// thread for the whole timeout. Only the polling phase is interruptible - a
+// capture that is still bringing up the chain (driver load + physical scan)
+// has to finish that first.
+std::atomic<bool> g_cancelRequested{false};
 
 const int kStatusTimeoutMs = 30000;
 const int kStatusPollMs = 100;
@@ -270,6 +278,9 @@ bool KernelInjectorCore::Capture(const CaptureRequest &req, uint32_t *outIdent, 
   // and from a second concurrent Capture.
   QMutexLocker lock(&g_chainMutex);
 
+  // Fresh capture: clear any cancel flag a previous Shutdown left behind.
+  g_cancelRequested = false;
+
   if(!EnsureChainUp(req.backend, error))
     return false;
 
@@ -308,8 +319,15 @@ bool KernelInjectorCore::Capture(const CaptureRequest &req, uint32_t *outIdent, 
 
   uint32_t shimStatus = 0;
   uint32_t lastStatus = 0;
+  bool cancelled = false;
   while(timer.elapsed() < kStatusTimeoutMs)
   {
+    if(g_cancelRequested.load())
+    {
+      cancelled = true;
+      break;
+    }
+
     // The shim writes through the same mapping.
     shimStatus = view->status;
     if(shimStatus == kShimStatusDone)
@@ -324,7 +342,9 @@ bool KernelInjectorCore::Capture(const CaptureRequest &req, uint32_t *outIdent, 
     UnmapViewOfFile(view);
     CloseHandle(mapping);
 
-    if(lastStatus == kShimStatusMismatch)
+    if(cancelled)
+      *error = QStringLiteral("Kernel capture cancelled - the application is shutting down");
+    else if(lastStatus == kShimStatusMismatch)
       *error = QStringLiteral("The shim loaded but did not match the target executable - "
                               "check that the process still runs under the expected name");
     else if(lastStatus == kShimStatusSetupFailed)
@@ -363,6 +383,10 @@ bool KernelInjectorCore::IsActive()
 
 void KernelInjectorCore::Shutdown()
 {
+  // Ask an in-flight Capture to abandon its status poll before blocking on
+  // the mutex it holds (see g_cancelRequested above).
+  g_cancelRequested = true;
+
   QMutexLocker lock(&g_chainMutex);
 
   if(g_injectorDevice != nullptr)
