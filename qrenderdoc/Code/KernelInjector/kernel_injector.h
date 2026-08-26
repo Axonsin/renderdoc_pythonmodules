@@ -56,9 +56,11 @@ public:
   {
     BackendId backend = BackendId::Portwell;
     uint32_t pid = 0;              // target process
+    bool targetIsWow64 = false;    // 32-bit target: inject the 32-bit shim and use the
+                                   // 32-bit mapping name (RenderDicGlobalHookData32)
     QString exeName;               // target exe file name (shim path match)
-    QString shimPath;              // full path to renderdicshim64.dll
-    QString renderdocPath;         // full path to renderdic.dll
+    QString shimPath;              // full path to renderdicshim64/32.dll
+    QString renderdocPath;         // full path to renderdic.dll (matching the target bitness)
     QString captureFile;           // .rdc path the target will write
     CaptureOptions opts;           // capture options for the target
   };

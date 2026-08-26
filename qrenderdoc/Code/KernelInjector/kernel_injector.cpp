@@ -132,8 +132,15 @@ bool CreateShimDataMapping(const KernelInjectorCore::CaptureRequest &req, HANDLE
   sa.nLength = sizeof(sa);
   sa.lpSecurityDescriptor = sd;
 
+  // The 32-bit shim opens a differently-named mapping (the WIN64 branch of
+  // renderdocshim.h picks RenderDicGlobalHookData32 for renderdicshim32.dll),
+  // so the coordinator must create the name that matches the shim bitness it
+  // injects.
+  const char *mappingName =
+      req.targetIsWow64 ? "RenderDicGlobalHookData32" : "RenderDicGlobalHookData64";
+
   HANDLE mapping = CreateFileMappingA(INVALID_HANDLE_VALUE, sd != NULL ? &sa : nullptr,
-                                      PAGE_READWRITE, 0, sizeof(ShimData), GLOBAL_HOOK_DATA_NAME);
+                                      PAGE_READWRITE, 0, sizeof(ShimData), mappingName);
 
   if(sd != NULL)
     LocalFree(sd);

@@ -27,6 +27,7 @@
 #include <QCoreApplication>
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QDir>
 #include <QFileInfo>
 #include <QKeyEvent>
 #include <QMimeData>
@@ -760,36 +761,81 @@ void MainWindow::OnKernelCaptureTrigger(const QString &exe, const QString &worki
     return;    // user cancelled
   }
 
-  // Step 2: kernel injection only supports 64-bit targets in this version.
+  // Step 2: resolve the shim + renderdoc dll for the target's bitness.
+  // WOW64 targets get the 32-bit pair, located with the same layout rules
+  // the global hook flow uses (see Process::StartGlobalHook): development
+  // builds pick the sibling Win32/<config> directory, installed builds the
+  // x86\ subdirectory next to the 64-bit files.
+  bool targetIsWow64 = false;
   {
-    HANDLE hProcess =
-        OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+    HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
     BOOL isWow64 = FALSE;
     if(hProcess != nullptr)
     {
       IsWow64Process(hProcess, &isWow64);
       CloseHandle(hProcess);
     }
+    else
+    {
+      // Protected targets may deny even limited query access; proceed as a
+      // 64-bit target and let the pipeline report a failure if wrong.
+      qWarning() << "Kernel capture: OpenProcess failed, assuming a 64-bit target";
+    }
 
-    if(isWow64)
+    targetIsWow64 = (isWow64 == TRUE);
+  }
+
+  QString shimPath, renderdocPath;
+  {
+    const QString appDir = QCoreApplication::applicationDirPath();
+
+    if(!targetIsWow64)
+    {
+      shimPath = appDir + lit("/renderdicshim64.dll");
+      renderdocPath = appDir + lit("/renderdic.dll");
+    }
+    else
+    {
+      QString x86Dir;
+      if(appDir.contains(lit("/x64/Release"), Qt::CaseInsensitive))
+        x86Dir = QDir(appDir + lit("/../../Win32/Release")).canonicalPath();
+      else if(appDir.contains(lit("/x64/Development"), Qt::CaseInsensitive))
+        x86Dir = QDir(appDir + lit("/../../Win32/Development")).canonicalPath();
+
+      if(x86Dir.isEmpty())
+        x86Dir = appDir + lit("/x86");
+
+      shimPath = x86Dir + lit("/renderdicshim32.dll");
+      renderdocPath = x86Dir + lit("/renderdic.dll");
+    }
+
+    if(!QFileInfo::exists(shimPath) || !QFileInfo::exists(renderdocPath))
     {
       s_busy = false;
-      RDDialog::critical(this, tr("Unsupported target"),
-                         tr("Kernel capture does not support 32-bit (wow64) targets yet."));
+      RDDialog::critical(
+          this, tr("Missing capture libraries"),
+          tr("The capture libraries for this target were not found:\n%1\n%2\n\n"
+             "64-bit targets use renderdicshim64.dll and renderdic.dll next to the "
+             "application. 32-bit (WOW64) targets use renderdicshim32.dll and the 32-bit "
+             "renderdic.dll, which live in Win32\\Release next to the x64 build in "
+             "development layouts, or in the x86\\ subdirectory when installed.")
+              .arg(shimPath, renderdocPath));
       return;
     }
   }
 
   // Step 3: run the kernel pipeline on a worker thread.
-  LambdaThread *th = new LambdaThread([this, pid, exeInfo, opts, callback]() {
+  LambdaThread *th = new LambdaThread([this, pid, targetIsWow64, exeInfo, shimPath, renderdocPath,
+                                       opts, callback]() {
     QString capturefile = m_Ctx.TempCaptureFilename(exeInfo.fileName());
 
     KernelInjector::KernelInjectorCore::CaptureRequest req;
     req.backend = (KernelInjector::BackendId)(int)m_Ctx.Config().KernelInjectionBackend;
     req.pid = pid;
+    req.targetIsWow64 = targetIsWow64;
     req.exeName = exeInfo.fileName();
-    req.shimPath = QCoreApplication::applicationDirPath() + lit("/renderdicshim64.dll");
-    req.renderdocPath = QCoreApplication::applicationDirPath() + lit("/renderdic.dll");
+    req.shimPath = shimPath;
+    req.renderdocPath = renderdocPath;
     req.captureFile = capturefile;
     req.opts = opts;
 
