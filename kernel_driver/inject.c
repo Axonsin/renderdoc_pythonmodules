@@ -22,7 +22,13 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
+// ntifs.h must come first: it defines _NTIFS_/_NTIFS_INCLUDED_ and then
+// includes ntddk.h itself, so wdm.h skips its own PEPROCESS/PETHREAD
+// typedefs. Including ntddk.h before ntifs.h redefines them with a
+// different base type (C2371).
+#include <ntifs.h>
 #include "driver.h"
+#include <ntimage.h>
 
 // ---------------------------------------------------------------------------
 // Injection: while attached to the target, write the DLL path into its
@@ -32,14 +38,43 @@
 // manual PE fixing is needed inside the target, and no APC machinery.
 // ---------------------------------------------------------------------------
 
-// ntddk.h does not declare ZwCreateThreadEx (it lives in ntifs.h); declare it
-// ourselves. The attribute list is always NULL here.
-NTKERNELAPI NTSTATUS NTAPI ZwCreateThreadEx(PHANDLE ThreadHandle, ACCESS_MASK DesiredAccess,
-                                            POBJECT_ATTRIBUTES ObjectAttributes,
-                                            HANDLE ProcessHandle, PVOID StartRoutine,
-                                            PVOID Argument, ULONG CreateFlags, SIZE_T ZeroBits,
-                                            SIZE_T StackSize, SIZE_T MaximumStackSize,
-                                            PVOID AttributeList);
+// ntoskrnl exports without public declarations in the WDK headers.
+NTKERNELAPI PIMAGE_NT_HEADERS RtlImageNtHeader(PVOID BaseAddress);
+NTKERNELAPI PPEB PsGetProcessPeb(PEPROCESS Process);
+
+// Minimal kernel-side definitions of the user-mode PEB / PEB_LDR_DATA (the
+// WDK headers only carry an opaque `struct _PEB *`). Offsets are stable on
+// x64: Ldr sits at PEB+0x18, the load-order list head at Ldr+0x10.
+typedef struct _RDI_PEB_LDR_DATA
+{
+  ULONG Length;                // +0x00
+  UCHAR Initialized;           // +0x04
+  PVOID SsHandle;              // +0x08
+  LIST_ENTRY InLoadOrderModuleList;              // +0x10
+  LIST_ENTRY InMemoryOrderModuleList;            // +0x20
+  LIST_ENTRY InInitializationOrderModuleList;    // +0x30
+} RDI_PEB_LDR_DATA;
+
+typedef struct _RDI_PEB
+{
+  UCHAR InheritedAddressSpacePermission;    // +0x00
+  UCHAR ReadImageFileExecOptions;           // +0x01
+  UCHAR BeingDebugged;                      // +0x02
+  UCHAR BitField;                           // +0x03
+  PVOID Mutant;                             // +0x08
+  PVOID ImageBaseAddress;                   // +0x10
+  RDI_PEB_LDR_DATA *Ldr;                    // +0x18
+} RDI_PEB;
+
+// ZwCreateThreadEx is not declared in any public WDK header and not present
+// in ntoskrnl.lib (undocumented export), so it is resolved at runtime below.
+typedef NTSTATUS(NTAPI *RDI_CREATE_THREAD_EX)(PHANDLE ThreadHandle,
+                                              ACCESS_MASK DesiredAccess,
+                                              POBJECT_ATTRIBUTES ObjectAttributes,
+                                              HANDLE ProcessHandle, PVOID StartRoutine,
+                                              PVOID Argument, ULONG CreateFlags, SIZE_T ZeroBits,
+                                              SIZE_T StackSize, SIZE_T MaximumStackSize,
+                                              PVOID AttributeList);
 
 // Public headers don't expose LDR_DATA_TABLE_ENTRY; this is the stable x64
 // prefix used for the InLoadOrderModuleList walk.
@@ -87,22 +122,22 @@ static PVOID RdiFindExport(PVOID ModuleBase, PCSTR ExportName)
     if(nt == NULL)
       return NULL;
 
-    DWORD expRva = nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
+    ULONG expRva = nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
     if(expRva == 0)
       return NULL;
 
     PIMAGE_EXPORT_DIRECTORY exp = (PIMAGE_EXPORT_DIRECTORY)((PCHAR)ModuleBase + expRva);
 
-    DWORD *names = (DWORD *)((PCHAR)ModuleBase + exp->AddressOfNames);
-    WORD *ordinals = (WORD *)((PCHAR)ModuleBase + exp->AddressOfNameOrdinals);
-    DWORD *functions = (DWORD *)((PCHAR)ModuleBase + exp->AddressOfFunctions);
+    ULONG *names = (ULONG *)((PCHAR)ModuleBase + exp->AddressOfNames);
+    USHORT *ordinals = (USHORT *)((PCHAR)ModuleBase + exp->AddressOfNameOrdinals);
+    ULONG *functions = (ULONG *)((PCHAR)ModuleBase + exp->AddressOfFunctions);
 
-    for(DWORD i = 0; i < exp->NumberOfNames; i++)
+    for(ULONG i = 0; i < exp->NumberOfNames; i++)
     {
       PCHAR name = (PCHAR)ModuleBase + names[i];
       if(RdiStrcmp(name, ExportName) == 0)
       {
-        DWORD funcRva = functions[ordinals[i]];
+        ULONG funcRva = functions[ordinals[i]];
         if(funcRva != 0)
         {
           result = (PCHAR)ModuleBase + funcRva;
@@ -124,7 +159,7 @@ static PVOID RdiFindExport(PVOID ModuleBase, PCSTR ExportName)
 // address space).
 static PVOID RdiResolveKernel32Export(PEPROCESS TargetProcess, PCSTR ExportName)
 {
-  PPEB peb = PsGetProcessPeb(TargetProcess);
+  RDI_PEB *peb = (RDI_PEB *)PsGetProcessPeb(TargetProcess);
   if(peb == NULL)
     return NULL;
 
@@ -132,7 +167,7 @@ static PVOID RdiResolveKernel32Export(PEPROCESS TargetProcess, PCSTR ExportName)
 
   __try
   {
-    PEB_LDR_DATA *ldr = peb->Ldr;
+    RDI_PEB_LDR_DATA *ldr = peb->Ldr;
     if(ldr == NULL)
       return NULL;
 
@@ -193,9 +228,18 @@ NTSTATUS RdiInjectDll(HANDLE ProcessId, PCWSTR DllPath)
     // called while attached, so ZwCurrentProcess() resolves to the target
     // process and the new thread runs LoadLibraryW(remotePath) in the
     // target's address space.
+    UNICODE_STRING routineName = RTL_CONSTANT_STRING(L"ZwCreateThreadEx");
+    RDI_CREATE_THREAD_EX createThreadEx =
+        (RDI_CREATE_THREAD_EX)MmGetSystemRoutineAddress(&routineName);
+    if(createThreadEx == NULL)
+    {
+      status = STATUS_PROCEDURE_NOT_FOUND;
+      break;
+    }
+
     HANDLE threadHandle = NULL;
-    status = ZwCreateThreadEx(&threadHandle, THREAD_ALL_ACCESS, NULL, ZwCurrentProcess(),
-                              loadLibraryW, remotePath, 0, NULL, 0, 0, NULL);
+    status = createThreadEx(&threadHandle, THREAD_ALL_ACCESS, NULL, ZwCurrentProcess(),
+                            loadLibraryW, remotePath, 0, 0, 0, 0, NULL);
     if(!NT_SUCCESS(status) || threadHandle == NULL)
       break;
 
