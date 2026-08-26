@@ -132,12 +132,12 @@ bool CreateShimDataMapping(const KernelInjectorCore::CaptureRequest &req, HANDLE
   sa.nLength = sizeof(sa);
   sa.lpSecurityDescriptor = sd;
 
-  // The 32-bit shim opens a differently-named mapping (the WIN64 branch of
-  // renderdocshim.h picks RenderDicGlobalHookData32 for renderdicshim32.dll),
-  // so the coordinator must create the name that matches the shim bitness it
-  // injects.
-  const char *mappingName =
-      req.targetIsWow64 ? "RenderDicGlobalHookData32" : "RenderDicGlobalHookData64";
+  // The 32-bit shim opens a differently-named mapping (the WIN32 / #else
+  // branch of renderdocshim.h picks RenderDicGlobalHookData32 for
+  // renderdicshim32.dll), so the coordinator must create the name that
+  // matches the shim bitness it injects. The 64-bit name is taken from the
+  // shared header so at least the default case cannot drift.
+  const char *mappingName = req.targetIsWow64 ? "RenderDicGlobalHookData32" : GLOBAL_HOOK_DATA_NAME;
 
   HANDLE mapping = CreateFileMappingA(INVALID_HANDLE_VALUE, sd != NULL ? &sa : nullptr,
                                       PAGE_READWRITE, 0, sizeof(ShimData), mappingName);
@@ -384,8 +384,9 @@ bool KernelInjectorCore::Capture(const CaptureRequest &req, uint32_t *outIdent, 
           "The shim loaded but the capture setup failed (renderdic.dll could not be loaded or "
           "its INTERNAL_* exports are missing)");
     else
-      *error = QStringLiteral("No response from renderdicshim64.dll - the injection may have "
-                              "been blocked or the target exited early");
+      *error = QStringLiteral("No response from %1 - the injection may have "
+                              "been blocked or the target exited early")
+                   .arg(req.targetIsWow64 ? lit("renderdicshim32.dll") : lit("renderdicshim64.dll"));
     return false;
   }
 

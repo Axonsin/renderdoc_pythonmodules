@@ -49,9 +49,14 @@
 //           start routine (a WOW64 process routes the new thread through
 //           the wow64 bootstrap so a 32-bit start address runs 32-bit);
 //        2. fallback (thread creation failed): hijack an existing thread's
-//           context into LoadLibraryW, poll for the module to appear in the
-//           loader list, then restore the context (RdiHijackInject in
-//           inject.c - see its comment for the two classic hijack races).
+//           context into LoadLibraryW. The fake return address points at a
+//           'jmp $' park stub allocated in the target, so completion is
+//           detected by the thread parking there (the loader links the
+//           module long before LoadLibraryW returns - restoring mid-load
+//           would wedge the target's loader lock). A parked thread whose
+//           module never appeared reports STATUS_DLL_NOT_FOUND; a timeout
+//           restores the context anyway with the classic loader-lock race
+//           (RdiHijackInject in inject.c).
 //
 // The device is created without a DACL and the IOCTL allows FILE_ANY_ACCESS,
 // so requests are authenticated instead: the first request carrying a

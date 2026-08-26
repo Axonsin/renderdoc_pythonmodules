@@ -392,8 +392,14 @@ static PVOID RdiResolveKernel32Export(PEPROCESS TargetProcess, PCSTR ExportName)
 }
 
 // Fallback injection when ZwCreateThreadEx fails: hijack an existing thread
-// of the target into LoadLibraryW(remotePath) and restore its context once
-// the module appears in the loader list (or after a timeout).
+// of the target into LoadLibraryW(remotePath). The fake return address lands
+// on a 2-byte 'jmp $' park stub allocated in the target, so once LoadLibraryW
+// returns the thread spins at a known address - that, not module presence in
+// the loader list (which the loader populates long before LoadLibraryW
+// returns, and restoring mid-load would wedge the loader lock forever), is
+// the completion signal. When the thread parks, the original context is
+// restored and the process resumed; a load that returned failure is reported
+// as STATUS_DLL_NOT_FOUND.
 //
 // A 64-bit CONTEXT is used even for WOW64 threads: the 32<->64-bit context
 // conversion lives in user-mode wow64.dll, but a thread suspended inside
@@ -401,12 +407,11 @@ static PVOID RdiResolveKernel32Export(PEPROCESS TargetProcess, PCSTR ExportName)
 // Rip/Rsp are the live 32-bit state and whose SegCs is a 32-bit code
 // selector - so the same capture/set/restore works for both bitnesses.
 //
-// Known races of the classic hijack technique (accepted, see driver.h):
-//  - after LoadLibraryW returns, the thread re-executes the few original
-//    instructions between completion and the restore with a rolled-back
-//    context (non-idempotent side effects in that window repeat once);
-//  - if the load never completes (timeout), the thread is restored anyway
-//    while it may still hold the loader lock.
+// Known race of the classic hijack technique (accepted, see driver.h): if
+// the load never completes (timeout), the thread is restored anyway while it
+// may still be inside the loader holding its lock. The parked-stub design
+// removes the "duplicate execution after completion" race entirely - the
+// thread never returns into original code before the restore.
 static NTSTATUS RdiHijackInject(PEPROCESS TargetProcess, PVOID LoadLibraryW, PVOID RemotePath,
                                 PCWSTR DllPath)
 {
@@ -416,12 +421,12 @@ static NTSTATUS RdiHijackInject(PEPROCESS TargetProcess, PVOID LoadLibraryW, PVO
   PRDI_CONTEXT workCtx = NULL;
   PVOID spiBuffer = NULL;
   BOOLEAN processSuspended = FALSE;
-  BOOLEAN hijackApplied = FALSE;
 
-  // The module name to poll for: the file name part of the injected path.
+  // The module name to check once the hijacked thread has parked: the file
+  // name part of the injected path.
   PCWSTR moduleName = DllPath;
   PCWSTR sep = RdiWcsrchr(DllPath, L'\\');
-  if(sep != NULL && sep + 1 > moduleName)
+  if(sep != NULL)
     moduleName = sep + 1;
   sep = RdiWcsrchr(moduleName, L'/');
   if(sep != NULL)
@@ -478,8 +483,10 @@ static NTSTATUS RdiHijackInject(PEPROCESS TargetProcess, PVOID LoadLibraryW, PVO
       break;
     processSuspended = TRUE;
 
-    // 3. Pick a thread: for WOW64 targets prefer one parked in 32-bit code
-    // (SegCs != 0x33) so the 32-bit start address resumes in 32-bit mode.
+    // 3. Pick a thread: WOW64 targets only accept one parked in 32-bit code
+    // (SegCs != 0x33) - a 32-bit start address resumed under the 64-bit
+    // code segment would execute 32-bit code in 64-bit mode. If no thread
+    // qualifies, STATUS_NOT_FOUND aborts the fallback.
     {
       const HANDLE targetPid = PsGetProcessId(TargetProcess);
       PCHAR procEntry = (PCHAR)spiBuffer;
@@ -532,27 +539,45 @@ static NTSTATUS RdiHijackInject(PEPROCESS TargetProcess, PVOID LoadLibraryW, PVO
       break;
     }
 
-    // 4. Build the hijacked context. Stack writes are SEH-guarded user
-    // writes in the attached address space.
+    // 4. Park stub + hijacked context. The stub is a 2-byte 'jmp $' the fake
+    // return address points at: when LoadLibraryW returns (success or
+    // failure) the thread spins there at a known address. Stack/stub writes
+    // are SEH-guarded user writes in the attached space. Both allocations
+    // (stub and the earlier path) are deliberately leaked.
+    PVOID parkStub = NULL;
+    SIZE_T stubSize = 16;
+    status = ZwAllocateVirtualMemory(ZwCurrentProcess(), &parkStub, 0, &stubSize,
+                                     MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if(!NT_SUCCESS(status) || parkStub == NULL)
+    {
+      if(NT_SUCCESS(status))
+        status = STATUS_UNSUCCESSFUL;
+      break;
+    }
+
     RtlCopyMemory(savedCtx, workCtx, sizeof(RDI_CONTEXT));
 
     __try
     {
+      ((UCHAR *)parkStub)[0] = 0xEB;    // jmp -2: spin on this instruction
+      ((UCHAR *)parkStub)[1] = 0xFE;
+
       if(targetIsWow64)
       {
         // x86 stdcall LoadLibraryW(LPCWSTR): at entry [esp]=return address
-        // (the original EIP), [esp+4]=argument.
+        // (the park stub), [esp+4]=argument.
         ULONG64 esp = ((workCtx->Rsp - 0x80) & ~0xFULL) - 8;
-        *(ULONG *)(ULONG_PTR)esp = (ULONG)savedCtx->Rip;
+        *(ULONG *)(ULONG_PTR)esp = (ULONG)(ULONG_PTR)parkStub;
         *(ULONG *)(ULONG_PTR)(esp + 4) = (ULONG)(ULONG_PTR)RemotePath;
         workCtx->Rsp = esp;
         workCtx->Rip = (ULONG64)(ULONG_PTR)LoadLibraryW;
       }
       else
       {
-        // x64: at entry [rsp]=return address, Rsp % 16 == 8, RCX=argument.
+        // x64: at entry [rsp]=return address (the park stub),
+        // Rsp % 16 == 8, RCX=argument.
         ULONG64 rsp = ((workCtx->Rsp - 0x80) & ~0xFULL) - 8;
-        *(ULONG64 *)(ULONG_PTR)rsp = savedCtx->Rip;
+        *(ULONG64 *)(ULONG_PTR)rsp = (ULONG64)(ULONG_PTR)parkStub;
         workCtx->Rsp = rsp;
         workCtx->Rip = (ULONG64)(ULONG_PTR)LoadLibraryW;
         workCtx->Rcx = (ULONG64)(ULONG_PTR)RemotePath;
@@ -567,32 +592,56 @@ static NTSTATUS RdiHijackInject(PEPROCESS TargetProcess, PVOID LoadLibraryW, PVO
     status = PsSetContextThread(thread, (PCONTEXT)workCtx);
     if(!NT_SUCCESS(status))
       break;
-    hijackApplied = TRUE;
 
     PsResumeProcess(TargetProcess);
     processSuspended = FALSE;
 
-    // 5. Poll for the module appearing in the target's loader list
-    // (max 5s). Unlike the thread-creation path this also detects a failed
-    // load (wrong path, blocked dll) instead of failing silently.
-    status = STATUS_TIMEOUT;
-    for(ULONG waited = 0; waited < 5000; waited += 50)
+    // 5. Poll until the hijacked thread parks at the stub (max 5s).
+    // Probing briefly suspends the whole process: PsGetContextThread is
+    // only reliable on a suspended thread. Module presence in the loader
+    // list is deliberately NOT used as the signal - the loader links the
+    // module long before LoadLibraryW returns.
+    BOOLEAN parked = FALSE;
+    for(ULONG waited = 0; waited < 5000 && !parked; waited += 50)
     {
       LARGE_INTEGER interval;
       interval.QuadPart = -50 * 1000 * 10;    // 50ms, relative
       KeDelayExecutionThread(KernelMode, FALSE, &interval);
 
-      if(RdiFindModuleByName(TargetProcess, moduleName) != NULL)
+      if(!NT_SUCCESS(PsSuspendProcess(TargetProcess)))
+        continue;
+
+      RtlZeroMemory(workCtx, sizeof(RDI_CONTEXT));
+      workCtx->ContextFlags = RDI_CONTEXT_CONTROL;
+
+      if(NT_SUCCESS(PsGetContextThread(thread, (PCONTEXT)workCtx)) &&
+         workCtx->Rip == (ULONG64)(ULONG_PTR)parkStub)
       {
-        status = STATUS_SUCCESS;
-        break;
+        parked = TRUE;    // keep it suspended and fall into the restore
+      }
+      else
+      {
+        PsResumeProcess(TargetProcess);
       }
     }
 
-    // 6. Restore the original context and let the process run again. Even
-    // after a timeout the restore happens (see the race notes above).
-    PsSuspendProcess(TargetProcess);
-    if(NT_SUCCESS(status) || hijackApplied)
+    // 6. Restore the original context and let the process run again. On a
+    // timeout the restore happens as well (the thread may still be inside
+    // the loader - see the race note above). Whether a parked thread's load
+    // actually succeeded is told by the module list.
+    if(!parked)
+      PsSuspendProcess(TargetProcess);    // best effort
+
+    if(parked)
+    {
+      status = (RdiFindModuleByName(TargetProcess, moduleName) != NULL) ? STATUS_SUCCESS
+                                                                        : STATUS_DLL_NOT_FOUND;
+    }
+    else
+    {
+      status = STATUS_TIMEOUT;
+    }
+
     {
       NTSTATUS restoreStatus = PsSetContextThread(thread, (PCONTEXT)savedCtx);
       if(!NT_SUCCESS(restoreStatus))
