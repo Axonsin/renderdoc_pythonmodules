@@ -127,7 +127,8 @@ NTSTATUS DispatchIoctl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 
   if(stack->Parameters.DeviceIoControl.IoControlCode == RDI_IOCTL_INJECT)
   {
-    if(stack->Parameters.DeviceIoControl.InputBufferLength >= sizeof(RDI_INJECT_REQUEST))
+    if(stack->Parameters.DeviceIoControl.InputBufferLength >= sizeof(RDI_INJECT_REQUEST) &&
+       stack->Parameters.DeviceIoControl.OutputBufferLength >= sizeof(RDI_INJECT_RESULT))
     {
       RDI_INJECT_REQUEST *req = (RDI_INJECT_REQUEST *)Irp->AssociatedIrp.SystemBuffer;
 
@@ -136,7 +137,15 @@ NTSTATUS DispatchIoctl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         // Guarantee termination inside the request buffer.
         req->DllPath[ARRAYSIZE(req->DllPath) - 1] = 0;
 
-        status = RdiInjectDll((HANDLE)(ULONG_PTR)req->ProcessId, req->DllPath);
+        // The result overlays the (already consumed) request in the shared
+        // METHOD_BUFFERED buffer - copy only after RdiInjectDll is done
+        // reading the request through the same memory.
+        RDI_INJECT_RESULT result;
+        result.Method = 0;
+        result.HijackMs = 0;
+        status = RdiInjectDll((HANDLE)(ULONG_PTR)req->ProcessId, req->DllPath, &result);
+        *(RDI_INJECT_RESULT *)req = result;
+        info = sizeof(RDI_INJECT_RESULT);
       }
       else
       {

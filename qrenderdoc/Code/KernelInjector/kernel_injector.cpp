@@ -181,18 +181,26 @@ bool CreateShimDataMapping(const KernelInjectorCore::CaptureRequest &req, HANDLE
   return true;
 }
 
-bool SendInjectRequest(uint32_t pid, const QString &shimPath)
+bool SendInjectRequest(uint32_t pid, const QString &shimPath, uint32_t *outMethod,
+                       uint32_t *outHijackMs)
 {
   if(g_injectorDevice == nullptr)
     return false;
 
-  // Must match RDI_INJECT_REQUEST in kernel_driver/driver.h.
+  // Must match RDI_INJECT_REQUEST / RDI_INJECT_RESULT in kernel_driver/driver.h.
+  // METHOD_BUFFERED: the small result struct is copied back over the request.
   struct InjectRequest
   {
     uint32_t processId;
     wchar_t dllPath[1024];
     uint64_t secret;
   } req = {};
+
+  struct InjectResult
+  {
+    uint32_t method;    // 1 = ZwCreateThreadEx, 2 = context hijack
+    uint32_t hijackMs;
+  } result = {};
 
   req.processId = pid;
   req.secret = g_deviceSecret;
@@ -203,8 +211,15 @@ bool SendInjectRequest(uint32_t pid, const QString &shimPath)
   wcscpy_s(req.dllPath, path.c_str());
 
   DWORD returned = 0;
-  return DeviceIoControl((HANDLE)g_injectorDevice, kInjectIoctl, &req, sizeof(req), nullptr, 0,
-                         &returned, nullptr) != FALSE;
+  if(DeviceIoControl((HANDLE)g_injectorDevice, kInjectIoctl, &req, sizeof(req), &result,
+                     sizeof(result), &returned, nullptr) == FALSE)
+    return false;
+
+  if(outMethod != nullptr)
+    *outMethod = result.method;
+  if(outHijackMs != nullptr)
+    *outHijackMs = result.hijackMs;
+  return true;
 }
 
 bool EnsureChainUp(BackendId backend, QString *error)
@@ -333,13 +348,23 @@ bool KernelInjectorCore::Capture(const CaptureRequest &req, uint32_t *outIdent, 
     return false;
   }
 
-  // 6. Inject the shim into the target.
-  if(!SendInjectRequest(req.pid, req.shimPath))
+  // 6. Inject the shim into the target. The method the driver used is
+  // logged right away - it is the key diagnostic when a target misbehaves
+  // after injection (1 = dedicated thread, 2 = context hijack fallback).
   {
-    UnmapViewOfFile(view);
-    CloseHandle(mapping);
-    *error = QStringLiteral("The injection driver rejected the inject request");
-    return false;
+    uint32_t method = 0, hijackMs = 0;
+    if(!SendInjectRequest(req.pid, req.shimPath, &method, &hijackMs))
+    {
+      UnmapViewOfFile(view);
+      CloseHandle(mapping);
+      *error = QStringLiteral("The injection driver rejected the inject request");
+      return false;
+    }
+
+    if(method == 2)
+      qInfo() << "KernelInjector: injected via context hijack, parked after" << hijackMs << "ms";
+    else
+      qInfo() << "KernelInjector: injected via dedicated thread";
   }
 
   // 7. Wait for the shim to load renderdoc.dll and complete the setup. Status

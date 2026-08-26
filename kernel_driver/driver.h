@@ -80,5 +80,15 @@ typedef struct _RDI_INJECT_REQUEST
   ULONG64 Secret;
 } RDI_INJECT_REQUEST;
 
+// Optional IOCTL output (METHOD_BUFFERED: the same SystemBuffer, written
+// after the request has been consumed). Method: 1 = ZwCreateThreadEx,
+// 2 = context hijack fallback; HijackMs: for the hijack, milliseconds until
+// the thread parked at the stub.
+typedef struct _RDI_INJECT_RESULT
+{
+  ULONG Method;
+  ULONG HijackMs;
+} RDI_INJECT_RESULT;
+
 // inject.c
-NTSTATUS RdiInjectDll(HANDLE ProcessId, PCWSTR DllPath);
+NTSTATUS RdiInjectDll(HANDLE ProcessId, PCWSTR DllPath, RDI_INJECT_RESULT *Result);

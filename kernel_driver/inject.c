@@ -303,13 +303,16 @@ static PVOID RdiFindExport(PVOID ModuleBase, PCSTR ExportName)
   return result;
 }
 
-// Returns the base address of the module whose BaseDllName equals ModuleName
-// in the attached process's loader list - the 32-bit list for WOW64 targets
-// (via the PEB32 from PsGetProcessWow64Process) or the 64-bit one otherwise.
-// Must be called while attached to the target; reads are SEH-guarded.
-static PVOID RdiFindModuleByName(PEPROCESS TargetProcess, PCWSTR ModuleName)
+// Returns the base and size of the module whose BaseDllName equals
+// ModuleName in the attached process's loader list - the 32-bit list for
+// WOW64 targets (via the PEB32 from PsGetProcessWow64Process) or the 64-bit
+// one otherwise. Must be called while attached to the target; reads are
+// SEH-guarded.
+static BOOLEAN RdiGetModuleInfo(PEPROCESS TargetProcess, PCWSTR ModuleName, PVOID *Base,
+                                ULONG *Size)
 {
   PVOID result = NULL;
+  ULONG resultSize = 0;
 
   __try
   {
@@ -326,7 +329,7 @@ static PVOID RdiFindModuleByName(PEPROCESS TargetProcess, PCWSTR ModuleName)
       ULONG ldr32 = ((RDI_PEB32 *)peb32)->Ldr;
       RDI_PEB_LDR_DATA32 *ldr = (RDI_PEB_LDR_DATA32 *)(ULONG_PTR)ldr32;
       if(ldr == NULL)
-        return NULL;
+        return FALSE;
 
       ULONG head = (ULONG)(ULONG_PTR)&ldr->InLoadOrderModuleList;
       ULONG link = ldr->InLoadOrderModuleList.Flink;
@@ -342,6 +345,7 @@ static PVOID RdiFindModuleByName(PEPROCESS TargetProcess, PCWSTR ModuleName)
         if(RtlEqualUnicodeString(&baseName, &name, TRUE))
         {
           result = (PVOID)(ULONG_PTR)mod->DllBase;
+          resultSize = mod->SizeOfImage;
           break;
         }
 
@@ -352,11 +356,11 @@ static PVOID RdiFindModuleByName(PEPROCESS TargetProcess, PCWSTR ModuleName)
     {
       RDI_PEB *peb = (RDI_PEB *)PsGetProcessPeb(TargetProcess);
       if(peb == NULL)
-        return NULL;
+        return FALSE;
 
       RDI_PEB_LDR_DATA *ldr = peb->Ldr;
       if(ldr == NULL)
-        return NULL;
+        return FALSE;
 
       LIST_ENTRY *head = &ldr->InLoadOrderModuleList;
       for(LIST_ENTRY *entry = head->Flink; entry != head && steps++ < kMaxModules;
@@ -367,6 +371,7 @@ static PVOID RdiFindModuleByName(PEPROCESS TargetProcess, PCWSTR ModuleName)
         if(RtlEqualUnicodeString(&mod->BaseDllName, &name, TRUE))
         {
           result = mod->DllBase;
+          resultSize = mod->SizeOfImage;
           break;
         }
       }
@@ -375,9 +380,24 @@ static PVOID RdiFindModuleByName(PEPROCESS TargetProcess, PCWSTR ModuleName)
   __except(EXCEPTION_EXECUTE_HANDLER)
   {
     result = NULL;
+    resultSize = 0;
   }
 
-  return result;
+  if(result == NULL)
+    return FALSE;
+
+  if(Base != NULL)
+    *Base = result;
+  if(Size != NULL)
+    *Size = resultSize;
+  return TRUE;
+}
+
+static PVOID RdiFindModuleByName(PEPROCESS TargetProcess, PCWSTR ModuleName)
+{
+  PVOID base = NULL;
+  RdiGetModuleInfo(TargetProcess, ModuleName, &base, NULL);
+  return base;
 }
 
 // Finds kernel32!ExportName in the target process (32-bit kernel32 for
@@ -413,7 +433,7 @@ static PVOID RdiResolveKernel32Export(PEPROCESS TargetProcess, PCSTR ExportName)
 // removes the "duplicate execution after completion" race entirely - the
 // thread never returns into original code before the restore.
 static NTSTATUS RdiHijackInject(PEPROCESS TargetProcess, PVOID LoadLibraryW, PVOID RemotePath,
-                                PCWSTR DllPath)
+                                PCWSTR DllPath, ULONG *ParkedMs)
 {
   NTSTATUS status = STATUS_UNSUCCESSFUL;
   PETHREAD thread = NULL;
@@ -483,53 +503,85 @@ static NTSTATUS RdiHijackInject(PEPROCESS TargetProcess, PVOID LoadLibraryW, PVO
       break;
     processSuspended = TRUE;
 
-    // 3. Pick a thread: WOW64 targets only accept one parked in 32-bit code
-    // (SegCs != 0x33) - a 32-bit start address resumed under the 64-bit
-    // code segment would execute 32-bit code in 64-bit mode. If no thread
-    // qualifies, STATUS_NOT_FOUND aborts the fallback.
+    // 3. Pick a thread. Two passes: the first only accepts threads whose
+    // suspended RIP lies OUTSIDE ntdll/kernel32 - a thread parked inside the
+    // loader likely holds the loader lock, and running a nested
+    // LoadLibraryW on it risks corrupting loader state. If nothing
+    // qualifies, the second pass drops that restriction (the SegCs filter
+    // for WOW64 is never dropped - resuming a 32-bit address under the
+    // 64-bit code segment would be a crash).
     {
+      PVOID ntdllBase = NULL, k32Base = NULL;
+      ULONG ntdllSize = 0, k32Size = 0;
+      RdiGetModuleInfo(TargetProcess, L"ntdll.dll", &ntdllBase, &ntdllSize);
+      RdiGetModuleInfo(TargetProcess, L"kernel32.dll", &k32Base, &k32Size);
+
       const HANDLE targetPid = PsGetProcessId(TargetProcess);
       PCHAR procEntry = (PCHAR)spiBuffer;
 
-      for(;;)
+      for(ULONG pass = 0; pass < 2 && thread == NULL; pass++)
       {
-        ULONG nextOffset = *(ULONG *)(procEntry + RDI_SPI_NEXTENTRYOFFSET);
-        ULONG threadCount = *(ULONG *)(procEntry + RDI_SPI_THREADCOUNT);
+        procEntry = (PCHAR)spiBuffer;
 
-        if(*(HANDLE *)(procEntry + RDI_SPI_UNIQUEPROCESSID) == targetPid)
+        for(;;)
         {
-          if(threadCount > 1024)
-            threadCount = 1024;
+          ULONG nextOffset = *(ULONG *)(procEntry + RDI_SPI_NEXTENTRYOFFSET);
+          ULONG threadCount = *(ULONG *)(procEntry + RDI_SPI_THREADCOUNT);
 
-          for(ULONG i = 0; i < threadCount && thread == NULL; i++)
+          if(*(HANDLE *)(procEntry + RDI_SPI_UNIQUEPROCESSID) == targetPid)
           {
-            PCHAR th = procEntry + RDI_SPI_THREAD_BASE + i * RDI_SPI_THREAD_STRIDE;
-            HANDLE tid = *(HANDLE *)(th + RDI_SPI_THREAD_CLIENT_TID);
+            if(threadCount > 1024)
+              threadCount = 1024;
 
-            PETHREAD candidate = NULL;
-            if(!NT_SUCCESS(PsLookupThreadByThreadId(tid, &candidate)))
-              continue;
-
-            RtlZeroMemory(workCtx, sizeof(RDI_CONTEXT));
-            workCtx->ContextFlags = RDI_CONTEXT_CONTROL | RDI_CONTEXT_INTEGER | RDI_CONTEXT_SEGMENTS;
-
-            if(NT_SUCCESS(PsGetContextThread(candidate, (PCONTEXT)workCtx)))
+            for(ULONG i = 0; i < threadCount && thread == NULL; i++)
             {
-              if(!targetIsWow64 || workCtx->SegCs != 0x33)
+              PCHAR th = procEntry + RDI_SPI_THREAD_BASE + i * RDI_SPI_THREAD_STRIDE;
+              HANDLE tid = *(HANDLE *)(th + RDI_SPI_THREAD_CLIENT_TID);
+
+              PETHREAD candidate = NULL;
+              if(!NT_SUCCESS(PsLookupThreadByThreadId(tid, &candidate)))
+                continue;
+
+              RtlZeroMemory(workCtx, sizeof(RDI_CONTEXT));
+              workCtx->ContextFlags =
+                  RDI_CONTEXT_CONTROL | RDI_CONTEXT_INTEGER | RDI_CONTEXT_SEGMENTS;
+
+              if(!NT_SUCCESS(PsGetContextThread(candidate, (PCONTEXT)workCtx)))
               {
-                thread = candidate;
-                break;
+                ObDereferenceObject(candidate);
+                continue;
               }
+
+              if(targetIsWow64 && workCtx->SegCs == 0x33)
+              {
+                ObDereferenceObject(candidate);
+                continue;
+              }
+
+              if(pass == 0)
+              {
+                const ULONG64 rip = workCtx->Rip;
+                const BOOLEAN inNtdll =
+                    (ntdllBase != NULL && rip >= (ULONG64)(ULONG_PTR)ntdllBase &&
+                     rip < (ULONG64)(ULONG_PTR)ntdllBase + ntdllSize);
+                const BOOLEAN inK32 = (k32Base != NULL && rip >= (ULONG64)(ULONG_PTR)k32Base &&
+                                       rip < (ULONG64)(ULONG_PTR)k32Base + k32Size);
+                if(inNtdll || inK32)
+                {
+                  ObDereferenceObject(candidate);
+                  continue;
+                }
+              }
+
+              thread = candidate;
             }
-
-            ObDereferenceObject(candidate);
+            break;
           }
-          break;
-        }
 
-        if(nextOffset == 0)
-          break;
-        procEntry += nextOffset;
+          if(nextOffset == 0)
+            break;
+          procEntry += nextOffset;
+        }
       }
     }
 
@@ -618,6 +670,8 @@ static NTSTATUS RdiHijackInject(PEPROCESS TargetProcess, PVOID LoadLibraryW, PVO
          workCtx->Rip == (ULONG64)(ULONG_PTR)parkStub)
       {
         parked = TRUE;    // keep it suspended and fall into the restore
+        if(ParkedMs != NULL)
+          *ParkedMs = waited;
       }
       else
       {
@@ -668,8 +722,14 @@ static NTSTATUS RdiHijackInject(PEPROCESS TargetProcess, PVOID LoadLibraryW, PVO
   return status;
 }
 
-NTSTATUS RdiInjectDll(HANDLE ProcessId, PCWSTR DllPath)
+NTSTATUS RdiInjectDll(HANDLE ProcessId, PCWSTR DllPath, RDI_INJECT_RESULT *Result)
 {
+  if(Result != NULL)
+  {
+    Result->Method = 0;
+    Result->HijackMs = 0;
+  }
+
   PEPROCESS target = NULL;
   NTSTATUS status = PsLookupProcessByProcessId(ProcessId, &target);
   if(!NT_SUCCESS(status))
@@ -717,6 +777,8 @@ NTSTATUS RdiInjectDll(HANDLE ProcessId, PCWSTR DllPath)
       if(NT_SUCCESS(status) && threadHandle != NULL)
       {
         ZwClose(threadHandle);
+        if(Result != NULL)
+          Result->Method = 1;
         status = STATUS_SUCCESS;
         break;
       }
@@ -732,7 +794,16 @@ NTSTATUS RdiInjectDll(HANDLE ProcessId, PCWSTR DllPath)
     // 4. Fallback: hijack an existing thread's context into LoadLibraryW.
     // The path allocation stays leaked in both paths - the loader reads it
     // asynchronously.
-    status = RdiHijackInject(target, loadLibraryW, remotePath, DllPath);
+    {
+      ULONG parkedMs = 0;
+      status = RdiHijackInject(target, loadLibraryW, remotePath, DllPath, &parkedMs);
+      if(Result != NULL)
+      {
+        Result->Method = 2;
+        if(NT_SUCCESS(status))
+          Result->HijackMs = parkedMs;
+      }
+    }
   } while(FALSE);
 
   KeUnstackDetachProcess(&apcState);
