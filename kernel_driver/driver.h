@@ -40,18 +40,27 @@
 //
 //   IOCTL_RDI_INJECT: {ULONG ProcessId, WCHAR DllPath[1024], ULONG64 Secret}
 //   -> while attached to the target process, writes the DLL path into its
-//      address space and creates a real user thread in the target whose start
-//      routine is the target's kernel32!LoadLibraryW. The injected DLL (the
-//      renderdoc shim) then performs the capture setup on its own.
+//      address space and runs the target's own kernel32!LoadLibraryW on it,
+//      loading the injected DLL (the renderdoc shim) which then performs
+//      the capture setup on its own. Both native 64-bit and 32-bit (WOW64)
+//      targets are supported - for WOW64 the 32-bit kernel32's
+//      LoadLibraryW is used:
+//        1. primary: ZwCreateThreadEx with the target's LoadLibraryW as the
+//           start routine (a WOW64 process routes the new thread through
+//           the wow64 bootstrap so a 32-bit start address runs 32-bit);
+//        2. fallback (thread creation failed): hijack an existing thread's
+//           context into LoadLibraryW, poll for the module to appear in the
+//           loader list, then restore the context (RdiHijackInject in
+//           inject.c - see its comment for the two classic hijack races).
 //
 // The device is created without a DACL and the IOCTL allows FILE_ANY_ACCESS,
 // so requests are authenticated instead: the first request carrying a
 // non-zero Secret arms the driver with the caller PID + secret, and all
 // later requests must match both (see RdiAuthorize in driver.c).
 //
-// 64-bit targets only. The remote path allocation is deliberately leaked: the
-// injected thread references it until the DLL load completes and it cannot be
-// freed safely from the driver.
+// The remote path allocation is deliberately leaked: the injected thread
+// references it until the DLL load completes and it cannot be freed safely
+// from the driver.
 
 #define RDI_DEVICE_NAME L"\\Device\\RenderDicInj"
 #define RDI_SYMLINK_NAME L"\\DosDevices\\RenderDicInj"
