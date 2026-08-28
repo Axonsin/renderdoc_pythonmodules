@@ -792,8 +792,10 @@ static bool HijackFunctionCall(HANDLE hProcess, HANDLE hThread, uintptr_t render
 
   rdcstr err;
 
-  // the callee writes out-parameters through the parameter buffer, which is read back
-  bool ret = HijackRemoteCall(hProcess, hThread, func_remote, data, dataLen, data, dataLen, 10000,
+  // All INTERNAL_* setup exports return void. Any outputs, such as the target-control ident,
+  // are written through the parameter buffer. Do not also read the return-value slot into the
+  // same buffer, as that would overwrite the out-parameter with the undefined return register.
+  bool ret = HijackRemoteCall(hProcess, hThread, func_remote, data, dataLen, NULL, 0, 10000,
                               err);
 
   if(!ret)
