@@ -632,6 +632,8 @@
     <ClCompile Include="$(IntDir)generated\moc_CommentView.cpp" />
     <ClCompile Include="$(IntDir)generated\moc_DescriptorViewer.cpp" />
     <ClCompile Include="$(IntDir)generated\moc_EventBrowser.cpp" />
+    <ClCompile Include="$(IntDir)generated\moc_ExportWindow.cpp" />
+    <ClCompile Include="$(IntDir)generated\moc_ExportRunner.cpp" />
     <ClCompile Include="$(IntDir)generated\moc_GLPipelineStateViewer.cpp" />
     <ClCompile Include="$(IntDir)generated\moc_LiveCapture.cpp" />
     <ClCompile Include="$(IntDir)generated\moc_EnvironmentEditor.cpp" />
@@ -779,6 +781,12 @@
     <ClCompile Include="Windows\Dialogs\ConfigEditor.cpp" />
     <ClCompile Include="Windows\Dialogs\VirtualFileDialog.cpp" />
     <ClCompile Include="Windows\EventBrowser.cpp" />
+    <ClCompile Include="Windows\ExportWindow.cpp" />
+    <ClCompile Include="Code\ResourceExport\ExportRunner.cpp" />
+    <ClCompile Include="Code\ResourceExport\GltfWriter.cpp" />
+    <ClCompile Include="Code\ResourceExport\MeshExtractor.cpp" />
+    <ClCompile Include="Code\ResourceExport\ObjWriter.cpp" />
+    <ClCompile Include="Code\ResourceExport\TextureExporter.cpp" />
     <ClCompile Include="3rdparty\flowlayout\FlowLayout.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
@@ -984,6 +992,7 @@
     <ClInclude Include="$(IntDir)generated\ui_CommentView.h" />
     <ClInclude Include="$(IntDir)generated\ui_DescriptorViewer.h" />
     <ClInclude Include="$(IntDir)generated\ui_EventBrowser.h" />
+    <ClInclude Include="$(IntDir)generated\ui_ExportWindow.h" />
     <ClInclude Include="$(IntDir)generated\ui_GLPipelineStateViewer.h" />
     <ClInclude Include="$(IntDir)generated\ui_LiveCapture.h" />
     <ClInclude Include="$(IntDir)generated\ui_MainWindow.h" />
@@ -1021,6 +1030,11 @@
     <ClInclude Include="Code\KernelInjector\manual_map.h" />
     <ClInclude Include="Code\KernelInjector\nt_internals.h" />
     <ClInclude Include="Code\KernelInjector\trace_cleanup.h" />
+    <ClInclude Include="Code\ResourceExport\GltfWriter.h" />
+    <ClInclude Include="Code\ResourceExport\MeshExtractor.h" />
+    <ClInclude Include="Code\ResourceExport\ObjWriter.h" />
+    <ClInclude Include="Code\ResourceExport\ResourceExport.h" />
+    <ClInclude Include="Code\ResourceExport\TextureExporter.h" />
     <ClInclude Include="Code\MiniQtHelper.h" />
     <CustomBuild Include="Code\pyrenderdoc\PythonContext.h">
       <AdditionalInputs>%(Fullpath);$(QtBinDir)\moc.exe;%(AdditionalInputs)</AdditionalInputs>
@@ -1372,6 +1386,18 @@
       <Message>MOC %(Filename).h</Message>
       <Outputs>$(IntDir)generated\moc_%(Filename).cpp</Outputs>
     </CustomBuild>
+    <CustomBuild Include="Windows\ExportWindow.h">
+      <AdditionalInputs>%(Fullpath);$(QtBinDir)\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command>"$(QtBinDir)\moc.exe" -DUNICODE -DWIN32 -DWIN64 -D_WIN32 -D_WIN64 -DRENDERDOC_PLATFORM_WIN32 -DSCINTILLA_QT=1 -DSCI_LEXER=1 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -I"$(ProjectDir)." -I"$(SolutionDir)\renderdoc\api\replay" -I"$(QtIncludeDir)" -I"$(QtIncludeDir)\QtWidgets" -I"$(QtIncludeDir)\QtGui" -I"$(QtIncludeDir)\QtCore" "%(Fullpath)" -o "$(IntDir)generated\moc_%(Filename).cpp"</Command>
+      <Message>MOC %(Filename).h</Message>
+      <Outputs>$(IntDir)generated\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="Code\ResourceExport\ExportRunner.h">
+      <AdditionalInputs>%(Fullpath);$(QtBinDir)\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command>"$(QtBinDir)\moc.exe" -DUNICODE -DWIN32 -DWIN64 -D_WIN32 -D_WIN64 -DRENDERDOC_PLATFORM_WIN32 -DSCINTILLA_QT=1 -DSCI_LEXER=1 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -I"$(ProjectDir)." -I"$(SolutionDir)\renderdoc\api\replay" -I"$(QtIncludeDir)" -I"$(QtIncludeDir)\QtWidgets" -I"$(QtIncludeDir)\QtGui" -I"$(QtIncludeDir)\QtCore" "%(Fullpath)" -o "$(IntDir)generated\moc_%(Filename).cpp"</Command>
+      <Message>MOC %(Filename).h</Message>
+      <Outputs>$(IntDir)generated\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
     <CustomBuild Include="Windows\MainWindow.h">
       <AdditionalInputs>%(Fullpath);$(QtBinDir)\moc.exe;%(AdditionalInputs)</AdditionalInputs>
       <Command>"$(QtBinDir)\moc.exe" -DUNICODE -DWIN32 -DWIN64 -D_WIN32 -D_WIN64 -DRENDERDOC_PLATFORM_WIN32 -DSCINTILLA_QT=1 -DSCI_LEXER=1 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -D_MSC_VER=1900 -I"$(ProjectDir)." -I"$(SolutionDir)\renderdoc\api\replay" -I"$(QtIncludeDir)" -I"$(QtIncludeDir)\QtWidgets" -I"$(QtIncludeDir)\QtGui" -I"$(QtIncludeDir)\QtCore" "%(Fullpath)" -o "$(IntDir)generated\moc_%(Filename).cpp"</Command>
@@ -1674,6 +1700,12 @@
       <Outputs>$(IntDir)generated\ui_%(Filename).h</Outputs>
     </CustomBuild>
     <CustomBuild Include="Windows\EventBrowser.ui">
+      <AdditionalInputs>%(Fullpath);$(QtBinDir)\uic.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command>"$(QtBinDir)\uic.exe" "%(Fullpath)" -o "$(IntDir)generated\ui_%(Filename).h"</Command>
+      <Message>UIC %(Filename).ui</Message>
+      <Outputs>$(IntDir)generated\ui_%(Filename).h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="Windows\ExportWindow.ui">
       <AdditionalInputs>%(Fullpath);$(QtBinDir)\uic.exe;%(AdditionalInputs)</AdditionalInputs>
       <Command>"$(QtBinDir)\uic.exe" "%(Fullpath)" -o "$(IntDir)generated\ui_%(Filename).h"</Command>
       <Message>UIC %(Filename).ui</Message>

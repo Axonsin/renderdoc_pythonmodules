@@ -1191,6 +1191,28 @@ protected:
 
 DECLARE_REFLECTION_STRUCT(IStatisticsViewer);
 
+DOCUMENT(R"(The resource export window.
+
+This window is retrieved by calling :meth:`CaptureContext.GetExportWindow`.
+)");
+struct IExportWindow
+{
+  DOCUMENT(R"(Retrieves the PySide2 QWidget for this :class:`ExportWindow` if PySide2 is available, or otherwise
+returns a unique opaque pointer that can be passed back to any RenderDic functions expecting a
+QWidget.
+
+:return: Return the widget handle, either a PySide2 handle or an opaque handle.
+:rtype: QWidget
+)");
+  virtual QWidget *Widget() = 0;
+
+protected:
+  IExportWindow() = default;
+  ~IExportWindow() = default;
+};
+
+DECLARE_REFLECTION_STRUCT(IExportWindow);
+
 DOCUMENT(R"(The performance counter view window.
 
 This window is retrieved by calling :meth:`CaptureContext.GetPerformanceCounterViewer`.
@@ -2634,6 +2656,13 @@ on the UI thread.
 )");
   virtual IResourceInspector *GetResourceInspector() = 0;
 
+  DOCUMENT(R"(Retrieve the current singleton :class:`ExportWindow`.
+
+:return: The current window, which is created (but not shown) it there wasn't one open.
+:rtype: ExportWindow
+)");
+  virtual IExportWindow *GetExportWindow() = 0;
+
   DOCUMENT(R"(Check if there is a current :class:`EventBrowser` open.
 
 :return: ``True`` if there is a window open.
@@ -2738,6 +2767,13 @@ on the UI thread.
 :rtype: bool
 )");
   virtual bool HasResourceInspector() = 0;
+
+  DOCUMENT(R"(Check if there is a current :class:`ExportWindow` open.
+
+:return: ``True`` if there is a window open.
+:rtype: bool
+)");
+  virtual bool HasExportWindow() = 0;
 
   DOCUMENT("Raise the current :class:`EventBrowser`, showing it in the default place if needed.");
   virtual void ShowEventBrowser() = 0;

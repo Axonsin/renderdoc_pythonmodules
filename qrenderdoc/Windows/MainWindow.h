@@ -125,6 +125,7 @@ public:
   void showPythonShell() { on_action_Python_Shell_triggered(); }
   void showPerformanceCounterViewer() { on_action_Counter_Viewer_triggered(); }
   void showResourceInspector() { on_action_Resource_Inspector_triggered(); }
+  void showExportWindow() { on_action_Export_Window_triggered(); }
   void showExtensionManager() { on_action_Manage_Extensions_triggered(); }
   void PopulateRecentCaptureFiles();
   void PopulateRecentCaptureSettings();
@@ -141,6 +142,7 @@ private slots:
   void on_action_API_Inspector_triggered();
   void on_action_Annotation_Viewer_triggered();
   void on_action_Event_Browser_triggered();
+  void on_action_Export_Window_triggered();
   void on_action_Texture_Viewer_triggered();
   void on_action_Pipeline_State_triggered();
   void on_action_Launch_Application_triggered();

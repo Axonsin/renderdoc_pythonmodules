@@ -22,6 +22,9 @@
     <Filter Include="Code\pyrenderdoc">
       <UniqueIdentifier>{c2e91ed4-8c04-4fdc-accf-8fed288f2cd8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\ResourceExport">
+      <UniqueIdentifier>{3f9a2c1e-5d24-4e07-9a68-c41b10d1a7b2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Windows">
       <UniqueIdentifier>{897f728c-8a11-41c3-ba6f-75815d9e06db}</UniqueIdentifier>
     </Filter>
@@ -113,6 +116,24 @@
     </ClCompile>
     <ClCompile Include="Windows\EventBrowser.cpp">
       <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ExportWindow.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ResourceExport\ExportRunner.cpp">
+      <Filter>Code\ResourceExport</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ResourceExport\GltfWriter.cpp">
+      <Filter>Code\ResourceExport</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ResourceExport\MeshExtractor.cpp">
+      <Filter>Code\ResourceExport</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ResourceExport\ObjWriter.cpp">
+      <Filter>Code\ResourceExport</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ResourceExport\TextureExporter.cpp">
+      <Filter>Code\ResourceExport</Filter>
     </ClCompile>
     <ClCompile Include="Widgets\ResourcePreview.cpp">
       <Filter>Widgets</Filter>
@@ -439,6 +460,12 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="$(IntDir)generated\moc_EventBrowser.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(IntDir)generated\moc_ExportWindow.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(IntDir)generated\moc_ExportRunner.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="$(IntDir)generated\moc_GLPipelineStateViewer.cpp">
@@ -1019,6 +1046,9 @@
     <ClInclude Include="$(IntDir)generated\ui_EventBrowser.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(IntDir)generated\ui_ExportWindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(IntDir)generated\ui_GLPipelineStateViewer.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -1133,6 +1163,21 @@
     <ClInclude Include="Code\RGPInterop.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="Code\ResourceExport\GltfWriter.h">
+      <Filter>Code\ResourceExport</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ResourceExport\MeshExtractor.h">
+      <Filter>Code\ResourceExport</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ResourceExport\ObjWriter.h">
+      <Filter>Code\ResourceExport</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ResourceExport\ResourceExport.h">
+      <Filter>Code\ResourceExport</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ResourceExport\TextureExporter.h">
+      <Filter>Code\ResourceExport</Filter>
+    </ClInclude>
     <ClInclude Include="$(IntDir)generated\ui_ExtensionManager.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -1218,6 +1263,9 @@
       <Filter>Windows</Filter>
     </CustomBuild>
     <CustomBuild Include="Windows\EventBrowser.ui">
+      <Filter>Windows</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Windows\ExportWindow.ui">
       <Filter>Windows</Filter>
     </CustomBuild>
     <CustomBuild Include="Windows\MainWindow.ui">
@@ -1309,6 +1357,12 @@
     </CustomBuild>
     <CustomBuild Include="Windows\EventBrowser.h">
       <Filter>Windows</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Windows\ExportWindow.h">
+      <Filter>Windows</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Code\ResourceExport\ExportRunner.h">
+      <Filter>Code\ResourceExport</Filter>
     </CustomBuild>
     <CustomBuild Include="Windows\ShaderViewer.h">
       <Filter>Windows</Filter>

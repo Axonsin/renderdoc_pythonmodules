@@ -49,6 +49,7 @@
 #include "Windows/Dialogs/LiveCapture.h"
 #include "Windows/Dialogs/SettingsDialog.h"
 #include "Windows/EventBrowser.h"
+#include "Windows/ExportWindow.h"
 #include "Windows/LogView.h"
 #include "Windows/MainWindow.h"
 #include "Windows/PerformanceCounterViewer.h"
@@ -2424,6 +2425,18 @@ IResourceInspector *CaptureContext::GetResourceInspector()
   return m_ResourceInspector;
 }
 
+IExportWindow *CaptureContext::GetExportWindow()
+{
+  if(m_ExportWindow)
+    return m_ExportWindow;
+
+  m_ExportWindow = new ExportWindow(*this, m_MainWindow);
+  m_ExportWindow->setObjectName(lit("exportWindow"));
+  setupDockWindow(m_ExportWindow, true);
+
+  return m_ExportWindow;
+}
+
 void CaptureContext::ShowEventBrowser()
 {
   m_MainWindow->showEventBrowser();
@@ -2737,6 +2750,10 @@ QWidget *CaptureContext::CreateBuiltinWindow(const rdcstr &objectName)
   {
     return GetResourceInspector()->Widget();
   }
+  else if(objectName == "exportWindow")
+  {
+    return GetExportWindow()->Widget();
+  }
   else if(objectName == "performanceCounterViewer")
   {
     return GetPerformanceCounterViewer()->Widget();
@@ -2773,6 +2790,8 @@ void CaptureContext::BuiltinWindowClosed(QWidget *window)
     m_PythonShell = NULL;
   else if(m_ResourceInspector && m_ResourceInspector->Widget() == window)
     m_ResourceInspector = NULL;
+  else if(m_ExportWindow && m_ExportWindow->Widget() == window)
+    m_ExportWindow = NULL;
   else if(m_PerformanceCounterViewer && m_PerformanceCounterViewer->Widget() == window)
     m_PerformanceCounterViewer = NULL;
   else

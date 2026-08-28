@@ -55,6 +55,7 @@ class PythonShell;
 class ResourceInspector;
 class ShaderViewer;
 class MiniQtHelper;
+class ExportWindow;
 
 class QFileSystemWatcher;
 
@@ -226,6 +227,7 @@ public:
   ITimelineBar *GetTimelineBar() override;
   IPythonShell *GetPythonShell() override;
   IResourceInspector *GetResourceInspector() override;
+  IExportWindow *GetExportWindow() override;
 
   bool HasEventBrowser() override { return m_EventBrowser != NULL; }
   bool HasAPIInspector() override { return m_APIInspector != NULL; }
@@ -242,6 +244,7 @@ public:
   bool HasTimelineBar() override { return m_TimelineBar != NULL; }
   bool HasPythonShell() override { return m_PythonShell != NULL; }
   bool HasResourceInspector() override { return m_ResourceInspector != NULL; }
+  bool HasExportWindow() override { return m_ExportWindow != NULL; }
   void ShowEventBrowser() override;
   void ShowAPIInspector() override;
   void ShowAnnotationViewer() override;
@@ -452,4 +455,5 @@ private:
   TimelineBar *m_TimelineBar = NULL;
   PythonShell *m_PythonShell = NULL;
   ResourceInspector *m_ResourceInspector = NULL;
+  ExportWindow *m_ExportWindow = NULL;
 };

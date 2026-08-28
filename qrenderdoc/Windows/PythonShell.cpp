@@ -724,6 +724,10 @@ struct CaptureContextInvoker : ObjectForwarder<ICaptureContext>
   {
     return InvokeRetFunction<IResourceInspector *>(&ICaptureContext::GetResourceInspector);
   }
+  virtual IExportWindow *GetExportWindow() override
+  {
+    return InvokeRetFunction<IExportWindow *>(&ICaptureContext::GetExportWindow);
+  }
   virtual bool HasEventBrowser() override
   {
     return InvokeRetFunction<bool>(&ICaptureContext::HasEventBrowser);
@@ -783,6 +787,10 @@ struct CaptureContextInvoker : ObjectForwarder<ICaptureContext>
   virtual bool HasResourceInspector() override
   {
     return InvokeRetFunction<bool>(&ICaptureContext::HasResourceInspector);
+  }
+  virtual bool HasExportWindow() override
+  {
+    return InvokeRetFunction<bool>(&ICaptureContext::HasExportWindow);
   }
 
   virtual void ShowEventBrowser() override

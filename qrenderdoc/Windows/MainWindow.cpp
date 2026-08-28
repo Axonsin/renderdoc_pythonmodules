@@ -2381,6 +2381,16 @@ void MainWindow::on_action_Event_Browser_triggered()
     ui->toolWindowManager->addToolWindow(eventBrowser, leftToolArea());
 }
 
+void MainWindow::on_action_Export_Window_triggered()
+{
+  QWidget *exportWindow = m_Ctx.GetExportWindow()->Widget();
+
+  if(ui->toolWindowManager->toolWindows().contains(exportWindow))
+    ToolWindowManager::raiseToolWindow(exportWindow);
+  else
+    ui->toolWindowManager->addToolWindow(exportWindow, mainToolArea());
+}
+
 void MainWindow::on_action_Texture_Viewer_triggered()
 {
   QWidget *textureViewer = m_Ctx.GetTextureViewer()->Widget();

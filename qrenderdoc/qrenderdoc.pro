@@ -174,6 +174,11 @@ SOURCES += Code/qrenderdoc.cpp \
     Code/QRDUtils.cpp \
     Code/MiniQtHelper.cpp \
     Code/BufferFormatter.cpp \
+    Code/ResourceExport/ExportRunner.cpp \
+    Code/ResourceExport/GltfWriter.cpp \
+    Code/ResourceExport/MeshExtractor.cpp \
+    Code/ResourceExport/ObjWriter.cpp \
+    Code/ResourceExport/TextureExporter.cpp \
     Code/Resources.cpp \
     Code/RGPInterop.cpp \
     Code/pyrenderdoc/PythonContext.cpp \
@@ -190,6 +195,7 @@ SOURCES += Code/qrenderdoc.cpp \
     Windows/Dialogs/UpdateDialog.cpp \
     Windows/MainWindow.cpp \
     Windows/EventBrowser.cpp \
+    Windows/ExportWindow.cpp \
     Windows/TextureViewer.cpp \
     Windows/ShaderViewer.cpp \
     Windows/ShaderMessageViewer.cpp \
@@ -260,6 +266,12 @@ HEADERS += Code/CaptureContext.h \
     Code/ReplayManager.h \
     Code/ScintillaSyntax.h \
     Code/QRDUtils.h \
+    Code/ResourceExport/ExportRunner.h \
+    Code/ResourceExport/GltfWriter.h \
+    Code/ResourceExport/MeshExtractor.h \
+    Code/ResourceExport/ObjWriter.h \
+    Code/ResourceExport/ResourceExport.h \
+    Code/ResourceExport/TextureExporter.h \
     Code/MiniQtHelper.h \
     Code/Resources.h \
     Code/RGPInterop.h \
@@ -279,6 +291,7 @@ HEADERS += Code/CaptureContext.h \
     Windows/Dialogs/UpdateDialog.h \
     Windows/MainWindow.h \
     Windows/EventBrowser.h \
+    Windows/ExportWindow.h \
     Windows/TextureViewer.h \
     Windows/ShaderViewer.h \
     Windows/ShaderMessageViewer.h \
@@ -349,6 +362,7 @@ FORMS    += Windows/Dialogs/AboutDialog.ui \
     Windows/Dialogs/UpdateDialog.ui \
     Windows/MainWindow.ui \
     Windows/EventBrowser.ui \
+    Windows/ExportWindow.ui \
     Windows/TextureViewer.ui \
     Widgets/ResourcePreview.ui \
     Widgets/ThumbnailStrip.ui \
